@@ -717,8 +717,7 @@
       <div id="pg-absensi" class="page">
 
         <!-- filter bar -->
-        <div
-          style="display:flex;flex-wrap:wrap;gap:1rem;margin-bottom:1.5rem;align-items:center;background:#fff;padding:1rem 1.5rem;border-radius:100px;border:1px solid var(--brd);box-shadow:var(--s1)">
+        <div class="filter-bar-flex">
           <div style="display:flex;align-items:center;gap:0.5rem;flex:1;min-width:200px">
             <label style="font-size:0.85rem;font-weight:700;color:var(--tx)">Kelas</label>
             <select id="absClass" class="fi"
@@ -839,8 +838,7 @@
             onclick="exportRekap()">Export Laporan</button>
         </div>
 
-        <div
-          style="display:flex;flex-wrap:wrap;gap:1rem;margin-bottom:1.5rem;align-items:center;background:#fff;padding:1rem 1.5rem;border-radius:100px;border:1px solid var(--brd);box-shadow:var(--s1)">
+        <div class="filter-bar-flex">
           <div style="display:flex;align-items:center;gap:0.5rem;flex:1;min-width:180px" data-r="admin,guru">
             <label style="font-size:0.85rem;font-weight:700;color:var(--tx)">Kelas</label>
             <select id="rekClass" class="fi"
@@ -872,7 +870,7 @@
         <div class="card mb2" id="rekSumArea"
           style="border:1px solid var(--brd);box-shadow:var(--s1);border-radius:var(--r)">
           <div class="card-b">
-            <div id="rekSumBars" style="display:grid;grid-template-columns:repeat(5,1fr);gap:1.5rem">
+            <div id="rekSumBars" class="g5 gap1">
               <div style="background:var(--bg);padding:1rem;border-radius:var(--r2)">
                 <div class="fbet tsm mb1"><span class="tb7"><img src="image/checkbox.png"
                       style="width:1.2em;height:1.2em;vertical-align:middle;"> Hadir</span><span id="rn_hadir"
@@ -1154,7 +1152,7 @@
               Filter Laporan</div>
           </div>
           <div class="card-b">
-            <div style="display:grid;grid-template-columns:1fr 1fr 1fr auto;gap:.75rem;align-items:end">
+            <div class="filter-grid">
               <div class="fg" style="margin:0"><label class="fl">Kelas</label><select id="lapClass" class="fi">
                   <option value="">Semua Kelas</option>
                 </select></div>
@@ -1176,7 +1174,7 @@
         <!-- summary bars -->
         <div class="card mb3">
           <div class="card-b">
-            <div id="lapSumBars" style="display:grid;grid-template-columns:repeat(5,1fr);gap:1rem">
+            <div id="lapSumBars" class="g5">
               <div>
                 <div class="fbet tsm mb1"><span class="tb7"><img src="image/checkbox.png"
                       style="width:1.2em;height:1.2em;vertical-align:middle;filter:drop-shadow(0 2px 3px rgba(0,0,0,0.2))">
@@ -1258,7 +1256,7 @@
         <!-- Filter bar -->
         <div class="card mb2">
           <div class="card-b">
-            <div style="display:grid;grid-template-columns:1fr 1fr 1fr auto;gap:.75rem;align-items:end">
+            <div class="filter-grid">
               <div class="fg" style="margin:0" data-r="admin,guru"><label class="fl">Kelas</label><select id="schClass"
                   class="fi" onchange="fetchSchedules()">
                   <option value="">— Semua Kelas —</option>
@@ -1383,7 +1381,7 @@
                     style="font-weight:800;color:var(--tx1);margin-bottom:1rem;border-bottom:2px solid var(--brd);padding-bottom:0.5rem">
                     Akademik & Waktu</div>
 
-                  <div style="display:grid;grid-template-columns:1fr 1fr;gap:1rem">
+                  <div class="g2">
                     <div class="fg"><label class="fl">Tahun Ajaran</label>
                       <input id="setYear" type="text" class="fi" placeholder="2023/2024">
                     </div>
@@ -1395,7 +1393,7 @@
                     </div>
                   </div>
 
-                  <div style="display:grid;grid-template-columns:1fr 1fr;gap:1rem">
+                  <div class="g2">
                     <div class="fg"><label class="fl">Jam Masuk</label>
                       <input id="setStart" type="time" class="fi" required>
                     </div>
