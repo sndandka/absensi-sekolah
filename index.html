@@ -183,6 +183,8 @@
         <div
           style="font-family:'Nunito',sans-serif;font-size:1.3rem;font-weight:900;color:var(--tx);letter-spacing:-0.5px;line-height:1">
           SiAbsen</div>
+        <div class="sb-close" onclick="document.getElementById('sidebar').classList.remove('on')"
+          style="margin-left:auto; cursor:pointer; font-size:1.2rem; font-weight:bold; color:var(--tx);">✕</div>
       </div>
 
       <div class="sb-scroll">
@@ -452,7 +454,7 @@
           </div>
 
           <!-- Middle Section -->
-          <div style="display:grid;grid-template-columns:2fr 1fr;gap:1.5rem;margin-bottom:1.5rem">
+          <div class="dash-mid-grid mb3">
 
             <div class="card" style="border:none;box-shadow:none;background:var(--bg)">
               <div class="card-h" style="padding-left:0;border:none">
@@ -489,7 +491,7 @@
           </div>
 
           <!-- Bottom Section -->
-          <div style="display:grid;grid-template-columns:2fr 1fr;gap:1.5rem">
+          <div class="dash-mid-grid">
             <div class="card">
               <div class="card-h">
                 <div class="card-t"><img src="image/info.png"
