@@ -541,15 +541,23 @@ textarea.fi{resize:vertical;min-height:85px}
 .kelas-toggle-btn:hover{background:var(--v3) !important}
 
 /* ─── RESPONSIVE ─────────────────────────────────────────── */
+.dash-mid-grid { display: grid; grid-template-columns: 2fr 1fr; gap: 1.5rem; }
+.sb-close { display: none; }
+
 @media(max-width:1024px){
-  .sidebar{transform:translateX(-100%)}.sidebar.open{transform:none}
+  .sidebar{transform:translateX(-100%);box-shadow:var(--s3)}.sidebar.on{transform:none !important}
+  .sb-close { display: block !important; }
   .main{margin-left:0}.hamburger{display:flex !important}
   .srow{grid-template-columns:repeat(2,1fr)}
   .g4{grid-template-columns:repeat(2,1fr)}
 }
 @media(max-width:640px){
   .srow{grid-template-columns:1fr}.page{padding:1rem}
-  .topbar{padding:0 1rem}.g2,.g3,.g4{grid-template-columns:1fr}
+  .topbar{padding:1rem 1rem 0.5rem 1rem !important}.g2,.g3,.g4{grid-template-columns:1fr}
   .att-grid{grid-template-columns:1fr}
   .kelas-grid{grid-template-columns:1fr}
+  .dash-mid-grid { grid-template-columns: 1fr; }
+}
+@media(min-width:1025px){
+  .sb-tgl { display: none !important; }
 }
