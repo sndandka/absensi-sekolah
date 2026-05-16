@@ -558,11 +558,33 @@ textarea.fi{resize:vertical;min-height:85px}
 @media(max-width:640px){
   .srow{grid-template-columns:1fr}.page{padding:1rem}
   .topbar{padding:1rem 1rem 0.5rem 1rem !important}.g2,.g3,.g4,.g5{grid-template-columns:1fr}
-  .filter-grid{grid-template-columns:1fr}
+  .filter-grid{grid-template-columns:1fr; gap: 1rem;}
+  .filter-grid .flex { flex-direction: column; width: 100%; }
+  .filter-grid .flex .btn { width: 100%; justify-content: center; }
   .att-grid{grid-template-columns:1fr}
   .kelas-grid{grid-template-columns:1fr}
   .dash-mid-grid { grid-template-columns: 1fr; }
-  .filter-bar-flex { border-radius: var(--r) !important; padding: 1rem !important; }
+  
+  /* Filter Bar Improvements */
+  .filter-bar-flex { flex-direction: column; align-items: stretch !important; border-radius: var(--r) !important; padding: 1rem !important; gap: 0.8rem; }
+  .filter-bar-flex > div { flex-direction: column !important; align-items: stretch !important; width: 100% !important; min-width: 0 !important; flex: none !important; gap: 0.4rem !important; }
+  .filter-bar-flex > div > select, .filter-bar-flex > div > input { width: 100% !important; }
+  .filter-bar-flex .btn { margin-left: 0 !important; width: 100%; justify-content: center; margin-top: 0.4rem; }
+
+  /* Action Bar Improvements */
+  .fbet.fwrap { flex-direction: column !important; align-items: stretch !important; gap: 1rem !important; text-align: left; }
+  .fbet.fwrap > div { text-align: left !important; }
+  .fbet.fwrap .flex { flex-direction: column !important; align-items: stretch !important; width: 100% !important; gap: 0.5rem !important; }
+  .fbet.fwrap input.fi, .fbet.fwrap select.fi { width: 100% !important; }
+  .fbet.fwrap .btn { width: 100% !important; justify-content: center !important; }
+  
+  /* Quick Actions in Attendance */
+  .flex.gap1.mb2.fwrap { flex-direction: column !important; align-items: stretch !important; gap: 0.5rem !important; }
+  .flex.gap1.mb2.fwrap > .btn { width: 100% !important; margin-left: 0 !important; justify-content: center !important; }
+
+  /* Topbar Fixes */
+  #tbName, #tbEmail { display: none !important; }
+  .topbar { flex-direction: row !important; }
 }
 @media(min-width:1025px){
   .sb-tgl { display: none !important; }
