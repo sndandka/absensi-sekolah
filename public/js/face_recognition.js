@@ -537,8 +537,11 @@ async function startCam() {
     if (v) { v.srcObject = faceStream; v.play(); }
     id('btnStartCam').style.display = 'none';
     id('btnStopCam').style.display = 'inline-flex';
-    id('btnCapture').style.display = 'inline-flex';
-    scanMsg('📸 Kamera aktif. Klik "Scan Wajah" atau posisikan wajah di lingkaran.', '');
+    id('btnCapture').style.display = 'none';
+    scanMsg('📸 Kamera aktif. Memulai pemindaian wajah otomatis...', '');
+    
+    // Auto start scanning after a short delay to allow video stream to initialize
+    setTimeout(doCapture, 1000);
   } catch (e) {
     scanMsg('❌ Gagal akses kamera: ' + e.message, 'err');
     showToast('Tidak bisa akses kamera: ' + e.message, 'error');
@@ -555,16 +558,15 @@ async function doCapture() {
   const v = id('scanVid');
   const uid = App.profile.id;
   const captureBtn = id('btnCapture');
-  if (captureBtn) { captureBtn.disabled = true; captureBtn.textContent = '🔍 Memindai...'; }
+  if (captureBtn) { captureBtn.style.display = 'none'; }
 
   scanMsg('🔍 Mendeteksi dan mencocokkan wajah...', '');
   id('livenessVal').textContent = 'Memproses...';
 
   let bestResult = null;
-  let attempts = 0;
 
-  while (attempts < 20 && !bestResult?.passed) {
-    attempts++;
+  // Keep scanning as long as faceStream is active and no best match
+  while (faceStream && !bestResult?.passed) {
     try {
       const det = await faceapi
         .detectSingleFace(v, new faceapi.SsdMobilenetv1Options({ minConfidence: 0.5 }))
@@ -587,12 +589,12 @@ async function doCapture() {
           scanMsg('🔄 Kecocokan: ' + result.percent + '% — perlu ≥60%. Coba ubah posisi...', '');
         }
       } else {
-        scanMsg('👤 Wajah tidak terdeteksi. Pastikan wajah terlihat jelas.', '');
+        scanMsg('👤 Wajah tidak terdeteksi. Posisikan wajah di lingkaran.', '');
       }
     } catch (e) {
       console.error('Detection error:', e);
     }
-    await wait(100);
+    await wait(300); // Wait between frames to reduce CPU load
   }
 
   if (bestResult && bestResult.passed) {
@@ -602,12 +604,18 @@ async function doCapture() {
     id('btnCatatHdr').classList.add('pulse');
     // Store match result for recording
     window._lastFaceMatch = bestResult;
+    
+    // Opsional: Otomatis tekan tombol catat hadir agar lebih mulus
+    setTimeout(catatHadir, 1500);
   } else {
     id('livenessVal').textContent = '—';
-    scanMsg('❌ Gagal mencocokkan wajah. Pastikan wajah terdaftar dan cahaya cukup.', 'err');
+    if (!faceStream) {
+      scanMsg('Kamera dihentikan.', '');
+    } else {
+      scanMsg('❌ Gagal mencocokkan wajah. Pastikan wajah terdaftar dan cahaya cukup.', 'err');
+    }
   }
 
-  if (captureBtn) { captureBtn.disabled = false; captureBtn.innerHTML = '<img src="image/info.png" style="width:1.2em;height:1.2em;vertical-align:middle"> Scan Ulang'; }
   isScanning = false;
 }
 
