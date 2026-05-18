@@ -1,11 +1,11 @@
-# 🎓 SiAbsen — Sistem Absensi Sekolah Digital (Supabase Cloud Version)
+# SiAbsen - Sistem Absensi Sekolah Digital (Supabase Cloud Version)
 
 Aplikasi absensi digital modern yang telah dimigrasi dari PHP/MySQL ke arsitektur **Serverless** menggunakan **Supabase (PostgreSQL & Auth)**.
 Mendukung **4 role**: Admin, Guru, Siswa, dan Orang Tua.
 
 ---
 
-## 🚀 Fitur Utama (Versi Supabase)
+## Fitur Utama (Versi Supabase)
 
 - **Supabase Auth**: Autentikasi aman dengan session management otomatis.
 - **Row Level Security (RLS)**: Keamanan data di tingkat database (PostgreSQL).
@@ -15,7 +15,7 @@ Mendukung **4 role**: Admin, Guru, Siswa, dan Orang Tua.
 
 ---
 
-## 🛠️ Setup Cepat
+## Setup Cepat
 
 ### 1. Persiapan Supabase
 1. Buat proyek baru di [Supabase Dashboard](https://supabase.com/dashboard).
@@ -37,7 +37,7 @@ Mendukung **4 role**: Admin, Guru, Siswa, dan Orang Tua.
 
 ---
 
-## 👥 Role & Fitur
+## Role dan Fitur
 
 ### 1. Role: Admin (Pengelola Sistem)
 *   **Dashboard**: Statistik real-time kehadiran seluruh siswa (Hadir, Izin, Sakit, Alpha).
@@ -56,7 +56,7 @@ Mendukung **4 role**: Admin, Guru, Siswa, dan Orang Tua.
 
 ---
 
-## 📊 Struktur Database Supabase
+## Struktur Database Supabase
 
 | Tabel | Deskripsi |
 |-------|-----------|
@@ -73,7 +73,7 @@ Mendukung **4 role**: Admin, Guru, Siswa, dan Orang Tua.
 
 ---
 
-## 📁 Struktur Proyek (Terupdate)
+## Struktur Proyek (Terupdate)
 
 ```
 absensi-sekolah/
@@ -97,7 +97,7 @@ absensi-sekolah/
 
 ---
 
-## 🤖 AI & Keamanan
+## AI dan Keamanan
 
 - **Face-api.js**: Menggunakan model `SSD Mobilenet v1` untuk deteksi wajah dan `Face Recognition Net` untuk ekstraksi fitur 128-dimensi.
 - **Geofencing**: Validasi koordinat GPS saat absensi mandiri untuk memastikan siswa berada di area sekolah (radius dapat diatur di Settings).
@@ -105,4 +105,4 @@ absensi-sekolah/
 
 ---
 
-SiAbsen Cloud © 2025 — Sistem Absensi Sekolah Berbasis Supabase
+SiAbsen Cloud - 2025 - Sistem Absensi Sekolah Berbasis Supabase
