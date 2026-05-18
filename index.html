@@ -1,0 +1,1888 @@
+<!DOCTYPE html>
+<html lang="id">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1">
+  <title>SiAbsen SMK — Sistem Absensi Digital Masa Depan</title>
+  <meta name="description" content="Sistem absensi digital unggulan untuk SMK — siswa, guru, dan admin">
+  <link rel="stylesheet" href="public/css/app.css">
+  <!-- Leaflet.js for interactive maps (no API key needed) -->
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" crossorigin="" />
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" crossorigin=""></script>
+
+  <script src="public/js/face-api.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+  <script src="https://unpkg.com/html5-qrcode" type="text/javascript"></script>
+  <script>
+    window.addEventListener('error', function (e) {
+      var err = document.createElement('div');
+      err.style.cssText = 'position:fixed;top:0;left:0;width:100%;background:red;color:white;z-index:999999;padding:10px;font-family:monospace;font-size:14px;';
+      err.innerHTML = 'JS ERROR: ' + e.message + ' at ' + e.filename + ':' + e.lineno;
+      document.body.appendChild(err);
+    });
+    window.addEventListener('unhandledrejection', function (e) {
+      var err = document.createElement('div');
+      err.style.cssText = 'position:fixed;top:40px;left:0;width:100%;background:darkred;color:white;z-index:999999;padding:10px;font-family:monospace;font-size:14px;';
+      err.innerHTML = 'PROMISE REJECTION: ' + (e.reason && e.reason.message ? e.reason.message : String(e.reason));
+      document.body.appendChild(err);
+    });
+  </script>
+  <style>
+    .pulse {
+      animation: pulse-btn 1.5s infinite;
+      box-shadow: 0 0 0 0 rgba(75, 102, 54, 0.7);
+    }
+
+    @keyframes pulse-btn {
+      0% {
+        transform: scale(1);
+        box-shadow: 0 0 0 0 rgba(75, 102, 54, 0.7);
+      }
+
+      70% {
+        transform: scale(1.05);
+        box-shadow: 0 0 0 10px rgba(75, 102, 54, 0);
+      }
+
+      100% {
+        transform: scale(1);
+        box-shadow: 0 0 0 0 rgba(75, 102, 54, 0);
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+  <!-- ══════════════ LOADING ══════════════ -->
+  <div id="loading">
+    <div class="ld-brand">
+      <img src="image/logo_smk.png"
+        style="width:160px;height:160px;object-fit:contain;filter:drop-shadow(0 4px 16px rgba(0,0,0,0.35));animation:ldpop .5s cubic-bezier(.34,1.56,.64,1) both">
+    </div>
+    <div class="ld-bar">
+      <div class="ld-prog"></div>
+    </div>
+    <div class="ld-txt">Mempersiapkan sistem absensi masa depan...</div>
+  </div>
+
+  <!-- ══════════════════════════════════════════════════════
+     AUTH SCREEN
+══════════════════════════════════════════════════════════ -->
+  <div id="authWrap"
+    style="display:none;min-height:100vh;background:var(--bg);align-items:center;justify-content:center">
+
+    <!-- bg decoration -->
+    <div style="position:fixed;inset:0;pointer-events:none;overflow:hidden;z-index:0">
+      <div
+        style="position:absolute;top:-120px;right:-80px;width:500px;height:500px;border-radius:50%;background:radial-gradient(circle,rgba(79, 70, 229, .1) 0%,transparent 70%)">
+      </div>
+      <div
+        style="position:absolute;bottom:-100px;left:-60px;width:420px;height:420px;border-radius:50%;background:radial-gradient(circle,rgba(6, 182, 212, .1) 0%,transparent 70%)">
+      </div>
+      <div
+        style="position:absolute;inset:0;background-image:radial-gradient(circle,rgba(79, 70, 229, .08) 1px,transparent 1px);background-size:26px 26px;opacity:.5">
+      </div>
+    </div>
+
+    <div style="position:relative;z-index:1;width:100%;max-width:430px;padding:1.5rem">
+
+      <!-- Logo -->
+      <div style="display:flex;flex-direction:column;align-items:center;margin-bottom:1.8rem;gap:.5rem">
+        <img src="image/logo_smk.png"
+          style="width:130px;height:130px;object-fit:contain;filter:drop-shadow(0 4px 20px rgba(75,102,54,0.35))">
+        <p style="color:var(--tx2);font-size:.85rem;margin:0">Pusat Keunggulan Absensi Digital</p>
+      </div>
+
+      <!-- Tabs -->
+      <div
+        style="display:flex;background:#fff;border:1.5px solid var(--brd);border-radius:var(--r2);padding:3px;margin-bottom:1.2rem;box-shadow:var(--s1)">
+        <button id="tabLogin" onclick="switchTab('login')"
+          style="flex:1;padding:.58rem;border-radius:8px;border:none;background:linear-gradient(135deg,var(--v),var(--v1));color:#fff;font-weight:700;font-size:.85rem;font-family:'Poppins',sans-serif;cursor:pointer;transition:all .2s">Masuk</button>
+        <button id="tabReg" onclick="switchTab('reg')"
+          style="flex:1;padding:.58rem;border-radius:8px;border:none;background:transparent;color:var(--tx2);font-weight:600;font-size:.85rem;font-family:'Poppins',sans-serif;cursor:pointer;transition:all .2s">Daftar</button>
+      </div>
+
+      <!-- LOGIN BOX -->
+      <div id="boxLogin"
+        style="background:#fff;border:1.5px solid var(--brd);border-radius:var(--r);padding:1.7rem;box-shadow:var(--s2)">
+        <h2 style="font-size:1.15rem;margin-bottom:.25rem">Selamat Datang Kembali! <img src="image/info.png"
+            style="width:1.2em;height:1.2em;vertical-align:middle;filter:drop-shadow(0 2px 3px rgba(0,0,0,0.2))"></h2>
+        <p style="font-size:.8rem;color:var(--tx2);margin-bottom:1.4rem">Masuk ke portal SiAbsen SMK Anda</p>
+        <form onsubmit="handleLogin(event)">
+          <div class="fg"><label class="fl">Email</label><input id="lEmail" type="email" class="fi"
+              placeholder="email@smk-anda.sch.id" required></div>
+          <div class="fg"><label class="fl">Password</label><input id="lPass" type="password" class="fi"
+              placeholder="••••••••" required></div>
+          <button id="loginBtn" type="submit" class="btn btn-pri wf" style="margin-top:.4rem">Masuk →</button>
+          <div style="text-align:center;margin-top:.9rem">
+            <button type="button" onclick="handleForgot()"
+              style="background:none;border:none;color:var(--tx3);font-size:.78rem;cursor:pointer;font-family:'Poppins',sans-serif">Lupa
+              password?</button>
+          </div>
+        </form>
+
+      </div>
+
+      <!-- REGISTER BOX -->
+      <div id="boxReg"
+        style="display:none;background:#fff;border:1.5px solid var(--brd);border-radius:var(--r);padding:1.7rem;box-shadow:var(--s2)">
+        <h2 style="font-size:1.15rem;margin-bottom:.25rem">Buat Akun Baru <img src="image/info.png"
+            style="width:1.2em;height:1.2em;vertical-align:middle;filter:drop-shadow(0 2px 3px rgba(0,0,0,0.2))"></h2>
+        <p style="font-size:.8rem;color:var(--tx2);margin-bottom:1.4rem">Daftar sebagai pengguna SiAbsen</p>
+        <form onsubmit="handleRegister(event)">
+          <div class="fg"><label class="fl">Nama Lengkap</label><input id="rName" type="text" class="fi"
+              placeholder="Nama lengkap" required></div>
+          <div class="fg"><label class="fl">Email</label><input id="rEmail" type="email" class="fi"
+              placeholder="email@sekolah.sch.id" required></div>
+          <div class="fg"><label class="fl">Password</label><input id="rPass" type="password" class="fi"
+              placeholder="Min. 6 karakter" required></div>
+          <div class="fg" id="nisnWrap"><label class="fl">NISN (Wajib untuk Siswa)</label><input id="rNisn" type="text"
+              class="fi" placeholder="Masukkan 10 digit NISN"></div>
+          <div class="fg" id="nipWrap" style="display:none"><label class="fl">NIP (Wajib untuk Guru)</label><input
+              id="rNip" type="text" class="fi" placeholder="Masukkan NIP"></div>
+          <div class="fg"><label class="fl">Saya adalah</label>
+            <select id="rRole" class="fi" onchange="toggleRegFields(this.value)">
+              <option value="siswa">🎒 Siswa SMK</option>
+              <option value="guru">👨‍🏫 Guru / Instruktur</option>
+            </select>
+          </div>
+          <script>
+            function toggleRegFields(role) {
+              document.getElementById('nisnWrap').style.display = (role === 'siswa') ? 'block' : 'none';
+              document.getElementById('nipWrap').style.display = (role === 'guru') ? 'block' : 'none';
+            }
+            // Set initial state
+            toggleRegFields('siswa');
+          </script>
+          <button id="regBtn" type="submit" class="btn btn-pri wf" style="margin-top:.4rem">Daftar Sekarang →</button>
+        </form>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════════════════════════════
+     MAIN APP
+══════════════════════════════════════════════════════════ -->
+  <div id="appWrap" style="display:none" class="shell">
+
+    <!-- ──────── SIDEBAR ──────── -->
+    <aside id="sidebar" class="sidebar">
+      <div class="sb-brand"
+        style="display:flex;flex-direction:row;align-items:center;justify-content:flex-start;gap:0.8rem;padding:1rem 1.25rem 0.5rem 1.25rem;">
+        <div
+          style="flex-shrink:0;width:42px;height:42px;border-radius:8px;overflow:hidden;display:flex;align-items:center;justify-content:center;">
+          <img src="image/logo smk 3.png"
+            style="width:100%;height:100%;object-fit:contain;filter:drop-shadow(0 2px 4px rgba(0,0,0,0.15))">
+        </div>
+        <div
+          style="font-family:'Nunito',sans-serif;font-size:1.3rem;font-weight:900;color:var(--tx);letter-spacing:-0.5px;line-height:1">
+          SiAbsen</div>
+        <div class="sb-close" onclick="document.getElementById('sidebar').classList.remove('on')"
+          style="margin-left:auto; cursor:pointer; font-size:1.2rem; font-weight:bold; color:var(--tx);">✕</div>
+      </div>
+
+      <div class="sb-scroll">
+
+        <!-- Semua role -->
+        <div class="sb-lbl">MENU</div>
+        <div class="nav on" data-pg="dashboard" onclick="navigateTo('dashboard')">
+          <span class="nav-ic"><img src="image/home.png"
+              style="width:1.2em;height:1.2em;vertical-align:middle;filter:drop-shadow(0 2px 3px rgba(0,0,0,0.2))"></span>
+          Dashboard
+        </div>
+
+        <!-- Siswa -->
+        <div data-r="siswa">
+          <div class="nav" data-pg="camera" onclick="navigateTo('camera')">
+            <span class="nav-ic"><img src="image/camera.png"
+                style="width:1.2em;height:1.2em;vertical-align:middle;filter:drop-shadow(0 2px 3px rgba(0,0,0,0.2))"></span>
+            Absensi Sekolah
+            <span class="nav-new">PAGI</span>
+          </div>
+          <div class="nav" data-pg="rekap" onclick="navigateTo('rekap')">
+            <span class="nav-ic"><img src="image/add-document.png"
+                style="width:1.2em;height:1.2em;vertical-align:middle;filter:drop-shadow(0 2px 3px rgba(0,0,0,0.2))"></span>
+            Rekap Kehadiran
+          </div>
+          <div class="nav" data-pg="izin" onclick="navigateTo('izin')">
+            <span class="nav-ic"><img src="image/add-document.png"
+                style="width:1.2em;height:1.2em;vertical-align:middle;filter:drop-shadow(0 2px 3px rgba(0,0,0,0.2))"></span>
+            Ajukan Izin/Sakit
+            <span class="nav-bdg" id="izinBdgSiswa" style="display:none">0</span>
+          </div>
+          <div class="nav" data-pg="pengumuman" onclick="navigateTo('pengumuman')">
+            <span class="nav-ic"><img src="image/bell.png"
+                style="width:1.2em;height:1.2em;vertical-align:middle;filter:drop-shadow(0 2px 3px rgba(0,0,0,0.2))"></span>
+            Pengumuman
+          </div>
+          <div class="nav" data-pg="jadwal" onclick="navigateTo('jadwal')">
+            <span class="nav-ic"><img src="image/info.png"
+                style="width:1.2em;height:1.2em;vertical-align:middle;filter:drop-shadow(0 2px 3px rgba(0,0,0,0.2))"></span>
+            Jadwal Pelajaran
+          </div>
+          <div class="nav" data-pg="profil" onclick="navigateTo('profil')">
+            <span class="nav-ic"><img src="image/user.png"
+                style="width:1.2em;height:1.2em;vertical-align:middle;filter:drop-shadow(0 2px 3px rgba(0,0,0,0.2))"></span>
+            Profil Saya
+          </div>
+        </div>
+
+        <!-- Guru & Admin -->
+        <div data-r="guru">
+          <div class="sb-lbl">Kepenulisan & Verifikasi</div>
+          <div class="nav" data-pg="absensi" onclick="navigateTo('absensi')">
+            <span class="nav-ic"><img src="image/camera.png"
+                style="width:1.2em;height:1.2em;vertical-align:middle;filter:drop-shadow(0 2px 3px rgba(0,0,0,0.2))"></span>
+            Input Presensi
+          </div>
+          <div class="nav" data-pg="izin" onclick="navigateTo('izin')">
+            <span class="nav-ic"><img src="image/add-document.png"
+                style="width:1.2em;height:1.2em;vertical-align:middle;filter:drop-shadow(0 2px 3px rgba(0,0,0,0.2))"></span>
+            Verifikasi Izin <span id="izinBdg" class="bdg br" style="display:none">0</span>
+          </div>
+
+          <div class="nav" data-pg="jadwal" onclick="navigateTo('jadwal')">
+            <span class="nav-ic"><img src="image/info.png"
+                style="width:1.2em;height:1.2em;vertical-align:middle;filter:drop-shadow(0 2px 3px rgba(0,0,0,0.2))"></span>
+            Jadwal Mengajar
+          </div>
+          <div class="nav" data-pg="rekap_sekolah" onclick="navigateTo('rekap_sekolah')">
+            <span class="nav-ic"><img src="image/home.png"
+                style="width:1.2em;height:1.2em;vertical-align:middle;filter:drop-shadow(0 2px 3px rgba(0,0,0,0.2))"></span>
+            Rekap Absensi Sekolah
+          </div>
+          <div class="nav" data-pg="rekap_mapel" onclick="navigateTo('rekap_mapel')">
+            <span class="nav-ic"><img src="image/add-document.png"
+                style="width:1.2em;height:1.2em;vertical-align:middle;filter:drop-shadow(0 2px 3px rgba(0,0,0,0.2))"></span>
+            Rekap Absensi Mapel
+          </div>
+          <div class="sb-lbl">Lainnya</div>
+          <div class="nav" data-pg="pengumuman" onclick="navigateTo('pengumuman')">
+            <span class="nav-ic"><img src="image/bell.png"
+                style="width:1.2em;height:1.2em;vertical-align:middle;filter:drop-shadow(0 2px 3px rgba(0,0,0,0.2))"></span>
+            Pengumuman
+          </div>
+          <div class="nav" data-pg="profil" onclick="navigateTo('profil')">
+            <span class="nav-ic"><img src="image/user.png"
+                style="width:1.2em;height:1.2em;vertical-align:middle;filter:drop-shadow(0 2px 3px rgba(0,0,0,0.2))"></span>
+            Profil Saya
+          </div>
+        </div>
+        <div data-r="admin">
+          <div class="sb-lbl">ABSENSI</div>
+          <div class="nav" data-pg="absensi" onclick="navigateTo('absensi')">
+            <span class="nav-ic"><img src="image/checkbox.png"
+                style="width:1.2em;height:1.2em;vertical-align:middle;filter:drop-shadow(0 2px 3px rgba(0,0,0,0.2))"></span>
+            Absensi Mapel
+          </div>
+          <div class="nav" data-pg="rekap" onclick="navigateTo('rekap')">
+            <span class="nav-ic"><img src="image/add-document.png"
+                style="width:1.2em;height:1.2em;vertical-align:middle;filter:drop-shadow(0 2px 3px rgba(0,0,0,0.2))"></span>
+            Rekap Absensi
+          </div>
+          <div class="nav" data-pg="izin" onclick="navigateTo('izin')">
+            <span class="nav-ic"><img src="image/add-document.png"
+                style="width:1.2em;height:1.2em;vertical-align:middle;filter:drop-shadow(0 2px 3px rgba(0,0,0,0.2))"></span>
+            Izin & Sakit
+            <span class="nav-bdg" id="izinBdg" style="display:none">0</span>
+          </div>
+          <div class="sb-lbl">DATA UTAMA</div>
+          <div class="nav" data-pg="siswa" onclick="navigateTo('siswa')">
+            <span class="nav-ic"><img src="image/users-alt.png"
+                style="width:1.2em;height:1.2em;vertical-align:middle;filter:drop-shadow(0 2px 3px rgba(0,0,0,0.2))"></span>
+            Data Siswa
+          </div>
+          <div class="nav" data-pg="kelas" onclick="navigateTo('kelas')">
+            <span class="nav-ic"><img src="image/home.png"
+                style="width:1.2em;height:1.2em;vertical-align:middle;filter:drop-shadow(0 2px 3px rgba(0,0,0,0.2))"></span>
+            Data Kelas
+          </div>
+          <div class="nav" data-pg="mapel" onclick="navigateTo('mapel')">
+            <span class="nav-ic"><img src="image/add-document.png"
+                style="width:1.2em;height:1.2em;vertical-align:middle;filter:drop-shadow(0 2px 3px rgba(0,0,0,0.2))"></span>
+            Mata Pelajaran
+          </div>
+          <div class="nav" data-pg="guru" onclick="navigateTo('guru')">
+            <span class="nav-ic"><img src="image/user.png"
+                style="width:1.2em;height:1.2em;vertical-align:middle;filter:drop-shadow(0 2px 3px rgba(0,0,0,0.2))"></span>
+            Data Guru
+          </div>
+          <div class="nav" data-pg="jadwal" onclick="navigateTo('jadwal')">
+            <span class="nav-ic"><img src="image/info.png"
+                style="width:1.2em;height:1.2em;vertical-align:middle;filter:drop-shadow(0 2px 3px rgba(0,0,0,0.2))"></span>
+            Jadwal Pelajaran
+          </div>
+        </div>
+
+        <!-- Admin dashboard -->
+        <div data-r="admin">
+          <div class="sb-lbl">GENERAL</div>
+          <div class="nav" data-pg="users" onclick="navigateTo('users')">
+            <span class="nav-ic"><img src="image/users-alt.png"
+                style="width:1.2em;height:1.2em;vertical-align:middle;filter:drop-shadow(0 2px 3px rgba(0,0,0,0.2))"></span>
+            Manajemen User
+          </div>
+          <div class="nav" data-pg="laporan" onclick="navigateTo('laporan')">
+            <span class="nav-ic"><img src="image/add-document.png"
+                style="width:1.2em;height:1.2em;vertical-align:middle;filter:drop-shadow(0 2px 3px rgba(0,0,0,0.2))"></span>
+            Laporan Global
+          </div>
+          <div class="nav" data-pg="log" onclick="navigateTo('log')">
+            <span class="nav-ic"><img src="image/info.png"
+                style="width:1.2em;height:1.2em;vertical-align:middle;filter:drop-shadow(0 2px 3px rgba(0,0,0,0.2))"></span>
+            Log Aktivitas
+          </div>
+          <div class="nav" data-pg="settings" onclick="navigateTo('settings')">
+            <span class="nav-ic"><img src="image/settings (1).png"
+                style="width:1.2em;height:1.2em;vertical-align:middle;filter:drop-shadow(0 2px 3px rgba(0,0,0,0.2))"></span>
+            Pengaturan
+          </div>
+
+        </div>
+
+      </div><!-- /sb-scroll -->
+    </aside>
+
+    <!-- ──────── MAIN CONTENT ──────── -->
+    <div class="main">
+
+      <header class="topbar"
+        style="padding:1.5rem 1.6rem 0.5rem 1.6rem; flex-direction:row; justify-content:space-between; align-items:center;">
+        <div style="display:flex;align-items:center;gap:1rem">
+          <div class="sb-tgl" onclick="document.getElementById('sidebar').classList.toggle('on')"
+            style="cursor:pointer;font-size:1.5rem;font-weight:bold;color:var(--tx)">☰</div>
+          <div>
+            <div id="tbTitle"
+              style="font-size:1.5rem;font-weight:900;font-family:'Nunito',sans-serif;color:var(--tx);line-height:1.2">
+              Dashboard</div>
+            <div id="tbSub" style="font-size:0.85rem;color:var(--tx2);"></div>
+          </div>
+        </div>
+
+        <div style="position:relative;cursor:pointer;display:flex;align-items:center;gap:0.75rem"
+          onclick="const m=document.getElementById('tbMenu'); m.style.display=(m.style.display==='block'?'none':'block')">
+          <img id="tbAvatar" src="image/user.png"
+            style="width:36px;height:36px;border-radius:50%;object-fit:cover;background:#eee;border:1px solid var(--brd)">
+          <div style="display:flex;flex-direction:column;align-items:flex-start">
+            <span id="tbName" style="font-weight:700;font-size:0.85rem;color:var(--tx)">Memuat...</span>
+            <span id="tbEmail" style="font-size:0.75rem;color:var(--tx2)">—</span>
+          </div>
+          <!-- Dropdown Menu -->
+          <div id="tbMenu"
+            style="display:none;position:absolute;top:130%;right:0;background:#fff;border:1px solid var(--brd);border-radius:var(--r);box-shadow:var(--s1);min-width:180px;z-index:100;overflow:hidden">
+            <div onclick="navigateTo('profil')"
+              style="padding:0.8rem 1.2rem;font-size:0.85rem;font-weight:700;color:var(--tx);border-bottom:1px solid var(--brd2);cursor:pointer;transition:0.2s"
+              onmouseover="this.style.background='var(--bg)'" onmouseout="this.style.background='none'">
+              <img src="image/user.png"
+                style="width:1.2em;height:1.2em;vertical-align:middle;margin-right:0.4rem;filter:brightness(0) opacity(0.6)">
+              Profil Saya
+            </div>
+            <div onclick="doLogout()"
+              style="padding:0.8rem 1.2rem;font-size:0.85rem;font-weight:700;color:var(--red);cursor:pointer;transition:0.2s"
+              onmouseover="this.style.background='rgba(239,68,68,0.1)'" onmouseout="this.style.background='none'">
+              <img src="image/exit.png"
+                style="width:1.2em;height:1.2em;vertical-align:middle;margin-right:0.4rem;filter:brightness(0) opacity(0.6)">
+              Keluar (Logout)
+            </div>
+          </div>
+        </div>
+      </header>
+
+      <!-- ════════════ PAGE: DASHBOARD ════════════ -->
+      <div id="pg-dashboard" class="page on">
+
+        <!-- Dashboard header removed to use topbar -->
+
+        <!-- Admin view -->
+        <div data-r="admin">
+          <!-- Admin Banner -->
+          <div class="card mb3"
+            style="background:linear-gradient(135deg,var(--v),var(--v1));color:#fff;border:0;position:relative;overflow:hidden;">
+            <div style="position:absolute;top:-20px;right:-20px;font-size:8rem;opacity:0.1;pointer-events:none">
+              <img src="image/users-alt.png"
+                style="width:1.2em;height:1.2em;vertical-align:middle;filter:drop-shadow(0 2px 3px rgba(0,0,0,0.2))">
+            </div>
+            <div class="card-b fbet fwrap gap2" style="position:relative;z-index:1;">
+              <div>
+                <div style="font-size:1.4rem;font-weight:900;text-shadow:0 2px 4px rgba(0,0,0,0.2);">Halo,
+                  Administrator!</div>
+                <div style="font-size:0.9rem;opacity:0.9;margin-top:0.3rem">Ringkasan aktivitas sistem absensi hari ini.
+                </div>
+              </div>
+              <div style="text-align:right;background:rgba(0,0,0,0.2);padding:0.8rem 1.2rem;border-radius:1rem;">
+                <div class="tsm" style="opacity:0.9">Total Siswa Terdaftar</div>
+                <div id="dSiswa" style="font-size:1.5rem;font-weight:900;font-family:'Nunito',sans-serif">...</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Main Stats -->
+          <div class="srow mb3">
+            <div class="sc v">
+              <div class="sc-lbl"><img src="image/checkbox.png" style="width:1.2em;height:1.2em;vertical-align:middle;">
+                Hadir Hari Ini</div>
+              <div class="sc-ico ic-v">↗</div>
+              <div class="sc-num" id="dH">—</div>
+              <div class="sc-tr" style="color:var(--v)">↗ Real-time</div>
+            </div>
+            <div class="sc">
+              <div class="sc-lbl"><span style="font-weight:bold;margin:0 4px">✕</span> Alpha</div>
+              <div class="sc-ico ic-r" style="color:var(--red);background:rgba(239,68,68,0.1)">↘</div>
+              <div class="sc-num" id="dA">—</div>
+              <div class="sc-tr" style="color:var(--red)">Tanpa Keterangan</div>
+            </div>
+            <div class="sc">
+              <div class="sc-lbl"><img src="image/add-document.png"
+                  style="width:1.2em;height:1.2em;vertical-align:middle;"> Izin / Sakit</div>
+              <div class="sc-ico ic-a" style="color:var(--amb);background:rgba(245,158,11,0.1)">→</div>
+              <div class="sc-num" id="dI">—</div>
+              <div class="sc-tr" style="color:var(--amb)">Hari Ini</div>
+            </div>
+            <div class="sc">
+              <div class="sc-lbl"><img src="image/info.png" style="width:1.2em;height:1.2em;vertical-align:middle;">
+                Terlambat</div>
+              <div class="sc-ico ic-p" style="color:var(--pnk);background:rgba(236,72,153,0.1)">↘</div>
+              <div class="sc-num" id="dT">—</div>
+              <div class="sc-tr" style="color:var(--pnk)">Melebihi Waktu</div>
+            </div>
+          </div>
+
+          <!-- Middle Section -->
+          <div class="dash-mid-grid mb3">
+
+            <div class="card" style="border:none;box-shadow:none;background:var(--bg)">
+              <div class="card-h" style="padding-left:0;border:none">
+                <div class="card-t" style="font-size:1.1rem;font-weight:800;">Kehadiran 7 Hari Terakhir</div>
+                <div style="font-size:0.75rem;color:var(--tx2);display:flex;align-items:center;gap:0.4rem"><span
+                    style="width:6px;height:6px;background:var(--v);border-radius:50%"></span> Minggu Ini</div>
+              </div>
+              <div class="card-b"
+                style="background:#fff;border-radius:var(--r);border:1px solid var(--brd);box-shadow:var(--s1);min-height:280px">
+                <div id="weekChart"></div>
+              </div>
+            </div>
+
+            <!-- Pending Permit Widget -->
+            <div class="card fcen"
+              style="border-radius:1rem;box-shadow:var(--s2);overflow:hidden;border:1px solid var(--brd);flex-direction:column;text-align:center;padding:1.5rem;background:linear-gradient(to bottom right, #ffffff, var(--bg2)); height: 100%;">
+              <div
+                style="width:60px;height:60px;background:var(--v3);border-radius:50%;display:flex;align-items:center;justify-content:center;margin-bottom:1rem;box-shadow:0 4px 12px rgba(99,102,241,0.2)">
+                <img src="image/add-document.png"
+                  style="width:2rem;height:2rem;filter:drop-shadow(0 2px 3px rgba(0,0,0,0.2))">
+              </div>
+              <h3 style="font-size:1.1rem;font-weight:800;color:var(--tx1);margin-bottom:0.2rem">Verifikasi Izin & Sakit
+              </h3>
+              <p class="t2 tsm" style="margin-bottom:1rem;line-height:1.4">Menunggu persetujuan admin</p>
+              <div style="display:flex;align-items:center;gap:0.5rem;margin-bottom:1rem">
+                <span class="bdg br" id="dIzin"
+                  style="font-size:1.2rem;padding:0.3rem 0.8rem;border-radius:2rem;box-shadow:0 3px 8px rgba(244,63,94,0.3)">0</span>
+                <span style="font-weight:700;color:var(--tx2)">Antrean</span>
+              </div>
+              <button class="btn btn-pri btn-sm" onclick="navigateTo('izin')"
+                style="border-radius:2rem;padding:0.5rem 1.5rem;box-shadow:var(--s1)">Buka Verifikasi →</button>
+            </div>
+
+          </div>
+
+          <!-- Bottom Section -->
+          <div class="dash-mid-grid">
+            <div class="card">
+              <div class="card-h">
+                <div class="card-t"><img src="image/info.png"
+                    style="width:1.2em;height:1.2em;vertical-align:middle;filter:drop-shadow(0 2px 3px rgba(0,0,0,0.2))">
+                  Absensi Terbaru</div>
+                <div class="tb-live" style="font-size:.68rem">
+                  <div class="tb-dot"></div>Live
+                </div>
+              </div>
+              <div class="card-b np">
+                <div class="tw">
+                  <table>
+                    <thead>
+                      <tr>
+                        <th>Siswa</th>
+                        <th>Kelas</th>
+                        <th>Jam</th>
+                        <th>Mapel</th>
+                        <th>Status</th>
+                      </tr>
+                    </thead>
+                    <tbody id="dashTbody">
+                      <tr>
+                        <td colspan="5" style="text-align:center;padding:1.5rem;color:var(--tx3)">Memuat...</td>
+                      </tr>
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            </div>
+
+            <div style="display:flex;flex-direction:column;gap:1.5rem">
+              <div class="card">
+                <div class="card-h">
+                  <div class="card-t"><img src="image/bell.png"
+                      style="width:1.2em;height:1.2em;vertical-align:middle;filter:drop-shadow(0 2px 3px rgba(0,0,0,0.2))">
+                    Pengumuman</div><button class="btn btn-xs btn-out" onclick="navigateTo('pengumuman')">Semua</button>
+                </div>
+                <div class="card-b">
+                  <div id="dashAnnAdmin"></div>
+                </div>
+              </div>
+
+              <div class="card">
+                <div class="card-h">
+                  <div class="card-t"><img src="image/add.png"
+                      style="width:1.2em;height:1.2em;vertical-align:middle;filter:drop-shadow(0 2px 3px rgba(0,0,0,0.2))">
+                    Kalender Akademik</div>
+                </div>
+                <div class="card-b">
+                  <div id="miniCalAdmin"></div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+        </div>
+
+        <!-- Guru Dashboard -->
+        <div data-r="guru">
+          <!-- Banner Profil Guru -->
+          <div class="card mb3"
+            style="background:linear-gradient(135deg,var(--v),var(--v1));color:#fff;border:0;position:relative;overflow:hidden;">
+            <div style="position:absolute;top:-20px;right:-20px;font-size:8rem;opacity:0.1;pointer-events:none">
+              <img src="image/user.png"
+                style="width:1.2em;height:1.2em;vertical-align:middle;filter:drop-shadow(0 2px 3px rgba(0,0,0,0.2))">
+            </div>
+            <div class="card-b fbet fwrap gap2" style="position:relative;z-index:1;">
+              <div class="flex gap1" style="align-items:center">
+                <div class="prof-av"
+                  style="width:70px;height:70px;background:rgba(255,255,255,0.2);border:3px solid rgba(255,255,255,0.4);display:flex;align-items:center;justify-content:center;border-radius:50%;overflow:hidden">
+                  <img id="dashGuruPhoto" src="image/user.png" style="width:100%;height:100%;object-fit:cover">
+                </div>
+                <div>
+                  <div id="dashGuruName"
+                    style="font-size:1.4rem;font-weight:900;text-shadow:0 2px 4px rgba(0,0,0,0.2);">Memuat Profil...
+                  </div>
+                  <div id="dashGuruMapel"
+                    style="font-size:0.9rem;opacity:0.9;background:rgba(0,0,0,0.2);padding:0.2rem 0.6rem;border-radius:1rem;display:inline-block;margin-top:0.3rem">
+                    Guru Mata Pelajaran</div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Cards Summary -->
+          <div class="g3 mb3">
+            <div class="card"
+              style="border-radius:1rem;box-shadow:var(--s2);overflow:hidden;border:1px solid var(--brd);">
+              <div class="card-h fbet"
+                style="background:var(--bg2);padding:1rem 1.2rem;border-bottom:1px solid var(--brd)">
+                <div class="card-t" style="font-weight:800;color:var(--tx1)"><img src="image/info.png"
+                    style="width:1.2em;height:1.2em;vertical-align:middle;filter:drop-shadow(0 2px 3px rgba(0,0,0,0.2))">
+                  Jadwal Hari Ini</div>
+              </div>
+              <div class="card-b" id="dashScheduleList" style="padding:1.2rem">
+                <div class="t3 txs" style="text-align:center;padding:1rem">Memuat jadwal...</div>
+              </div>
+            </div>
+
+            <div class="card fcen"
+              style="border-radius:1rem;box-shadow:var(--s2);overflow:hidden;border:1px solid var(--brd);flex-direction:column;text-align:center;padding:1.5rem;background:linear-gradient(to bottom right, #ffffff, var(--bg2))">
+              <div
+                style="width:60px;height:60px;background:var(--v3);border-radius:50%;display:flex;align-items:center;justify-content:center;margin-bottom:1rem;box-shadow:0 4px 12px rgba(99,102,241,0.2)">
+                <img src="image/add-document.png"
+                  style="width:2rem;height:2rem;filter:drop-shadow(0 2px 3px rgba(0,0,0,0.2))">
+              </div>
+              <h3 style="font-size:1.1rem;font-weight:800;color:var(--tx1);margin-bottom:0.2rem">Verifikasi Izin
+              </h3>
+              <p class="t2 tsm" style="margin-bottom:1rem;line-height:1.4">Validasi pengajuan absen</p>
+              <div style="display:flex;align-items:center;justify-content:center;gap:0.5rem;margin-bottom:1rem">
+                <span class="bdg br" id="dashIzinBdg"
+                  style="font-size:1.2rem;padding:0.3rem 0.8rem;border-radius:2rem;display:none;box-shadow:0 3px 8px rgba(244,63,94,0.3)">0</span>
+                <span style="font-weight:700;color:var(--tx2)">Menunggu</span>
+              </div>
+              <button class="btn btn-pri btn-sm" onclick="navigateTo('izin')"
+                style="border-radius:2rem;padding:0.5rem 1.5rem;box-shadow:var(--s1)">Buka Validasi</button>
+            </div>
+
+            <div class="card fcen"
+              style="border-radius:1rem;box-shadow:var(--s2);overflow:hidden;border:1px solid var(--brd);flex-direction:column;text-align:center;padding:1.5rem;background:linear-gradient(to bottom right, #ffffff, var(--bg2))">
+              <div
+                style="width:60px;height:60px;background:#dbeafe;border-radius:50%;display:flex;align-items:center;justify-content:center;margin-bottom:1rem;box-shadow:0 4px 12px rgba(59,130,246,0.2)">
+                <img src="image/user.png" style="width:2rem;height:2rem;filter:drop-shadow(0 2px 3px rgba(0,0,0,0.2))">
+              </div>
+              <h3 style="font-size:1.1rem;font-weight:800;color:var(--tx1);margin-bottom:0.2rem">Input Presensi
+              </h3>
+              <p class="t2 tsm" style="margin-bottom:1rem;line-height:1.4">Catat kehadiran kelas</p>
+              <div style="height:35px;margin-bottom:1rem"></div>
+              <button class="btn btn-blu btn-sm" onclick="navigateTo('absensi')"
+                style="border-radius:2rem;padding:0.5rem 1.5rem;box-shadow:var(--s1)">Input Sekarang</button>
+            </div>
+
+          </div>
+
+          <!-- Bottom Widgets -->
+          <div class="g2 mb3">
+            <div class="card">
+              <div class="card-h fbet">
+                <div class="card-t">Kalender Akademik</div>
+              </div>
+              <div class="card-b">
+                <div id="miniCalGuru"></div>
+              </div>
+            </div>
+            <div class="card">
+              <div class="card-h fbet">
+                <div class="card-t">Pengumuman Terbaru</div>
+                <button class="btn btn-xs btn-out" onclick="navigateTo('pengumuman')">Semua</button>
+              </div>
+              <div class="card-b" id="dashAnnGuru"></div>
+            </div>
+          </div>
+
+
+        </div>
+
+        <!-- Siswa view -->
+        <div data-r="siswa">
+          <div class="card mb3"
+            style="background:linear-gradient(135deg,var(--v),var(--v1));color:#fff;border:0;position:relative;overflow:hidden;">
+            <div style="position:absolute;top:-20px;right:-20px;font-size:8rem;opacity:0.1;pointer-events:none">
+              <img src="image/info.png"
+                style="width:1.2em;height:1.2em;vertical-align:middle;filter:drop-shadow(0 2px 3px rgba(0,0,0,0.2))">
+            </div>
+            <div class="card-b fbet fwrap gap2" style="position:relative;z-index:1;">
+              <div>
+                <div id="dashSiswaGreeting"
+                  style="font-size:1.4rem;font-weight:900;text-shadow:0 2px 4px rgba(0,0,0,0.2);">Halo, Siswa!</div>
+                <div style="font-size:0.9rem;opacity:0.9;margin-top:0.3rem">Tetap semangat belajar dan raih mimpimu hari
+                  ini.</div>
+              </div>
+              <div style="text-align:right;background:rgba(0,0,0,0.2);padding:0.8rem 1.2rem;border-radius:1rem;">
+                <div class="tsm" style="opacity:0.9">Batas Jam Masuk</div>
+                <div id="dashSchoolStart" style="font-size:1.5rem;font-weight:900;font-family:'Nunito',sans-serif">07:00
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="g3 mb3">
+            <div class="card fcen" style="padding:1.5rem;flex-direction:column;text-align:center;">
+              <div class="tsm tb7 mb1">Status Hari Ini</div>
+              <div id="dashSiswaStatus" class="bdg" style="font-size:1rem;padding:0.5rem 1rem">...</div>
+            </div>
+            <div class="card fcen" style="padding:1.5rem;flex-direction:column;text-align:center;">
+              <div class="tsm tb7 mb1">Waktu Absen</div>
+              <div id="dashSiswaTime" style="font-size:1.5rem;font-weight:900;color:var(--v)">--:--</div>
+            </div>
+            <div class="card fcen" style="padding:1.5rem;flex-direction:column;text-align:center;">
+              <div class="tsm tb7 mb1">Hadir Bulan Ini</div>
+              <div id="dashSiswaHadir" style="font-size:1.5rem;font-weight:900;color:var(--grn)">0</div>
+            </div>
+          </div>
+
+          <div class="g2 mb3">
+            <div class="card">
+              <div class="card-h fbet">
+                <div class="card-t">Kalender Kehadiran Pribadi</div>
+                <button class="btn btn-amb btn-sm" onclick="navigateTo('camera')"><img src="image/camera.png"
+                    style="width:1.2em;height:1.2em;vertical-align:middle;filter:drop-shadow(0 2px 3px rgba(0,0,0,0.2))">
+                  Absen Sekarang</button>
+              </div>
+              <div class="card-b">
+                <div id="miniCalSiswa"></div>
+              </div>
+            </div>
+            <div class="card">
+              <div class="card-h fbet">
+                <div class="card-t">Pengumuman Terbaru</div>
+                <button class="btn btn-xs btn-out" onclick="navigateTo('pengumuman')">Semua</button>
+              </div>
+              <div class="card-b" id="dashAnnSiswa"></div>
+            </div>
+          </div>
+        </div>
+
+
+
+      </div><!-- /pg-dashboard -->
+
+      <!-- ════════════ PAGE: INPUT PRESENSI ════════════ -->
+      <div id="pg-absensi" class="page">
+
+        <!-- filter bar -->
+        <div class="filter-bar-flex">
+          <div style="display:flex;align-items:center;gap:0.5rem;flex:1;min-width:200px">
+            <label style="font-size:0.85rem;font-weight:700;color:var(--tx)">Kelas</label>
+            <select id="absClass" class="fi"
+              style="border-radius:100px;padding:0.6rem 1.2rem;border:none;background:var(--bg);width:100%">
+              <option>Memuat...</option>
+            </select>
+          </div>
+          <div style="display:flex;align-items:center;gap:0.5rem;flex:1;min-width:200px">
+            <label style="font-size:0.85rem;font-weight:700;color:var(--tx)">Mapel</label>
+            <select id="absSubj" class="fi"
+              style="border-radius:100px;padding:0.6rem 1.2rem;border:none;background:var(--bg);width:100%">
+              <option>Memuat...</option>
+            </select>
+          </div>
+          <div style="display:flex;align-items:center;gap:0.5rem">
+            <label style="font-size:0.85rem;font-weight:700;color:var(--tx)">Tanggal</label>
+            <input id="absDate" type="date" class="fi"
+              style="border-radius:100px;padding:0.6rem 1.2rem;border:none;background:var(--bg)">
+          </div>
+          <button id="btnLoad" class="btn btn-pri" style="border-radius:100px;padding:0.6rem 1.5rem;margin-left:auto"
+            onclick="loadAttStudents()">
+            <img src="image/search.png"
+              style="width:1.2em;height:1.2em;vertical-align:middle;filter:brightness(0) invert(1)"> Muat Data Siswa
+          </button>
+        </div>
+        <!-- info + summary -->
+        <div class="fbet mb2 fwrap gap1">
+          <div id="attInfo" class="flex gap1 fwrap"></div>
+          <div id="attSum" class="flex gap1 fwrap"></div>
+        </div>
+        <!-- quick actions -->
+        <div class="flex gap1 mb2 fwrap">
+          <button class="btn btn-xs btn-grn" onclick="setAllSt('hadir')"><img src="image/checkbox.png"
+              style="width:1.2em;height:1.2em;vertical-align:middle;filter:drop-shadow(0 2px 3px rgba(0,0,0,0.2))">
+            Semua Hadir</button>
+          <button class="btn btn-xs btn-red" onclick="setAllSt('alpha')"><span
+              style="font-weight:bold;margin:0 4px">✕</span> Semua Alpha</button>
+          <button id="btnSave" class="btn btn-pri btn-sm" onclick="saveAbsensi()" style="margin-left:auto"><img
+              src="image/add-document.png"
+              style="width:1.2em;height:1.2em;vertical-align:middle;filter:drop-shadow(0 2px 3px rgba(0,0,0,0.2))">
+            Simpan
+            Absensi</button>
+        </div>
+        <div id="attGrid" class="att-grid"></div>
+      </div>
+
+      <!-- ════════════ PAGE: ABSENSI MANDIRI ════════════ -->
+      <div id="pg-camera" class="page">
+        <div style="max-width:540px;margin:0 auto">
+          <div class="card mb2">
+            <div class="card-h">
+              <div class="card-t"><img src="image/camera.png"
+                  style="width:1.2em;height:1.2em;vertical-align:middle;filter:drop-shadow(0 2px 3px rgba(0,0,0,0.2))">
+                Absensi Mandiri dengan Wajah</div>
+            </div>
+            <div class="card-b" style="text-align:center">
+              <div id="geoStat" class="mb2"><span class="bdg ba"><img src="image/map-marker.png"
+                    style="width:1.2em;height:1.2em;vertical-align:middle;filter:drop-shadow(0 2px 3px rgba(0,0,0,0.2))">
+                  Mendeteksi lokasi...</span></div>
+              <div class="cam-wrap mb2">
+                <video id="scanVid" autoplay muted playsinline style="background:#1f2916"></video>
+                <div class="cam-ring"></div>
+                <div class="cam-pulse"></div>
+              </div>
+              <canvas id="scanCvs" style="display:none"></canvas>
+              <div id="scanMsg" style="font-size:.86rem;font-weight:600;color:var(--tx2);margin-bottom:.9rem">Klik "Buka
+                Kamera" untuk mulai</div>
+              <div style="font-size:.78rem;color:var(--tx3);margin-bottom:1rem">
+                <img src="image/info.png"
+                  style="width:1.2em;height:1.2em;vertical-align:middle;filter:drop-shadow(0 2px 3px rgba(0,0,0,0.2))">
+                Liveness Score: <strong id="livenessVal" style="color:var(--v)">—</strong>
+              </div>
+              <div class="flex gap1" style="justify-content:center;flex-wrap:wrap">
+                <button id="btnStartCam" class="btn btn-out" onclick="startCam()"><img src="image/camera.png"
+                    style="width:1.2em;height:1.2em;vertical-align:middle;filter:drop-shadow(0 2px 3px rgba(0,0,0,0.2))">
+                  Buka Kamera</button>
+                <button id="btnStopCam" class="btn btn-red" onclick="stopCam()" style="display:none"><img
+                    src="image/exit.png"
+                    style="width:1.2em;height:1.2em;vertical-align:middle;filter:drop-shadow(0 2px 3px rgba(0,0,0,0.2))">
+                  Matikan
+                  Kamera</button>
+                <button id="btnCapture" class="btn btn-out" onclick="doCapture()" style="display:none"><img
+                    src="image/info.png"
+                    style="width:1.2em;height:1.2em;vertical-align:middle;filter:drop-shadow(0 2px 3px rgba(0,0,0,0.2))">
+                  Scan
+                  Wajah</button>
+                <button id="btnCatatHdr" class="btn btn-pri" onclick="catatHadir()" disabled><img
+                    src="image/checkbox.png"
+                    style="width:1.2em;height:1.2em;vertical-align:middle;filter:drop-shadow(0 2px 3px rgba(0,0,0,0.2))">
+                  Catat Kehadiran</button>
+              </div>
+            </div>
+          </div>
+          <div class="card" style="border:1.5px solid var(--v2);background:var(--v3)">
+            <div class="card-b">
+              <div style="font-weight:800;color:var(--v);font-size:.84rem;margin-bottom:.5rem"><img src="image/info.png"
+                  style="width:1.2em;height:1.2em;vertical-align:middle;filter:drop-shadow(0 2px 3px rgba(0,0,0,0.2))">
+                Panduan Absensi
+                Mandiri</div>
+              <ol style="font-size:.8rem;color:var(--tx2);line-height:2.1;padding-left:1.1rem">
+                <li>Pastikan browser mengizinkan akses <strong>kamera & lokasi</strong></li>
+                <li>Klik "Buka Kamera" → posisikan wajah di lingkaran</li>
+                <li>Klik "Scan Wajah" → sistem AI akan memverifikasi</li>
+                <li>Klik "Catat Kehadiran" setelah verifikasi berhasil <img src="image/checkbox.png"
+                    style="width:1.2em;height:1.2em;vertical-align:middle;filter:drop-shadow(0 2px 3px rgba(0,0,0,0.2))">
+                </li>
+              </ol>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ════════════ PAGE: REKAP ════════════ -->
+      <div id="pg-rekap" class="page">
+
+        <div style="margin-bottom: 1rem; display:flex; justify-content:flex-end;">
+          <button class="btn btn-out" style="border-radius:100px; box-shadow:var(--s1); border-color:var(--brd);"
+            onclick="exportRekap()">Export Laporan</button>
+        </div>
+
+        <div class="filter-bar-flex">
+          <div style="display:flex;align-items:center;gap:0.5rem;flex:1;min-width:180px" data-r="admin,guru">
+            <label style="font-size:0.85rem;font-weight:700;color:var(--tx)">Kelas</label>
+            <select id="rekClass" class="fi"
+              style="border-radius:100px;padding:0.6rem 1.2rem;border:none;background:var(--bg);width:100%">
+              <option value="">Semua Kelas</option>
+            </select>
+          </div>
+          <div style="display:flex;align-items:center;gap:0.5rem">
+            <label style="font-size:0.85rem;font-weight:700;color:var(--tx)">Tanggal</label>
+            <input id="rekDate" type="date" class="fi"
+              style="border-radius:100px;padding:0.6rem 1.2rem;border:none;background:var(--bg)">
+          </div>
+          <div style="display:flex;align-items:center;gap:0.5rem;flex:1;min-width:180px" data-r="admin,guru">
+            <label style="font-size:0.85rem;font-weight:700;color:var(--tx)">Jenis</label>
+            <select id="rekType" class="fi" onchange="loadRekap()"
+              style="border-radius:100px;padding:0.6rem 1.2rem;border:none;background:var(--bg);width:100%">
+              <option value="">Semua Jenis</option>
+              <option value="sekolah">🏠 Absensi Sekolah</option>
+              <option value="mapel">📚 Absensi Mapel</option>
+            </select>
+          </div>
+          <button class="btn btn-pri" style="border-radius:100px;padding:0.6rem 1.5rem;margin-left:auto"
+            onclick="loadRekap()">
+            <img src="image/search.png"
+              style="width:1.2em;height:1.2em;vertical-align:middle;filter:brightness(0) invert(1)"> Tampilkan
+          </button>
+        </div>
+
+        <div class="card mb2" id="rekSumArea"
+          style="border:1px solid var(--brd);box-shadow:var(--s1);border-radius:var(--r)">
+          <div class="card-b">
+            <div id="rekSumBars" class="g5 gap1">
+              <div style="background:var(--bg);padding:1rem;border-radius:var(--r2)">
+                <div class="fbet tsm mb1"><span class="tb7"><img src="image/checkbox.png"
+                      style="width:1.2em;height:1.2em;vertical-align:middle;"> Hadir</span><span id="rn_hadir"
+                    style="font-family:'Nunito',sans-serif;font-weight:900;color:var(--grn);font-size:1.2rem">0</span>
+                </div>
+                <div class="prog-track" style="height:6px;border-radius:100px">
+                  <div id="rr_hadir" class="prog-fill" style="width:0%;background:var(--grn);border-radius:100px"></div>
+                </div>
+              </div>
+              <div style="background:var(--bg);padding:1rem;border-radius:var(--r2)">
+                <div class="fbet tsm mb1"><span class="tb7"><img src="image/info.png"
+                      style="width:1.2em;height:1.2em;vertical-align:middle;"> Terlambat</span><span id="rn_terlambat"
+                    style="font-family:'Nunito',sans-serif;font-weight:900;color:var(--pnk);font-size:1.2rem">0</span>
+                </div>
+                <div class="prog-track" style="height:6px;border-radius:100px">
+                  <div id="rr_terlambat" class="prog-fill" style="width:0%;background:var(--pnk);border-radius:100px">
+                  </div>
+                </div>
+              </div>
+              <div style="background:var(--bg);padding:1rem;border-radius:var(--r2)">
+                <div class="fbet tsm mb1"><span class="tb7"><img src="image/add-document.png"
+                      style="width:1.2em;height:1.2em;vertical-align:middle;"> Izin</span><span id="rn_izin"
+                    style="font-family:'Nunito',sans-serif;font-weight:900;color:var(--v);font-size:1.2rem">0</span>
+                </div>
+                <div class="prog-track" style="height:6px;border-radius:100px">
+                  <div id="rr_izin" class="prog-fill" style="width:0%;background:var(--v);border-radius:100px"></div>
+                </div>
+              </div>
+              <div style="background:var(--bg);padding:1rem;border-radius:var(--r2)">
+                <div class="fbet tsm mb1"><span class="tb7"><img src="image/add.png"
+                      style="width:1.2em;height:1.2em;vertical-align:middle;"> Sakit</span><span id="rn_sakit"
+                    style="font-family:'Nunito',sans-serif;font-weight:900;color:var(--amb);font-size:1.2rem">0</span>
+                </div>
+                <div class="prog-track" style="height:6px;border-radius:100px">
+                  <div id="rr_sakit" class="prog-fill" style="width:0%;background:var(--amb);border-radius:100px"></div>
+                </div>
+              </div>
+              <div style="background:var(--bg);padding:1rem;border-radius:var(--r2)">
+                <div class="fbet tsm mb1"><span class="tb7"><span
+                      style="font-weight:bold;margin:0 4px;color:var(--red)">✕</span> Alpha</span><span id="rn_alpha"
+                    style="font-family:'Nunito',sans-serif;font-weight:900;color:var(--red);font-size:1.2rem">0</span>
+                </div>
+                <div class="prog-track" style="height:6px;border-radius:100px">
+                  <div id="rr_alpha" class="prog-fill" style="width:0%;background:var(--red);border-radius:100px"></div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="card mb2" id="rekCardSekolah">
+          <div class="card-h">
+            <div class="card-t"><img src="image/home.png"
+                style="width:1.2em;height:1.2em;vertical-align:middle;filter:drop-shadow(0 2px 3px rgba(0,0,0,0.2))">
+              Rekap Absensi Sekolah</div>
+          </div>
+          <div class="card-b np">
+            <div class="tw">
+              <table>
+                <thead>
+                  <tr>
+                    <th data-r="admin,guru">Nama Siswa</th>
+                    <th data-r="admin,guru">NISN</th>
+                    <th data-r="admin,guru">Kelas</th>
+                    <th>Waktu</th>
+                    <th>Petugas / Sistem</th>
+                    <th>Status</th>
+                  </tr>
+                </thead>
+                <tbody id="rekTbodySekolah">
+                  <tr>
+                    <td colspan="6" style="text-align:center;padding:2rem;color:var(--tx3)">Pilih filter & klik
+                      Tampilkan</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+
+        <div class="card" id="rekCardMapel">
+          <div class="card-h">
+            <div class="card-t"><img src="image/add-document.png"
+                style="width:1.2em;height:1.2em;vertical-align:middle;filter:drop-shadow(0 2px 3px rgba(0,0,0,0.2))">
+              Rekap Absensi Mata Pelajaran</div>
+          </div>
+          <div class="card-b np">
+            <div class="tw">
+              <table>
+                <thead>
+                  <tr>
+                    <th data-r="admin,guru">Nama Siswa</th>
+                    <th data-r="admin,guru">NISN</th>
+                    <th data-r="admin,guru">Kelas</th>
+                    <th>Mapel</th>
+                    <th>Waktu</th>
+                    <th>Guru</th>
+                    <th>Status</th>
+                  </tr>
+                </thead>
+                <tbody id="rekTbodyMapel">
+                  <tr>
+                    <td colspan="7" style="text-align:center;padding:2rem;color:var(--tx3)">Pilih filter & klik
+                      Tampilkan</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ════════════ PAGE: MANAJEMEN USER ════════════ -->
+      <div id="pg-users" class="page">
+        <div class="fbet mb3 fwrap gap1">
+          <input type="search" class="fi" style="width:230px" placeholder="🔍 Cari email / nama..."
+            oninput="filterUsers(this.value)">
+          <button class="btn btn-pri" onclick="addUser()"><img src="image/add.png"
+              style="width:1.2em;height:1.2em;vertical-align:middle;filter:drop-shadow(0 2px 3px rgba(0,0,0,0.2))">
+            Tambah User</button>
+        </div>
+        <div class="card">
+          <div class="card-b np">
+            <div class="tw">
+              <table>
+                <thead>
+                  <tr>
+                    <th>Nama</th>
+                    <th>Email</th>
+                    <th>Role</th>
+                    <th>Status</th>
+                    <th>Terakhir Login</th>
+                    <th>Aksi</th>
+                  </tr>
+                </thead>
+                <tbody id="userTbody"></tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ════════════ PAGE: DATA SISWA ════════════ -->
+      <div id="pg-siswa" class="page">
+        <div class="fbet mb3 fwrap gap2">
+          <div class="flex gap1 fwrap">
+            <input type="search" class="fi" style="width:230px" placeholder="🔍 Cari nama / NISN..."
+              oninput="filterStu(this.value)">
+            <select id="stuCls" class="fi" style="width:150px" onchange="fetchStu(this.value)">
+              <option value="">Semua Kelas</option>
+            </select>
+          </div>
+          <div class="flex gap1 fwrap">
+            <button class="btn btn-out" onclick="document.getElementById('csvFile').click()"><img
+                src="image/add-document.png"
+                style="width:1.2em;height:1.2em;vertical-align:middle;filter:drop-shadow(0 2px 3px rgba(0,0,0,0.2))">
+              Import CSV</button>
+            <input type="file" id="csvFile" style="display:none" accept=".csv" onchange="importStu(this)">
+            <button class="btn btn-pri" onclick="addStu()"><img src="image/add.png"
+                style="width:1.2em;height:1.2em;vertical-align:middle;filter:drop-shadow(0 2px 3px rgba(0,0,0,0.2))">
+              Tambah Siswa</button>
+          </div>
+        </div>
+        <div class="card">
+          <div class="card-b np">
+            <div class="tw">
+              <table>
+                <thead>
+                  <tr>
+                    <th>Siswa</th>
+                    <th>NISN</th>
+                    <th>No.</th>
+                    <th>Kelas</th>
+                    <th>JK</th>
+                    <th>Telepon</th>
+                    <th>Aksi</th>
+                  </tr>
+                </thead>
+                <tbody id="stuTbody"></tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ════════════ PAGE: DATA GURU ════════════ -->
+      <div id="pg-guru" class="page">
+        <div class="fbet mb3 fwrap gap1">
+          <input type="search" class="fi" style="width:230px" placeholder="🔍 Cari nama / NIP..."
+            oninput="filterGuru(this.value)">
+          <button class="btn btn-pri" onclick="addGuru()"><img src="image/add.png"
+              style="width:1.2em;height:1.2em;vertical-align:middle;filter:drop-shadow(0 2px 3px rgba(0,0,0,0.2))">
+            Tambah Guru</button>
+        </div>
+        <div class="card">
+          <div class="card-b np">
+            <div class="tw">
+              <table>
+                <thead>
+                  <tr>
+                    <th>Guru</th>
+                    <th>NIP</th>
+                    <th>Mata Pelajaran</th>
+                    <th>Wali Kelas</th>
+                    <th>Telepon</th>
+                    <th>Aksi</th>
+                  </tr>
+                </thead>
+                <tbody id="guruTbody"></tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ════════════ PAGE: KELAS ════════════ -->
+      <div id="pg-kelas" class="page">
+        <div class="fbet mb3 fwrap gap1">
+          <div class="flex gap1 fwrap" style="align-items:center">
+            <input type="search" class="fi" style="width:230px" placeholder="🔍 Cari kelas..."
+              oninput="filterKelas(this.value)">
+          </div>
+          <button class="btn btn-pri" onclick="addKelas()"><img src="image/add.png"
+              style="width:1.2em;height:1.2em;vertical-align:middle;filter:drop-shadow(0 2px 3px rgba(0,0,0,0.2))">
+            Tambah Kelas</button>
+        </div>
+        <!-- Summary stats -->
+        <div id="kelasStats" class="g3 mb3"></div>
+        <!-- Class cards container -->
+        <div id="kelasCards" class="kelas-grid"></div>
+      </div>
+
+      <!-- ════════════ PAGE: MATA PELAJARAN ════════════ -->
+      <div id="pg-mapel" class="page">
+        <div class="fbet mb3 fwrap gap1">
+          <div></div><button class="btn btn-pri" onclick="addMapel()"><img src="image/add.png"
+              style="width:1.2em;height:1.2em;vertical-align:middle;filter:drop-shadow(0 2px 3px rgba(0,0,0,0.2))">
+            Tambah Mapel</button>
+        </div>
+        <div id="mapelGrid" class="g3"></div>
+      </div>
+
+      <!-- ════════════ PAGE: IZIN & SAKIT ════════════ -->
+      <div id="pg-izin" class="page">
+        <div class="fbet mb3 fwrap gap1">
+          <div class="card-t">Daftar Pengajuan</div>
+          <button class="btn btn-pri" onclick="openMdl('izinMdl')" data-r="siswa"><img src="image/add.png"
+              style="width:1.2em;height:1.2em;vertical-align:middle;filter:drop-shadow(0 2px 3px rgba(0,0,0,0.2))">
+            Ajukan Izin/Sakit</button>
+        </div>
+        <div class="card">
+          <div class="card-b np">
+            <div class="tw">
+              <table>
+                <thead>
+                  <tr>
+                    <th>Siswa</th>
+                    <th>Kelas</th>
+                    <th>Jenis</th>
+                    <th>Tanggal</th>
+                    <th>Alasan</th>
+                    <th>Bukti</th>
+                    <th>Status</th>
+                    <th>Aksi</th>
+                  </tr>
+                </thead>
+                <tbody id="izinTbody"></tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ════════════ PAGE: LAPORAN GLOBAL ════════════ -->
+      <div id="pg-laporan" class="page">
+        <div class="card mb3">
+          <div class="card-h">
+            <div class="card-t"><img src="image/add-document.png"
+                style="width:1.2em;height:1.2em;vertical-align:middle;filter:drop-shadow(0 2px 3px rgba(0,0,0,0.2))">
+              Filter Laporan</div>
+          </div>
+          <div class="card-b">
+            <div class="filter-grid">
+              <div class="fg" style="margin:0"><label class="fl">Kelas</label><select id="lapClass" class="fi">
+                  <option value="">Semua Kelas</option>
+                </select></div>
+              <div class="fg" style="margin:0"><label class="fl">Dari</label><input id="lapFrom" type="date" class="fi">
+              </div>
+              <div class="fg" style="margin:0"><label class="fl">Sampai</label><input id="lapTo" type="date" class="fi">
+              </div>
+              <div class="flex gap1">
+                <button class="btn btn-pri" onclick="genLaporan()"><img src="image/search.png"
+                    style="width:1.2em;height:1.2em;vertical-align:middle;filter:drop-shadow(0 2px 3px rgba(0,0,0,0.2))">
+                  Generate</button>
+                <button class="btn btn-out" onclick="exportLaporan()"><img src="image/add-document.png"
+                    style="width:1.2em;height:1.2em;vertical-align:middle;filter:drop-shadow(0 2px 3px rgba(0,0,0,0.2))">
+                  CSV</button>
+              </div>
+            </div>
+          </div>
+        </div>
+        <!-- summary bars -->
+        <div class="card mb3">
+          <div class="card-b">
+            <div id="lapSumBars" class="g5">
+              <div>
+                <div class="fbet tsm mb1"><span class="tb7"><img src="image/checkbox.png"
+                      style="width:1.2em;height:1.2em;vertical-align:middle;filter:drop-shadow(0 2px 3px rgba(0,0,0,0.2))">
+                    Hadir</span><span id="bn_hadir"
+                    style="font-family:'Nunito',sans-serif;font-weight:900;color:var(--grn)">0</span></div>
+                <div class="prog-track">
+                  <div id="br_hadir" class="prog-fill" style="width:0%;background:var(--grn)"></div>
+                </div>
+              </div>
+              <div>
+                <div class="fbet tsm mb1"><span class="tb7"><img src="image/info.png"
+                      style="width:1.2em;height:1.2em;vertical-align:middle;filter:drop-shadow(0 2px 3px rgba(0,0,0,0.2))">
+                    Terlambat</span><span id="bn_terlambat"
+                    style="font-family:'Nunito',sans-serif;font-weight:900;color:var(--pnk)">0</span></div>
+                <div class="prog-track">
+                  <div id="br_terlambat" class="prog-fill" style="width:0%;background:var(--pnk)"></div>
+                </div>
+              </div>
+              <div>
+                <div class="fbet tsm mb1"><span class="tb7"><img src="image/add-document.png"
+                      style="width:1.2em;height:1.2em;vertical-align:middle;filter:drop-shadow(0 2px 3px rgba(0,0,0,0.2))">
+                    Izin</span><span id="bn_izin"
+                    style="font-family:'Nunito',sans-serif;font-weight:900;color:var(--v)">0</span></div>
+                <div class="prog-track">
+                  <div id="br_izin" class="prog-fill" style="width:0%;background:var(--v)"></div>
+                </div>
+              </div>
+              <div>
+                <div class="fbet tsm mb1"><span class="tb7"><img src="image/add.png"
+                      style="width:1.2em;height:1.2em;vertical-align:middle;filter:drop-shadow(0 2px 3px rgba(0,0,0,0.2))">
+                    Sakit</span><span id="bn_sakit"
+                    style="font-family:'Nunito',sans-serif;font-weight:900;color:var(--amb)">0</span></div>
+                <div class="prog-track">
+                  <div id="br_sakit" class="prog-fill" style="width:0%;background:var(--amb)"></div>
+                </div>
+              </div>
+              <div>
+                <div class="fbet tsm mb1"><span class="tb7"><span style="font-weight:bold;margin:0 4px">✕</span>
+                    Alpha</span><span id="bn_alpha"
+                    style="font-family:'Nunito',sans-serif;font-weight:900;color:var(--red)">0</span></div>
+                <div class="prog-track">
+                  <div id="br_alpha" class="prog-fill" style="width:0%;background:var(--red)"></div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="card">
+          <div class="card-b np">
+            <div class="tw">
+              <table>
+                <thead>
+                  <tr>
+                    <th>Tanggal</th>
+                    <th>Nama</th>
+                    <th>NISN</th>
+                    <th>Kelas</th>
+                    <th>Mapel</th>
+                    <th>Jam</th>
+                    <th>Status</th>
+                  </tr>
+                </thead>
+                <tbody id="lapTbody">
+                  <tr>
+                    <td colspan="7" style="text-align:center;padding:2rem;color:var(--tx3)">Pilih filter & klik Generate
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
+
+
+
+      <!-- ════════════ PAGE: JADWAL MENGAJAR ════════════ -->
+      <div id="pg-jadwal" class="page">
+        <!-- Filter bar -->
+        <div class="card mb2">
+          <div class="card-b">
+            <div class="filter-grid">
+              <div class="fg" style="margin:0" data-r="admin,guru"><label class="fl">Kelas</label><select id="schClass"
+                  class="fi" onchange="fetchSchedules()">
+                  <option value="">— Semua Kelas —</option>
+                </select></div>
+              <div class="fg" style="margin:0"><label class="fl">Hari</label>
+                <select id="schDay" class="fi" onchange="fetchSchedules()">
+                  <option value="">Semua Hari</option>
+                  <option value="1">Senin</option>
+                  <option value="2">Selasa</option>
+                  <option value="3">Rabu</option>
+                  <option value="4">Kamis</option>
+                  <option value="5">Jumat</option>
+                  <option value="6">Sabtu</option>
+                  <option value="0">Minggu</option>
+                </select>
+              </div>
+              <div class="fg" style="margin:0" data-r="admin"><label class="fl">Guru</label>
+                <select id="schTeacher" class="fi" onchange="fetchSchedules()">
+                  <option value="">— Semua Guru —</option>
+                </select>
+              </div>
+              <button class="btn btn-pri" onclick="addSchedule()" data-r="admin"><img src="image/add.png"
+                  style="width:1.2em;height:1.2em;vertical-align:middle;filter:drop-shadow(0 2px 3px rgba(0,0,0,0.2))">
+                Tambah Jadwal</button>
+            </div>
+          </div>
+        </div>
+        <!-- Summary stats -->
+        <div id="schStats" class="g4 mb2"></div>
+        <!-- Table -->
+        <div class="card">
+          <div class="card-b np">
+            <div class="tw">
+              <table>
+                <thead>
+                  <tr>
+                    <th>Hari</th>
+                    <th>Jam</th>
+                    <th data-r="admin,guru">Kelas</th>
+                    <th>Mata Pelajaran</th>
+                    <th>Guru Pengajar</th>
+                    <th>Aksi</th>
+                  </tr>
+                </thead>
+                <tbody id="scheduleTbody"></tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ════════════ PAGE: PENGUMUMAN ════════════ -->
+      ...
+
+      <div id="pg-pengumuman" class="page">
+        <div class="fbet mb3 fwrap gap1">
+          <div></div>
+          <div data-r="admin,guru">
+            <button class="btn btn-pri" onclick="openMdl('annMdl')">+ Buat Pengumuman</button>
+          </div>
+        </div>
+        <div style="max-width:680px">
+          <div id="annWrap"></div>
+        </div>
+      </div>
+
+      <!-- ════════════ PAGE: PROFIL ════════════ -->
+      <div id="pg-profil" class="page">
+        <div style="max-width:680px" id="profilWrap"></div>
+      </div>
+
+      <!-- ════════════ PAGE: PENGATURAN ════════════ -->
+      <div id="pg-settings" class="page">
+        <div style="margin-bottom: 2rem;">
+          <h1 style="font-size:2.2rem;font-weight:900;color:var(--tx);line-height:1.1;font-family:'Nunito',sans-serif;">
+            Konfigurasi Sistem</h1>
+          <p style="font-size:0.9rem;color:var(--tx2);margin-top:0.3rem;">Atur parameter utama aplikasi dan profil
+            identitas sekolah.</p>
+        </div>
+
+        <div class="card" style="border:none;box-shadow:var(--s1);background:#fff;border-radius:1rem;overflow:hidden">
+          <div class="card-h"
+            style="background:linear-gradient(135deg,var(--v),var(--v1));color:#fff;border:none;padding:1.5rem 2rem">
+            <div class="card-t" style="font-size:1.2rem;font-weight:800"><img src="image/settings (1).png"
+                style="width:1.2em;height:1.2em;vertical-align:middle;filter:brightness(0) invert(1) drop-shadow(0 2px 3px rgba(0,0,0,0.2))">
+              Parameter SiAbsen</div>
+          </div>
+          <div class="card-b" style="padding:2rem">
+            <form onsubmit="saveSettings(event)">
+              <div class="g2" style="margin-bottom:2rem">
+                <!-- Kolom Kiri: Profil Sekolah -->
+                <div>
+                  <div
+                    style="font-weight:800;color:var(--tx1);margin-bottom:1rem;border-bottom:2px solid var(--brd);padding-bottom:0.5rem">
+                    Profil Sekolah</div>
+
+                  <div class="fg"><label class="fl">Nama Sekolah</label>
+                    <input id="setSchool" type="text" class="fi" required>
+                  </div>
+
+                  <div class="fg"><label class="fl">Kepala Sekolah</label>
+                    <input id="setPrincipal" type="text" class="fi">
+                  </div>
+
+                  <div class="fg"><label class="fl">Email Sekolah</label>
+                    <input id="setEmail" type="email" class="fi">
+                  </div>
+
+                  <div class="fg"><label class="fl">Telepon / Kontak</label>
+                    <input id="setPhone" type="tel" class="fi">
+                  </div>
+
+                  <div class="fg"><label class="fl">Alamat Lengkap</label>
+                    <textarea id="setAddr" class="fi"
+                      style="min-height:80px;resize:vertical;border-radius:12px;padding:1rem"></textarea>
+                  </div>
+                </div>
+
+                <!-- Kolom Kanan: Akademik & Lokasi -->
+                <div>
+                  <div
+                    style="font-weight:800;color:var(--tx1);margin-bottom:1rem;border-bottom:2px solid var(--brd);padding-bottom:0.5rem">
+                    Akademik & Waktu</div>
+
+                  <div class="g2">
+                    <div class="fg"><label class="fl">Tahun Ajaran</label>
+                      <input id="setYear" type="text" class="fi" placeholder="2023/2024">
+                    </div>
+                    <div class="fg"><label class="fl">Semester</label>
+                      <select id="setSem" class="fi">
+                        <option value="Ganjil">Ganjil</option>
+                        <option value="Genap">Genap</option>
+                      </select>
+                    </div>
+                  </div>
+
+                  <div class="g2">
+                    <div class="fg"><label class="fl">Jam Masuk</label>
+                      <input id="setStart" type="time" class="fi" required>
+                    </div>
+                    <div class="fg"><label class="fl">Jam Pulang</label>
+                      <input id="setEnd" type="time" class="fi" required>
+                    </div>
+                  </div>
+
+                  <div class="fg"><label class="fl">Toleransi Terlambat (menit)</label>
+                    <input id="setLate" type="number" class="fi" value="15">
+                  </div>
+
+                  <div class="fg"><label class="fl">Hari Libur Mingguan</label>
+                    <select id="setHolidays" class="fi" multiple style="min-height:90px;padding:0.5rem">
+                      <option value="0">Minggu</option>
+                      <option value="6">Sabtu</option>
+                    </select>
+                    <div class="tsm t3 mt1">Tahan tombol <kbd>Ctrl</kbd> untuk memilih lebih dari satu hari libur.</div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Baris Bawah: Geolocation dengan Peta Interaktif -->
+              <div
+                style="background:var(--bg2);padding:1.5rem;border-radius:1rem;border:1px solid var(--brd);margin-bottom:2rem">
+                <!-- Header -->
+                <div
+                  style="margin-bottom:1rem;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:1rem">
+                  <div>
+                    <div
+                      style="font-weight:800;color:var(--tx1);display:flex;align-items:center;gap:0.5rem;margin-bottom:0.2rem">
+                      📍 Titik Koordinat & Radius Absensi
+                    </div>
+                    <div style="font-size:0.8rem;color:var(--tx3)">Klik pada peta atau seret marker untuk menentukan
+                      titik pusat sekolah</div>
+                  </div>
+                  <button type="button" class="btn btn-out btn-sm" onclick="autoDetectLocation()"
+                    style="border-radius:100px;font-size:0.8rem">
+                    <img src="image/info.png" style="width:1.2em;height:1.2em;vertical-align:middle"> Deteksi Lokasi
+                    Saat Ini
+                  </button>
+                </div>
+
+                <!-- Koordinat + Radius Inputs -->
+                <div
+                  style="display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:1rem;margin-bottom:1rem">
+                  <div class="fg" style="margin:0">
+                    <label class="fl">Latitude</label>
+                    <input id="setLat" type="text" class="fi" placeholder="-6.200000" oninput="syncMapFromInputs()">
+                  </div>
+                  <div class="fg" style="margin:0">
+                    <label class="fl">Longitude</label>
+                    <input id="setLng" type="text" class="fi" placeholder="106.816666" oninput="syncMapFromInputs()">
+                  </div>
+                  <div class="fg" style="margin:0">
+                    <label class="fl">Radius Maks (meter)</label>
+                    <input id="setRadius" type="number" class="fi" value="50" min="10" max="5000"
+                      oninput="updateRadiusCircle()">
+                  </div>
+                </div>
+
+                <!-- Peta Interaktif Leaflet -->
+                <!-- NOTE: overflow must NOT be hidden — it clips Leaflet popups & controls -->
+                <div style="position:relative;border-radius:0.75rem;border:2px solid var(--brd);box-shadow:var(--s1)">
+                  <div id="settingsMap" style="width:100%;height:400px;border-radius:0.6rem;"></div>
+                  <!-- Map overlay hint -->
+                  <div id="mapHint"
+                    style="position:absolute;top:10px;left:50%;transform:translateX(-50%);background:rgba(0,0,0,0.65);color:#fff;padding:6px 16px;border-radius:20px;font-size:0.78rem;font-weight:600;pointer-events:none;backdrop-filter:blur(4px);z-index:500;white-space:nowrap">
+                    🖱️ Klik peta atau seret marker untuk memindahkan titik sekolah
+                  </div>
+                </div>
+
+                <!-- Info koordinat aktif -->
+                <div
+                  style="margin-top:0.75rem;padding:0.75rem 1rem;background:#fff;border-radius:0.75rem;border:1px solid var(--brd);display:flex;align-items:center;gap:0.75rem;font-size:0.82rem;color:var(--tx2)">
+                  <span style="font-size:1.2rem">📌</span>
+                  <span>Koordinat aktif: <strong id="mapCoordDisplay" style="color:var(--v)">Belum ditentukan</strong> —
+                    Radius: <strong id="mapRadiusDisplay" style="color:var(--v)">50 m</strong></span>
+                </div>
+              </div>
+
+              <div style="text-align:right">
+                <button type="submit" class="btn btn-pri"
+                  style="padding:0.8rem 2.5rem;font-size:1.05rem;box-shadow:var(--s1)">
+                  <img src="image/add-document.png"
+                    style="width:1.2em;height:1.2em;vertical-align:middle;filter:drop-shadow(0 2px 3px rgba(0,0,0,0.2))">
+                  Simpan Konfigurasi
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      </div>
+
+      <!-- ════════════ PAGE: ACTIVITY LOG ════════════ -->
+      <div id="pg-log" class="page">
+        <div class="card">
+          <div class="card-h">
+            <div class="card-t"><img src="image/add-document.png"
+                style="width:1.2em;height:1.2em;vertical-align:middle;filter:drop-shadow(0 2px 3px rgba(0,0,0,0.2))">
+              Log Aktivitas Sistem</div><button class="btn btn-xs btn-out" onclick="activityLog()"><img
+                src="image/info.png"
+                style="width:1.2em;height:1.2em;vertical-align:middle;filter:drop-shadow(0 2px 3px rgba(0,0,0,0.2))">
+              Refresh</button>
+          </div>
+          <div class="card-b np">
+            <div class="tw">
+              <table>
+                <thead>
+                  <tr>
+                    <th>Waktu</th>
+                    <th>Pengguna</th>
+                    <th>Role</th>
+                    <th>Aksi</th>
+                    <th>Detail</th>
+                  </tr>
+                </thead>
+                <tbody id="logTbody"></tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div><!-- /main -->
+  </div><!-- /appWrap -->
+
+  <!-- ══════════════════════════════════════════════════════
+     MODALS
+══════════════════════════════════════════════════════════ -->
+
+  <!-- Modal Siswa -->
+  <div id="stuMdl" class="ov">
+    <div class="modal">
+      <div class="mh">
+        <div>
+          <div id="stuMdlTitle" class="mt">Tambah Siswa</div>
+          <div class="ms">Lengkapi data siswa</div>
+        </div><button class="mx" onclick="closeMdl('stuMdl')"><span
+            style="font-weight:bold;margin:0 4px">✕</span></button>
+      </div>
+      <div class="mb">
+        <form id="stuForm" onsubmit="saveStu(event)">
+          <input type="hidden" id="stuId">
+          <div class="g2">
+            <div class="fg"><label class="fl">Nama Lengkap *</label><input id="stuName" type="text" class="fi" required>
+            </div>
+            <div class="fg"><label class="fl">NISN</label><input id="stuNisn" type="text" class="fi"
+                placeholder="0012345678"></div>
+            <div class="fg"><label class="fl">No. Absen</label><input id="stuNo" type="number" class="fi" min="1"></div>
+            <div class="fg"><label class="fl">Jenis Kelamin</label><select id="stuGender" class="fi">
+                <option value="L">👨 Laki-laki</option>
+                <option value="P">👩 Perempuan</option>
+              </select></div>
+            <div class="fg"><label class="fl">No. HP / WA</label><input id="stuPhone" type="tel" class="fi"></div>
+            <div class="fg"><label class="fl">Kelas</label><select id="stuClsId" class="fi">
+                <option value="">—</option>
+              </select></div>
+            <div class="fg"><label class="fl">Nama Orang Tua</label><input id="stuParent" type="text" class="fi"></div>
+            <div class="fg"><label class="fl">HP Orang Tua</label><input id="stuParentPh" type="tel" class="fi"></div>
+          </div>
+          <div class="mf"><button type="button" class="btn btn-out" onclick="closeMdl('stuMdl')">Batal</button><button
+              type="submit" class="btn btn-pri"><img src="image/add-document.png"
+                style="width:1.2em;height:1.2em;vertical-align:middle;filter:drop-shadow(0 2px 3px rgba(0,0,0,0.2))">
+              Simpan</button></div>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal Guru -->
+  <div id="guruMdl" class="ov">
+    <div class="modal">
+      <div class="mh">
+        <div>
+          <div id="guruMdlTitle" class="mt">Tambah Guru</div>
+        </div><button class="mx" onclick="closeMdl('guruMdl')"><span
+            style="font-weight:bold;margin:0 4px">✕</span></button>
+      </div>
+      <div class="mb">
+        <form id="guruForm" onsubmit="saveGuru(event)">
+          <input type="hidden" id="guruId">
+          <div class="g2">
+            <div class="fg"><label class="fl">Nama Lengkap *</label><input id="guruName" type="text" class="fi"
+                required></div>
+            <div class="fg"><label class="fl">NIP</label><input id="guruNip" type="text" class="fi"></div>
+            <div class="fg"><label class="fl">Mata Pelajaran</label><input id="guruSubj" type="text" class="fi"
+                placeholder="Matematika, IPA..."></div>
+            <div class="fg"><label class="fl">Wali Kelas</label><input id="guruHomeroom" type="text" class="fi"
+                placeholder="X IPA 1 (kosongkan jika bukan)"></div>
+            <div class="fg"><label class="fl">No. HP</label><input id="guruPhone" type="tel" class="fi"></div>
+            <div class="fg"><label class="fl">Email</label><input id="guruEmail" type="email" class="fi"></div>
+          </div>
+          <div class="mf"><button type="button" class="btn btn-out" onclick="closeMdl('guruMdl')">Batal</button><button
+              type="submit" class="btn btn-pri"><img src="image/add-document.png"
+                style="width:1.2em;height:1.2em;vertical-align:middle;filter:drop-shadow(0 2px 3px rgba(0,0,0,0.2))">
+              Simpan</button></div>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal Kelas -->
+  <div id="kelasMdl" class="ov">
+    <div class="modal" style="max-width:460px">
+      <div class="mh">
+        <div>
+          <div id="kelasMdlTitle" class="mt">Tambah Kelas</div>
+        </div><button class="mx" onclick="closeMdl('kelasMdl')"><span
+            style="font-weight:bold;margin:0 4px">✕</span></button>
+      </div>
+      <div class="mb">
+        <form id="kelasForm" onsubmit="saveKelas(event)">
+          <input type="hidden" id="kelasId">
+          <div class="g2">
+            <div class="fg"><label class="fl">Nama Kelas *</label><input id="kelasName" type="text" class="fi"
+                placeholder="X IPA 1" required></div>
+            <div class="fg"><label class="fl">Tingkat</label>
+              <select id="kelasGrade" class="fi">
+                <option value="VII">VII (Kelas 7)</option>
+                <option value="VIII">VIII (Kelas 8)</option>
+                <option value="IX">IX (Kelas 9)</option>
+                <option value="X">X (Kelas 10)</option>
+                <option value="XI">XI (Kelas 11)</option>
+                <option value="XII">XII (Kelas 12)</option>
+              </select>
+            </div>
+            <div class="fg"><label class="fl">Kompetensi Keahlian (Jurusan)</label>
+              <select id="kelasMajor" class="fi">
+                <option value="RPL">Rekayasa Perangkat Lunak (RPL)</option>
+                <option value="TKJ">Teknik Komputer Jaringan (TKJ)</option>
+                <option value="MM">Multimedia / DKV</option>
+                <option value="TITL">Teknik Instalasi Tenaga Listrik</option>
+                <option value="TKR">Teknik Kendaraan Ringan</option>
+                <option value="TPM">Teknik Pemesinan</option>
+                <option value="BDP">Bisnis Daring & Pemasaran</option>
+                <option value="OTKP">Otomatisasi Tata Kelola Perkantoran</option>
+                <option value="Umum">Umum</option>
+              </select>
+            </div>
+            <div class="fg"><label class="fl">Ruangan</label><input id="kelasRoom" type="text" class="fi"
+                placeholder="R.101"></div>
+            <div class="fg"><label class="fl">Kapasitas</label><input id="kelasCap" type="number" class="fi" value="36"
+                min="1"></div>
+          </div>
+          <div class="mf"><button type="button" class="btn btn-out" onclick="closeMdl('kelasMdl')">Batal</button><button
+              type="submit" class="btn btn-pri"><img src="image/add-document.png"
+                style="width:1.2em;height:1.2em;vertical-align:middle;filter:drop-shadow(0 2px 3px rgba(0,0,0,0.2))">
+              Simpan</button></div>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal Mapel -->
+  <div id="mapelMdl" class="ov">
+    <div class="modal" style="max-width:390px">
+      <div class="mh">
+        <div>
+          <div id="mapelMdlTitle" class="mt">Tambah Mata Pelajaran</div>
+        </div><button class="mx" onclick="closeMdl('mapelMdl')"><span
+            style="font-weight:bold;margin:0 4px">✕</span></button>
+      </div>
+      <div class="mb">
+        <form id="mapelForm" onsubmit="saveMapel(event)">
+          <input type="hidden" id="mapelId">
+          <div class="fg"><label class="fl">Nama Mapel *</label><input id="mapelName" type="text" class="fi" required
+              placeholder="Matematika"></div>
+          <div class="fg"><label class="fl">Kode</label><input id="mapelCode" type="text" class="fi" placeholder="MTK">
+          </div>
+          <div class="g2">
+            <div class="fg"><label class="fl">Emoji</label><input id="mapelEmoji" type="text" class="fi"
+                placeholder="1️⃣" style="font-size:1.2rem"></div>
+            <div class="fg"><label class="fl">Warna</label><input id="mapelColor" type="color" class="fi"
+                value="#6366f1" style="height:42px;padding:.3rem"></div>
+          </div>
+          <div class="mf"><button type="button" class="btn btn-out" onclick="closeMdl('mapelMdl')">Batal</button><button
+              type="submit" class="btn btn-pri"><img src="image/add-document.png"
+                style="width:1.2em;height:1.2em;vertical-align:middle;filter:drop-shadow(0 2px 3px rgba(0,0,0,0.2))">
+              Simpan</button></div>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal Jadwal Pelajaran -->
+  <div id="schMdl" class="ov">
+    <div class="modal" style="max-width:520px">
+      <div class="mh">
+        <div>
+          <div id="schMdlTitle" class="mt">Tambah Jadwal Pelajaran</div>
+          <div class="ms">Atur jadwal mengajar per kelas & guru</div>
+        </div><button class="mx" onclick="closeMdl('schMdl')"><span
+            style="font-weight:bold;margin:0 4px">✕</span></button>
+      </div>
+      <div class="mb">
+        <form id="schForm" onsubmit="saveSchedule(event)">
+          <input type="hidden" id="schId">
+          <div class="g2">
+            <div class="fg"><label class="fl">Hari *</label>
+              <select id="schFormDay" class="fi" required>
+                <option value="">— Pilih Hari —</option>
+                <option value="1">Senin</option>
+                <option value="2">Selasa</option>
+                <option value="3">Rabu</option>
+                <option value="4">Kamis</option>
+                <option value="5">Jumat</option>
+                <option value="6">Sabtu</option>
+                <option value="0">Minggu</option>
+              </select>
+            </div>
+            <div class="fg"><label class="fl">Kelas *</label><select id="schFormClass" class="fi" required></select>
+            </div>
+          </div>
+          <div class="fg"><label class="fl">Mata Pelajaran *</label><select id="schFormSubj" class="fi"
+              required></select></div>
+          <div class="fg"><label class="fl">Guru Pengajar *</label><select id="schFormTeacher" class="fi"
+              required></select></div>
+          <div class="g2">
+            <div class="fg"><label class="fl">Jam Mulai *</label><input id="schFormStart" type="time" class="fi"
+                required></div>
+            <div class="fg"><label class="fl">Jam Selesai *</label><input id="schFormEnd" type="time" class="fi"
+                required></div>
+          </div>
+          <div class="mf"><button type="button" class="btn btn-out" onclick="closeMdl('schMdl')">Batal</button><button
+              type="submit" class="btn btn-pri"><img src="image/add-document.png"
+                style="width:1.2em;height:1.2em;vertical-align:middle;filter:drop-shadow(0 2px 3px rgba(0,0,0,0.2))">
+              Simpan Jadwal</button></div>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal Izin -->
+  <div id="izinMdl" class="ov">
+    <div class="modal" style="max-width:450px">
+      <div class="mh">
+        <div>
+          <div class="mt"><img src="image/add-document.png"
+              style="width:1.2em;height:1.2em;vertical-align:middle;filter:drop-shadow(0 2px 3px rgba(0,0,0,0.2))">
+            Ajukan Izin / Sakit</div>
+          <div class="ms">Akan diproses oleh wali kelas Anda</div>
+        </div><button class="mx" onclick="closeMdl('izinMdl')"><span
+            style="font-weight:bold;margin:0 4px">✕</span></button>
+      </div>
+      <div class="mb">
+        <form onsubmit="submitIzin(event)">
+          <div class="fg"><label class="fl">Jenis Pengajuan</label>
+            <select id="izinType" class="fi">
+              <option value="izin">Izin (ada keperluan)</option>
+              <option value="sakit">Sakit</option>
+            </select>
+          </div>
+          <div class="g2">
+            <div class="fg"><label class="fl">Tanggal Mulai</label><input id="izinStart" type="date" class="fi"
+                required></div>
+            <div class="fg"><label class="fl">Tanggal Selesai</label><input id="izinEnd" type="date" class="fi"></div>
+          </div>
+          <div class="fg"><label class="fl">Keterangan / Alasan</label><textarea id="izinReason" class="fi"
+              placeholder="Jelaskan alasan pengajuan..."></textarea></div>
+          <div class="fg"><label class="fl">Bukti (Foto/PDF) - Opsional</label>
+            <input id="izinFile" type="file" class="fi" accept="image/*,application/pdf" style="padding: 10px;">
+            <div class="t3 txs" style="margin-top:5px">Format: JPG, PNG, atau PDF. Maks 2MB.</div>
+          </div>
+          <div class="mf"><button type="button" class="btn btn-out" onclick="closeMdl('izinMdl')">Batal</button><button
+              type="submit" class="btn btn-pri"><img src="image/add-document.png"
+                style="width:1.2em;height:1.2em;vertical-align:middle;filter:drop-shadow(0 2px 3px rgba(0,0,0,0.2))">
+              Kirim Pengajuan</button></div>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal User -->
+  <div id="userMdl" class="ov">
+    <div class="modal" style="max-width:420px">
+      <div class="mh">
+        <div>
+          <div id="userMdlTitle" class="mt">Tambah User</div>
+          <div class="ms">Akun akses aplikasi</div>
+        </div><button class="mx" onclick="closeMdl('userMdl')"><span
+            style="font-weight:bold;margin:0 4px">✕</span></button>
+      </div>
+      <div class="mb">
+        <form id="userForm" onsubmit="saveUser(event)">
+          <input type="hidden" id="userId">
+          <div class="fg"><label class="fl">Nama Lengkap *</label><input id="userName" type="text" class="fi" required>
+          </div>
+          <div class="fg"><label class="fl">Email *</label><input id="userEmail" type="email" class="fi" required></div>
+          <div class="fg"><label class="fl">Password</label><input id="userPass" type="password" class="fi"
+              placeholder="Isi hanya jika ingin ganti"></div>
+          <div class="fg"><label class="fl">Role</label>
+            <select id="userRole" class="fi">
+              <option value="admin">Admin</option>
+              <option value="guru">Guru</option>
+              <option value="siswa">Siswa</option>
+
+            </select>
+          </div>
+          <div class="mf"><button type="button" class="btn btn-out" onclick="closeMdl('userMdl')">Batal</button><button
+              type="submit" class="btn btn-pri"><img src="image/add-document.png"
+                style="width:1.2em;height:1.2em;vertical-align:middle;filter:drop-shadow(0 2px 3px rgba(0,0,0,0.2))">
+              Simpan User</button></div>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal Pengumuman -->
+  <div id="annMdl" class="ov">
+    <div class="modal" style="max-width:490px">
+      <div class="mh">
+        <div>
+          <div class="mt"><img src="image/bell.png"
+              style="width:1.2em;height:1.2em;vertical-align:middle;filter:drop-shadow(0 2px 3px rgba(0,0,0,0.2))"> Buat
+            Pengumuman</div>
+        </div><button class="mx" onclick="closeMdl('annMdl')"><span
+            style="font-weight:bold;margin:0 4px">✕</span></button>
+      </div>
+      <div class="mb">
+        <form onsubmit="saveAnn(event)">
+          <div class="fg"><label class="fl">Judul *</label><input id="annTitle" type="text" class="fi" required
+              placeholder="Judul pengumuman"></div>
+          <div class="fg"><label class="fl">Isi Pengumuman *</label><textarea id="annBody" class="fi" required
+              placeholder="Tulis isi pengumuman..."></textarea></div>
+          <div class="fg"><label class="fl">Prioritas</label>
+            <select id="annPrio" class="fi">
+              <option value="">Umum</option>
+              <option value="info">Informasi Penting</option>
+              <option value="penting">Sangat Penting</option>
+            </select>
+          </div>
+          <div class="mf"><button type="button" class="btn btn-out" onclick="closeMdl('annMdl')">Batal</button><button
+              type="submit" class="btn btn-pri"><img src="image/add-document.png"
+                style="width:1.2em;height:1.2em;vertical-align:middle;filter:drop-shadow(0 2px 3px rgba(0,0,0,0.2))">
+              Publikasikan</button></div>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal QR Generator (Guru) -->
+  <div id="qrGenMdl" class="ov">
+    <div class="modal" style="max-width:350px;text-align:center">
+      <div class="mh">
+        <div class="mt">QR Absensi Mapel</div>
+        <button class="mx" onclick="closeMdl('qrGenMdl')"><span style="font-weight:bold;margin:0 4px">✕</span></button>
+      </div>
+      <div class="mb" style="padding: 2rem 1rem;">
+        <div id="qrCodeContainer"
+          style="display:flex;justify-content:center;margin-bottom:1rem;padding:1rem;background:#fff;border-radius:10px;box-shadow:0 4px 6px rgba(0,0,0,0.1)">
+        </div>
+        <div id="qrCodeDesc" style="font-weight:600;color:var(--tx2)"></div>
+        <div class="t3 txs mt1" style="color:var(--tx3)">Minta siswa memindai QR code ini di menu Jadwal Pelajaran
+          mereka.</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal QR Scanner (Siswa) -->
+  <div id="qrScanMdl" class="ov">
+    <div class="modal" style="max-width:400px;text-align:center">
+      <div class="mh">
+        <div class="mt"><img src="image/camera.png"
+            style="width:1.2em;height:1.2em;vertical-align:middle;filter:drop-shadow(0 2px 3px rgba(0,0,0,0.2))"> Scan
+          QR Absensi</div>
+        <button class="mx" onclick="stopQRScanner()"><span style="font-weight:bold;margin:0 4px">✕</span></button>
+      </div>
+      <div class="mb">
+        <div id="qr-reader" style="width:100%;border-radius:10px;overflow:hidden;box-shadow:0 4px 6px rgba(0,0,0,0.1)">
+        </div>
+        <div id="qrScanStatus" class="mt1" style="font-weight:600;color:var(--v)">Arahkan kamera ke QR Code Guru</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Toast container -->
+  <div id="toasts"></div>
+
+  <!-- Scripts (Supabase Version) -->
+  <script src="public/js/supabase_client.js"></script>
+  <script src="public/js/auth.js"></script>
+  <script src="public/js/dashboard.js"></script>
+  <script src="public/js/modules_absensi.js"></script>
+  <script src="public/js/modules_data.js"></script>
+  <script src="public/js/modules_izin.js"></script>
+  <script src="public/js/modules_profil.js"></script>
+  <script src="public/js/modules_admin.js"></script>
+  <script src="public/js/modules_guru.js"></script>
+  <script src="public/js/face_recognition.js"></script>
+  <script src="public/js/app.js"></script>
+</body>
+
+</html>
