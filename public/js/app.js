@@ -12,6 +12,18 @@ const App = { user: null, profile: null, page: '', listeners: [], attBuf: {} };
 // ── Supabase is initialized in supabase_client.js ───────────
 
 
+// ── UNAUTH SCREEN HANDLER ────────────────────────────
+function showUnauthScreen() {
+  id('appWrap').style.display = 'none';
+  if (!localStorage.getItem('hasSeenLanding')) {
+    id('landingWrap').style.display = 'block';
+    id('authWrap').style.display = 'none';
+  } else {
+    if(id('landingWrap')) id('landingWrap').style.display = 'none';
+    id('authWrap').style.display = 'flex';
+  }
+}
+
 // ── SESSION CHECK (using Supabase Auth) ──────────────
 async function checkSession() {
   const ld = id('loading');
@@ -44,13 +56,12 @@ async function checkSession() {
         // Fallback if profile not found
         App.user = App.profile = null;
         ld?.classList.add('off');
-        id('authWrap').style.display = 'flex';
+        showUnauthScreen();
       }
     } else {
       App.user = App.profile = null;
       ld?.classList.add('off');
-      id('authWrap').style.display = 'flex';
-      id('appWrap').style.display = 'none';
+      showUnauthScreen();
     }
   } catch (e) {
     console.error('Session check error:', e);
@@ -63,8 +74,7 @@ async function checkSession() {
     }
     App.user = App.profile = null;
     ld?.classList.add('off');
-    id('authWrap').style.display = 'flex';
-    id('appWrap').style.display = 'none';
+    showUnauthScreen();
   }
 }
 // Run on page load
@@ -75,8 +85,7 @@ supabase.auth.onAuthStateChange((event, session) => {
   if (event === 'SIGNED_OUT' || (event === 'TOKEN_REFRESHED' && !session)) {
     // Session expired or refresh token was invalidated
     App.user = App.profile = null;
-    id('authWrap').style.display = 'flex';
-    id('appWrap').style.display = 'none';
+    showUnauthScreen();
     showToast('Sesi Anda telah berakhir. Silakan login kembali.', 'warning', 5000);
   }
 });
@@ -178,8 +187,7 @@ async function doLogout() {
     if (error) throw error;
 
     App.user = App.profile = null;
-    id('authWrap').style.display = 'flex';
-    id('appWrap').style.display = 'none';
+    showUnauthScreen();
     showToast('Berhasil keluar.', 'success');
   } catch (e) {
     showToast('Gagal keluar: ' + e.message, 'error');
