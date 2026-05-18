@@ -1155,6 +1155,7 @@ textarea.fi {
   display: block;
   background: #1f2916;
   border: 3px solid rgba(75, 102, 54, .4);
+  transform: scaleX(-1); /* Hilangkan efek mirror kamera selfie */
 }
 
 .cam-ring {
