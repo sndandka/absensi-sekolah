@@ -273,21 +273,21 @@ function renderKelasStats(classes, students, unassigned) {
       <div style="width:42px;height:42px;background:var(--v);border-radius:50%;display:flex;align-items:center;justify-content:center;margin-bottom:.6rem;box-shadow:0 4px 12px rgba(99,102,241,0.25)">
         <img src="image/home.png" style="width:1.3rem;height:1.3rem;filter:brightness(10)">
       </div>
-      <div style="font-family:'Nunito',sans-serif;font-weight:900;font-size:1.6rem;color:var(--v)">${classes.length}</div>
+      <div style="font-family:'Montserrat',sans-serif;font-weight:900;font-size:1.6rem;color:var(--v)">${classes.length}</div>
       <div class="tsm t2" style="font-weight:600">Total Kelas</div>
     </div>
     <div class="card fcen" style="padding:1.2rem;flex-direction:column;text-align:center;background:linear-gradient(135deg,#ecfdf5,#fff);border:1.5px solid #a7f3d0">
       <div style="width:42px;height:42px;background:var(--grn);border-radius:50%;display:flex;align-items:center;justify-content:center;margin-bottom:.6rem;box-shadow:0 4px 12px rgba(16,185,129,0.25)">
         <img src="image/user.png" style="width:1.3rem;height:1.3rem;filter:brightness(10)">
       </div>
-      <div style="font-family:'Nunito',sans-serif;font-weight:900;font-size:1.6rem;color:var(--grn)">${totalStudents}</div>
+      <div style="font-family:'Montserrat',sans-serif;font-weight:900;font-size:1.6rem;color:var(--grn)">${totalStudents}</div>
       <div class="tsm t2" style="font-weight:600">Total Siswa</div>
     </div>
     <div class="card fcen" style="padding:1.2rem;flex-direction:column;text-align:center;background:linear-gradient(135deg,#fef3c7,#fff);border:1.5px solid #fcd34d">
       <div style="width:42px;height:42px;background:var(--amb);border-radius:50%;display:flex;align-items:center;justify-content:center;margin-bottom:.6rem;box-shadow:0 4px 12px rgba(245,158,11,0.25)">
         <img src="image/info.png" style="width:1.3rem;height:1.3rem;filter:brightness(10)">
       </div>
-      <div style="font-family:'Nunito',sans-serif;font-weight:900;font-size:1.6rem;color:var(--amb)">${unassigned.length}</div>
+      <div style="font-family:'Montserrat',sans-serif;font-weight:900;font-size:1.6rem;color:var(--amb)">${unassigned.length}</div>
       <div class="tsm t2" style="font-weight:600">Belum Ada Kelas</div>
     </div>
   `;
@@ -318,7 +318,7 @@ function renderKelasCards(classes) {
         <div style="position:absolute;bottom:-30px;right:30px;width:60px;height:60px;background:rgba(255,255,255,0.05);border-radius:50%"></div>
         <div class="fbet" style="position:relative;z-index:1">
           <div>
-            <div style="font-family:'Nunito',sans-serif;font-weight:900;font-size:1.2rem;margin-bottom:.2rem">${c.name}</div>
+            <div style="font-family:'Montserrat',sans-serif;font-weight:900;font-size:1.2rem;margin-bottom:.2rem">${c.name}</div>
             <div style="display:flex;gap:.4rem;align-items:center;flex-wrap:wrap">
               <span class="bdg" style="background:rgba(255,255,255,0.2);color:#fff;font-size:.7rem;backdrop-filter:blur(4px)">${c.grade || '—'}</span>
               ${c.major ? `<span class="bdg" style="background:rgba(255,255,255,0.2);color:#fff;font-size:.7rem;backdrop-filter:blur(4px)">${c.major}</span>` : ''}
