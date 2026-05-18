@@ -1,10 +1,10 @@
 /* ═══════════════════════════════════════════════════════════
    SiAbsen — Sistem Absensi Sekolah Digital
    Desain: Cerah · Modern · Ramah Siswa
-   Font: Nunito (display) + Poppins (body)
+   Font: Montserrat (display) + Open Sans (body)
    Tema: Putih bersih + aksen ungu-biru cerah
    ═══════════════════════════════════════════════════════════ */
-@import url('https://fonts.googleapis.com/css2?family=Nunito:wght@400;500;600;700;800;900&family=Poppins:wght@300;400;500;600;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800;900&family=Open+Sans:wght@300;400;500;600;700;800&display=swap');
 
 /* ─── DESIGN TOKENS ─────────────────────────────────────── */
 :root {
@@ -85,7 +85,7 @@ html {
 }
 
 body {
-  font-family: 'Poppins', sans-serif;
+  font-family: 'Open Sans', sans-serif;
   background: var(--bg);
   color: var(--tx);
   min-height: 100vh;
@@ -98,7 +98,7 @@ h1,
 h2,
 h3,
 h4 {
-  font-family: 'Nunito', sans-serif;
+  font-family: 'Montserrat', sans-serif;
   line-height: 1.2
 }
 
@@ -109,13 +109,13 @@ a {
 
 button {
   cursor: pointer;
-  font-family: 'Poppins', sans-serif
+  font-family: 'Open Sans', sans-serif
 }
 
 input,
 select,
 textarea {
-  font-family: 'Poppins', sans-serif
+  font-family: 'Open Sans', sans-serif
 }
 
 /* ─── LOADING ───────────────────────────────────────────── */
@@ -139,7 +139,7 @@ textarea {
   display: flex;
   align-items: center;
   gap: .8rem;
-  font-family: 'Nunito', sans-serif;
+  font-family: 'Montserrat', sans-serif;
   font-size: 2.2rem;
   font-weight: 900;
   color: #fff;
@@ -262,7 +262,7 @@ textarea {
 }
 
 .sb-name {
-  font-family: 'Nunito', sans-serif;
+  font-family: 'Montserrat', sans-serif;
   font-weight: 900;
   font-size: 1.3rem;
   color: var(--tx)
@@ -376,7 +376,7 @@ textarea {
   display: flex;
   align-items: center;
   justify-content: center;
-  font-family: 'Nunito', sans-serif;
+  font-family: 'Montserrat', sans-serif;
   font-weight: 900;
   font-size: .92rem;
   color: #fff;
@@ -437,7 +437,7 @@ textarea {
 }
 
 .tb-title {
-  font-family: 'Nunito', sans-serif;
+  font-family: 'Montserrat', sans-serif;
   font-size: 2.2rem;
   font-weight: 900;
   color: var(--tx);
@@ -659,7 +659,7 @@ textarea {
 }
 
 .sc-num {
-  font-family: 'Nunito', sans-serif;
+  font-family: 'Montserrat', sans-serif;
   font-size: 2.4rem;
   font-weight: 900;
   color: var(--tx);
@@ -741,7 +741,7 @@ textarea {
 }
 
 .card-t {
-  font-family: 'Nunito', sans-serif;
+  font-family: 'Montserrat', sans-serif;
   font-size: .95rem;
   font-weight: 800;
   color: var(--tx);
@@ -905,7 +905,7 @@ textarea.fi {
   gap: .42rem;
   padding: .62rem 1.25rem;
   border-radius: 100px;
-  font-family: 'Poppins', sans-serif;
+  font-family: 'Open Sans', sans-serif;
   font-weight: 600;
   font-size: .855rem;
   border: none;
@@ -1316,7 +1316,7 @@ textarea.fi {
   text-align: center;
   cursor: pointer;
   transition: all .13s;
-  font-family: 'Poppins', sans-serif;
+  font-family: 'Open Sans', sans-serif;
 }
 
 .sb.h {
