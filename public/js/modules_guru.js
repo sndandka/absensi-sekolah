@@ -277,19 +277,19 @@ function renderSchStats(rows) {
 
   el.innerHTML = `
     <div class="card fcen" style="padding:1rem;flex-direction:column;text-align:center;background:linear-gradient(135deg,var(--v3),#fff);border:1.5px solid var(--v2)">
-      <div style="font-family:'Nunito',sans-serif;font-weight:900;font-size:1.5rem;color:var(--v)">${rows.length}</div>
+      <div style="font-family:'Montserrat',sans-serif;font-weight:900;font-size:1.5rem;color:var(--v)">${rows.length}</div>
       <div class="tsm t2" style="font-weight:600">Total Jadwal</div>
     </div>
     <div class="card fcen" style="padding:1rem;flex-direction:column;text-align:center;background:linear-gradient(135deg,#ecfdf5,#fff);border:1.5px solid #a7f3d0">
-      <div style="font-family:'Nunito',sans-serif;font-weight:900;font-size:1.5rem;color:var(--grn)">${uniqueClasses.size}</div>
+      <div style="font-family:'Montserrat',sans-serif;font-weight:900;font-size:1.5rem;color:var(--grn)">${uniqueClasses.size}</div>
       <div class="tsm t2" style="font-weight:600">Kelas Terjadwal</div>
     </div>
     <div class="card fcen" style="padding:1rem;flex-direction:column;text-align:center;background:linear-gradient(135deg,#fef3c7,#fff);border:1.5px solid #fcd34d">
-      <div style="font-family:'Nunito',sans-serif;font-weight:900;font-size:1.5rem;color:var(--amb)">${uniqueTeachers.size}</div>
+      <div style="font-family:'Montserrat',sans-serif;font-weight:900;font-size:1.5rem;color:var(--amb)">${uniqueTeachers.size}</div>
       <div class="tsm t2" style="font-weight:600">Guru Aktif</div>
     </div>
     <div class="card fcen" style="padding:1rem;flex-direction:column;text-align:center;background:linear-gradient(135deg,#fdf2f8,#fff);border:1.5px solid #fbcfe8">
-      <div style="font-family:'Nunito',sans-serif;font-weight:900;font-size:1.5rem;color:var(--pnk)">${uniqueSubjects.size}</div>
+      <div style="font-family:'Montserrat',sans-serif;font-weight:900;font-size:1.5rem;color:var(--pnk)">${uniqueSubjects.size}</div>
       <div class="tsm t2" style="font-weight:600">Mata Pelajaran</div>
     </div>
   `;
