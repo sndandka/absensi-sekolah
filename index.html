@@ -58,9 +58,10 @@
 
   <!-- ══════════════ LOADING ══════════════ -->
   <div id="loading">
-    <div class="ld-brand">
-      <img src="image/logo_smk.png"
+    <div class="ld-brand" style="flex-direction: column; justify-content: center; align-items: center; gap: 0;">
+      <img src="image/putih.png"
         style="width:160px;height:160px;object-fit:contain;filter:drop-shadow(0 4px 16px rgba(0,0,0,0.35));animation:ldpop .5s cubic-bezier(.34,1.56,.64,1) both">
+      <p style="color:rgba(255,255,255,0.95);font-size:1.2rem;margin:0;margin-top:-10px;font-weight:700;letter-spacing:1px;text-align:center;">Sistem Absensi Sekolah Digital</p>
     </div>
     <div class="ld-bar">
       <div class="ld-prog"></div>
@@ -173,13 +174,13 @@
     <aside id="sidebar" class="sidebar">
       <div class="sb-brand"
         style="position:relative;display:flex;align-items:center;justify-content:center;padding:1rem 1.25rem 0.5rem 1.25rem;">
-        <div
-          style="height:55px;display:flex;align-items:center;justify-content:center;">
+        <div style="height:55px;display:flex;align-items:center;justify-content:center;">
           <img src="image/logo_smk.png"
             style="width:auto;height:80%;object-fit:contain;filter:drop-shadow(0 2px 4px rgba(0,0,0,0.15))">
         </div>
         <div class="sb-close" onclick="document.getElementById('sidebar').classList.remove('on')"
-          style="position:absolute;right:1.25rem;cursor:pointer;font-size:1.2rem;font-weight:bold;color:var(--tx);">✕</div>
+          style="position:absolute;right:1.25rem;cursor:pointer;font-size:1.2rem;font-weight:bold;color:var(--tx);">✕
+        </div>
       </div>
 
       <div class="sb-scroll">
