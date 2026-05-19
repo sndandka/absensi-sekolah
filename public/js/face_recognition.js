@@ -577,7 +577,7 @@ async function doCapture() {
   while (faceStream && !bestResult?.passed) {
     try {
       const det = await faceapi
-        .detectSingleFace(v, new faceapi.SsdMobilenetv1Options({ minConfidence: 0.5 }))
+        .detectSingleFace(v, new faceapi.TinyFaceDetectorOptions({ inputSize: 224, scoreThreshold: 0.5 }))
         .withFaceLandmarks()
         .withFaceDescriptor();
 
@@ -602,7 +602,7 @@ async function doCapture() {
     } catch (e) {
       console.error('Detection error:', e);
     }
-    await wait(300); // Wait between frames to reduce CPU load
+    await wait(100); // Wait between frames reduced to increase scanning speed
   }
 
   if (bestResult && bestResult.passed) {
@@ -612,9 +612,6 @@ async function doCapture() {
     id('btnCatatHdr').classList.add('pulse');
     // Store match result for recording
     window._lastFaceMatch = bestResult;
-    
-    // Opsional: Otomatis tekan tombol catat hadir agar lebih mulus
-    setTimeout(catatHadir, 1500);
   } else {
     id('livenessVal').textContent = '—';
     if (!faceStream) {
