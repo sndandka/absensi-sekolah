@@ -61,7 +61,9 @@
     <div class="ld-brand" style="flex-direction: column; justify-content: center; align-items: center; gap: 0;">
       <img src="image/putih.png"
         style="width:160px;height:160px;object-fit:contain;filter:drop-shadow(0 4px 16px rgba(0,0,0,0.35));animation:ldpop .5s cubic-bezier(.34,1.56,.64,1) both">
-      <p style="color:rgba(255,255,255,0.95);font-size:1.2rem;margin:0;margin-top:-10px;font-weight:700;letter-spacing:1px;text-align:center;">Sistem Absensi Sekolah Digital</p>
+      <p
+        style="color:rgba(255,255,255,0.95);font-size:1.2rem;margin:0;margin-top:-10px;font-weight:700;letter-spacing:1px;text-align:center;">
+        Sistem Absensi Sekolah Digital</p>
     </div>
     <div class="ld-bar">
       <div class="ld-prog"></div>
@@ -72,96 +74,229 @@
   <!-- ══════════════════════════════════════════════════════
      AUTH SCREEN
 ══════════════════════════════════════════════════════════ -->
-  <div id="authWrap"
-    style="display:none;min-height:100vh;background:var(--bg);align-items:center;justify-content:center">
+  <style>
+    /* Split-screen Layout Styles */
+    #authWrap {
+      display: none;
+      min-height: 100vh;
+      flex-wrap: wrap;
+      background: var(--bg);
+      align-items: flex-start;
+    }
 
-    <!-- bg decoration -->
-    <div style="position:fixed;inset:0;pointer-events:none;overflow:hidden;z-index:0">
+    .auth-left {
+      flex: 1.2;
+      min-width: 320px;
+      height: 100vh;
+      position: sticky;
+      top: 0;
+      background-image: url('image/Baground landing page.png');
+      background-size: cover;
+      background-position: center;
+      background-repeat: no-repeat;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      padding: 4rem;
+      color: #f9f9f9;
+      z-index: 1;
+    }
+
+    .auth-right {
+      flex: 1;
+      min-width: 320px;
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+      background: var(--bg);
+      box-shadow: -10px 0 30px rgba(0, 0, 0, 0.05);
+      z-index: 2;
+    }
+
+    .glass-card {
+      background: rgba(255, 255, 255, 0.1);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      border-radius: 16px;
+      padding: 1.5rem;
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+
+    .glass-card:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+      background: rgba(255, 255, 255, 0.15);
+    }
+
+    .hero-title {
+      font-size: 3rem;
+      font-weight: 900;
+      line-height: 1.1;
+      font-family: 'Montserrat', sans-serif;
+      margin-bottom: 1.5rem;
+      text-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+    }
+
+    .hero-subtitle {
+      font-size: 1.1rem;
+      line-height: 1.6;
+      opacity: 0.9;
+      margin-bottom: 3rem;
+      max-width: 480px;
+      text-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+    }
+
+    @media (max-width: 900px) {
+      .auth-left {
+        display: none;
+        /* Hide landing page on smaller screens */
+      }
+
+      .auth-right {
+        box-shadow: none;
+      }
+    }
+  </style>
+
+  <div id="authWrap">
+
+    <!-- ──────── LEFT SIDE: LANDING PAGE ──────── -->
+    <div class="auth-left">
+      <!-- Dark overlay to ensure text readability if background is bright -->
       <div
-        style="position:absolute;top:-120px;right:-80px;width:500px;height:500px;border-radius:50%;background:radial-gradient(circle,rgba(79, 70, 229, .1) 0%,transparent 70%)">
+        style="position:absolute;inset:0;background:linear-gradient(to right, rgba(0,0,0,0.3) 0%, rgba(0,0,0,0.1) 100%);z-index:0">
       </div>
-      <div
-        style="position:absolute;bottom:-100px;left:-60px;width:420px;height:420px;border-radius:50%;background:radial-gradient(circle,rgba(6, 182, 212, .1) 0%,transparent 70%)">
-      </div>
-      <div
-        style="position:absolute;inset:0;background-image:radial-gradient(circle,rgba(79, 70, 229, .08) 1px,transparent 1px);background-size:26px 26px;opacity:.5">
+
+      <div style="position:relative;z-index:1;max-width:600px">
+        <div style="display:flex;align-items:center;gap:1rem;margin-bottom:2rem;">
+          <img src="image/logo_smk.png"
+            style="width:50px;height:50px;object-fit:contain;filter:drop-shadow(0 2px 10px rgba(255,255,255,0.2))">
+          <span
+            style="font-size:1.5rem;font-weight:800;letter-spacing:1px;text-shadow:0 2px 4px rgba(0,0,0,0.5);">SiAbsen
+            SMK</span>
+        </div>
+
+        <h1 class="hero-title">Sistem Absensi Digital Masa Depan</h1>
+        <p class="hero-subtitle">Pantau kehadiran secara real-time dengan teknologi AI Face Recognition dan deteksi
+          radius lokasi cerdas.</p>
+
+        <div style="display:flex;gap:1.5rem;flex-wrap:wrap">
+          <div class="glass-card" style="flex:1;min-width:220px;">
+            <div
+              style="width:50px;height:50px;background:rgba(255,255,255,0.2);border-radius:12px;display:flex;align-items:center;justify-content:center;margin-bottom:1rem">
+              <img src="image/camera.png" style="width:28px;height:28px;filter:brightness(0) invert(1)">
+            </div>
+            <h3 style="font-size:1.1rem;font-weight:700;margin-bottom:0.5rem">Face Recognition</h3>
+            <p style="font-size:0.85rem;opacity:0.8;line-height:1.5">Absensi super cepat & akurat menggunakan kecerdasan
+              buatan.</p>
+          </div>
+          <div class="glass-card" style="flex:1;min-width:220px;">
+            <div
+              style="width:50px;height:50px;background:rgba(255,255,255,0.2);border-radius:12px;display:flex;align-items:center;justify-content:center;margin-bottom:1rem">
+              <img src="image/map-marker.png" style="width:28px;height:28px;filter:brightness(0) invert(1)">
+            </div>
+            <h3 style="font-size:1.1rem;font-weight:700;margin-bottom:0.5rem">Geo-Location</h3>
+            <p style="font-size:0.85rem;opacity:0.8;line-height:1.5">Validasi otomatis radius titik koordinat sekolah
+              secara presisi.</p>
+          </div>
+        </div>
       </div>
     </div>
 
-    <div style="position:relative;z-index:1;width:100%;max-width:430px;padding:1.5rem">
+    <!-- ──────── RIGHT SIDE: LOGIN FORM ──────── -->
+    <div class="auth-right">
 
-      <!-- Logo -->
-      <div style="display:flex;flex-direction:column;align-items:center;margin-bottom:1.8rem;gap:.5rem">
-        <img src="image/logo_smk.png"
-          style="width:130px;height:130px;object-fit:contain;filter:drop-shadow(0 4px 20px rgba(75,102,54,0.35))">
-        <p style="color:var(--tx2);font-size:.85rem;margin:0">Pusat Keunggulan Absensi Digital</p>
+      <!-- bg decoration for the right side -->
+      <div style="position:absolute;inset:0;pointer-events:none;overflow:hidden;z-index:0">
+        <div
+          style="position:absolute;top:-120px;right:-80px;width:500px;height:500px;border-radius:50%;background:radial-gradient(circle,rgba(79, 70, 229, .08) 0%,transparent 70%)">
+        </div>
+        <div
+          style="position:absolute;bottom:-100px;left:-60px;width:420px;height:420px;border-radius:50%;background:radial-gradient(circle,rgba(6, 182, 212, .08) 0%,transparent 70%)">
+        </div>
+        <div
+          style="position:absolute;inset:0;background-image:radial-gradient(circle,rgba(79, 70, 229, .05) 1px,transparent 1px);background-size:26px 26px;">
+        </div>
       </div>
 
-      <!-- Tabs -->
-      <div
-        style="display:flex;background:#fff;border:1.5px solid var(--brd);border-radius:var(--r2);padding:3px;margin-bottom:1.2rem;box-shadow:var(--s1)">
-        <button id="tabLogin" onclick="switchTab('login')"
-          style="flex:1;padding:.58rem;border-radius:8px;border:none;background:linear-gradient(135deg,var(--v),var(--v1));color:#fff;font-weight:700;font-size:.85rem;font-family:'Open Sans',sans-serif;cursor:pointer;transition:all .2s">Masuk</button>
-        <button id="tabReg" onclick="switchTab('reg')"
-          style="flex:1;padding:.58rem;border-radius:8px;border:none;background:transparent;color:var(--tx2);font-weight:600;font-size:.85rem;font-family:'Open Sans',sans-serif;cursor:pointer;transition:all .2s">Daftar</button>
+      <div style="position:relative;z-index:1;width:100%;max-width:440px;padding:2.5rem 2rem;">
+
+        <!-- Logo -->
+        <div style="display:flex;flex-direction:column;align-items:center;margin-bottom:2rem;gap:.5rem">
+          <img src="image/logo_smk.png"
+            style="width:120px;height:120px;object-fit:contain;filter:drop-shadow(0 4px 15px rgba(75,102,54,0.25))">
+          <p style="color:var(--tx2);font-size:.85rem;margin:0;font-weight:600">Pusat Keunggulan Absensi Digital</p>
+        </div>
+
+        <!-- Tabs -->
+        <div
+          style="display:flex;background:#fff;border:1.5px solid var(--brd);border-radius:12px;padding:4px;margin-bottom:1.5rem;box-shadow:var(--s1)">
+          <button id="tabLogin" onclick="switchTab('login')"
+            style="flex:1;padding:.65rem;border-radius:8px;border:none;background:linear-gradient(135deg,var(--v),var(--v1));color:#fff;font-weight:700;font-size:.9rem;font-family:'Open Sans',sans-serif;cursor:pointer;transition:all .2s;box-shadow:0 2px 4px rgba(0,0,0,0.1)">Masuk</button>
+          <button id="tabReg" onclick="switchTab('reg')"
+            style="flex:1;padding:.65rem;border-radius:8px;border:none;background:transparent;color:var(--tx2);font-weight:600;font-size:.9rem;font-family:'Open Sans',sans-serif;cursor:pointer;transition:all .2s">Daftar</button>
+        </div>
+
+        <!-- LOGIN BOX -->
+        <div id="boxLogin"
+          style="background:#fff;border:1.5px solid var(--brd);border-radius:16px;padding:1.8rem;box-shadow:0 10px 25px rgba(0,0,0,0.05)">
+          <h2 style="font-size:1.2rem;margin-bottom:.3rem;color:var(--tx1)">Selamat Datang Kembali!</h2>
+          <p style="font-size:.85rem;color:var(--tx2);margin-bottom:1.5rem">Masuk ke portal SiAbsen SMK Anda</p>
+          <form onsubmit="handleLogin(event)">
+            <div class="fg"><label class="fl">Email</label><input id="lEmail" type="email" class="fi"
+                placeholder="email@smk-anda.sch.id" required></div>
+            <div class="fg"><label class="fl">Password</label><input id="lPass" type="password" class="fi"
+                placeholder="••••••••" required></div>
+            <button id="loginBtn" type="submit" class="btn btn-pri wf"
+              style="margin-top:.5rem;padding:.75rem;font-size:1rem;border-radius:10px;font-weight:bold">Masuk
+              →</button>
+            <div style="text-align:center;margin-top:1.2rem">
+              <button type="button" onclick="handleForgot()"
+                style="background:none;border:none;color:var(--tx3);font-size:.85rem;font-weight:600;cursor:pointer;font-family:'Open Sans',sans-serif">Lupa
+                password?</button>
+            </div>
+          </form>
+        </div>
+
+        <!-- REGISTER BOX -->
+        <div id="boxReg"
+          style="display:none;background:#fff;border:1.5px solid var(--brd);border-radius:16px;padding:1.8rem;box-shadow:0 10px 25px rgba(0,0,0,0.05)">
+          <h2 style="font-size:1.2rem;margin-bottom:.3rem;color:var(--tx1)">Buat Akun Baru</h2>
+          <p style="font-size:.85rem;color:var(--tx2);margin-bottom:1.5rem">Daftar sebagai pengguna SiAbsen</p>
+          <form onsubmit="handleRegister(event)">
+            <div class="fg"><label class="fl">Nama Lengkap</label><input id="rName" type="text" class="fi"
+                placeholder="Nama lengkap" required></div>
+            <div class="fg"><label class="fl">Email</label><input id="rEmail" type="email" class="fi"
+                placeholder="email@sekolah.sch.id" required></div>
+            <div class="fg"><label class="fl">Password</label><input id="rPass" type="password" class="fi"
+                placeholder="Min. 6 karakter" required></div>
+            <div class="fg" id="nisnWrap"><label class="fl">NISN (Wajib untuk Siswa)</label><input id="rNisn"
+                type="text" class="fi" placeholder="Masukkan 10 digit NISN"></div>
+            <div class="fg" id="nipWrap" style="display:none"><label class="fl">NIP (Wajib untuk Guru)</label><input
+                id="rNip" type="text" class="fi" placeholder="Masukkan NIP"></div>
+            <div class="fg"><label class="fl">Saya adalah</label>
+              <select id="rRole" class="fi" onchange="toggleRegFields(this.value)">
+                <option value="siswa">🎒 Siswa SMK</option>
+                <option value="guru">👨‍🏫 Guru / Instruktur</option>
+              </select>
+            </div>
+            <script>
+              function toggleRegFields(role) {
+                document.getElementById('nisnWrap').style.display = (role === 'siswa') ? 'block' : 'none';
+                document.getElementById('nipWrap').style.display = (role === 'guru') ? 'block' : 'none';
+              }
+              toggleRegFields('siswa');
+            </script>
+            <button id="regBtn" type="submit" class="btn btn-pri wf"
+              style="margin-top:.5rem;padding:.75rem;font-size:1rem;border-radius:10px;font-weight:bold">Daftar Sekarang
+              →</button>
+          </form>
+        </div>
+
       </div>
-
-      <!-- LOGIN BOX -->
-      <div id="boxLogin"
-        style="background:#fff;border:1.5px solid var(--brd);border-radius:var(--r);padding:1.7rem;box-shadow:var(--s2)">
-        <h2 style="font-size:1.15rem;margin-bottom:.25rem">Selamat Datang Kembali! <img src="image/info.png"
-            style="width:1.2em;height:1.2em;vertical-align:middle;filter:drop-shadow(0 2px 3px rgba(0,0,0,0.2))"></h2>
-        <p style="font-size:.8rem;color:var(--tx2);margin-bottom:1.4rem">Masuk ke portal SiAbsen SMK Anda</p>
-        <form onsubmit="handleLogin(event)">
-          <div class="fg"><label class="fl">Email</label><input id="lEmail" type="email" class="fi"
-              placeholder="email@smk-anda.sch.id" required></div>
-          <div class="fg"><label class="fl">Password</label><input id="lPass" type="password" class="fi"
-              placeholder="••••••••" required></div>
-          <button id="loginBtn" type="submit" class="btn btn-pri wf" style="margin-top:.4rem">Masuk →</button>
-          <div style="text-align:center;margin-top:.9rem">
-            <button type="button" onclick="handleForgot()"
-              style="background:none;border:none;color:var(--tx3);font-size:.78rem;cursor:pointer;font-family:'Open Sans',sans-serif">Lupa
-              password?</button>
-          </div>
-        </form>
-
-      </div>
-
-      <!-- REGISTER BOX -->
-      <div id="boxReg"
-        style="display:none;background:#fff;border:1.5px solid var(--brd);border-radius:var(--r);padding:1.7rem;box-shadow:var(--s2)">
-        <h2 style="font-size:1.15rem;margin-bottom:.25rem">Buat Akun Baru <img src="image/info.png"
-            style="width:1.2em;height:1.2em;vertical-align:middle;filter:drop-shadow(0 2px 3px rgba(0,0,0,0.2))"></h2>
-        <p style="font-size:.8rem;color:var(--tx2);margin-bottom:1.4rem">Daftar sebagai pengguna SiAbsen</p>
-        <form onsubmit="handleRegister(event)">
-          <div class="fg"><label class="fl">Nama Lengkap</label><input id="rName" type="text" class="fi"
-              placeholder="Nama lengkap" required></div>
-          <div class="fg"><label class="fl">Email</label><input id="rEmail" type="email" class="fi"
-              placeholder="email@sekolah.sch.id" required></div>
-          <div class="fg"><label class="fl">Password</label><input id="rPass" type="password" class="fi"
-              placeholder="Min. 6 karakter" required></div>
-          <div class="fg" id="nisnWrap"><label class="fl">NISN (Wajib untuk Siswa)</label><input id="rNisn" type="text"
-              class="fi" placeholder="Masukkan 10 digit NISN"></div>
-          <div class="fg" id="nipWrap" style="display:none"><label class="fl">NIP (Wajib untuk Guru)</label><input
-              id="rNip" type="text" class="fi" placeholder="Masukkan NIP"></div>
-          <div class="fg"><label class="fl">Saya adalah</label>
-            <select id="rRole" class="fi" onchange="toggleRegFields(this.value)">
-              <option value="siswa">🎒 Siswa SMK</option>
-              <option value="guru">👨‍🏫 Guru / Instruktur</option>
-            </select>
-          </div>
-          <script>
-            function toggleRegFields(role) {
-              document.getElementById('nisnWrap').style.display = (role === 'siswa') ? 'block' : 'none';
-              document.getElementById('nipWrap').style.display = (role === 'guru') ? 'block' : 'none';
-            }
-            // Set initial state
-            toggleRegFields('siswa');
-          </script>
-          <button id="regBtn" type="submit" class="btn btn-pri wf" style="margin-top:.4rem">Daftar Sekarang →</button>
-        </form>
-      </div>
-
     </div>
   </div>
 
@@ -662,7 +797,8 @@
               </div>
               <div style="text-align:right;background:rgba(0,0,0,0.2);padding:0.8rem 1.2rem;border-radius:1rem;">
                 <div class="tsm" style="opacity:0.9">Batas Jam Masuk</div>
-                <div id="dashSchoolStart" style="font-size:1.5rem;font-weight:900;font-family:'Montserrat',sans-serif">07:00
+                <div id="dashSchoolStart" style="font-size:1.5rem;font-weight:900;font-family:'Montserrat',sans-serif">
+                  07:00
                 </div>
               </div>
             </div>
@@ -1327,7 +1463,8 @@
       <!-- ════════════ PAGE: PENGATURAN ════════════ -->
       <div id="pg-settings" class="page">
         <div style="margin-bottom: 2rem;">
-          <h1 style="font-size:2.2rem;font-weight:900;color:var(--tx);line-height:1.1;font-family:'Montserrat',sans-serif;">
+          <h1
+            style="font-size:2.2rem;font-weight:900;color:var(--tx);line-height:1.1;font-family:'Montserrat',sans-serif;">
             Konfigurasi Sistem</h1>
           <p style="font-size:0.9rem;color:var(--tx2);margin-top:0.3rem;">Atur parameter utama aplikasi dan profil
             identitas sekolah.</p>
