@@ -308,7 +308,7 @@ async function pengumuman(){
         <button class="btn btn-xs btn-red" onclick="delAnn('${a.id}')" data-r="admin,guru"><img src="image/trash.png" style="width:1.2em;height:1.2em;vertical-align:middle"></button>
       </div>
       <div class="ann-b">${a.body}</div>
-      <div class="ann-m"><span><img src="image/info.png" style="width:1.2em;height:1.2em;vertical-align:middle"> ${fdt(a.created_at)}</span><span><img src="image/info.png" style="width:1.2em;height:1.2em;vertical-align:middle"> ${a.author||'Admin'}</span><span class="bdg bn" style="font-size:.62rem">${a.priority||'Umum'}</span></div>
+      <div class="ann-m"><span><img src="image/jadwal_pelajaran.png" style="width:1.2em;height:1.2em;vertical-align:middle"> ${fdt(a.created_at)}</span><span><img src="image/user.png" style="width:1.2em;height:1.2em;vertical-align:middle"> ${a.author||'Admin'}</span><span class="bdg bn" style="font-size:.62rem">${a.priority||'Umum'}</span></div>
     </div>`).join('')||`<div class="t3 tsm">Belum ada pengumuman</div>`;
   applyRoles();
 }
