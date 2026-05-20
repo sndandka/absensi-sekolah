@@ -215,53 +215,180 @@ async function fetchSchedules() {
     if (statsEl) statsEl.innerHTML = '';
   }
 
+  const schTableCard = id('schTableCard');
+  const schCardsWrap = id('schCardsWrap');
+
+  if (role === 'siswa') {
+    if (schTableCard) schTableCard.style.display = 'none';
+    if (schCardsWrap) {
+      schCardsWrap.style.display = 'flex';
+      schCardsWrap.style.flexDirection = 'column';
+      schCardsWrap.style.gap = '1rem';
+      schCardsWrap.classList.remove('g3');
+    }
+  } else {
+    if (schTableCard) schTableCard.style.display = 'block';
+    if (schCardsWrap) schCardsWrap.style.display = 'none';
+  }
+
   if (!rows.length) {
+    if (role === 'siswa' && schCardsWrap) {
+      schCardsWrap.innerHTML = `<div class="card fcen" style="padding:2rem;color:var(--tx3);width:100%">Belum ada jadwal pelajaran</div>`;
+    }
     tbody.innerHTML = `<tr><td colspan="6" style="text-align:center;padding:2rem;color:var(--tx3)">Belum ada jadwal pelajaran</td></tr>`;
     return;
   }
 
-  tbody.innerHTML = rows.map(s => {
-    const dayName = DAYS[s.day] || '—';
-    const teacherName = s.teachers?.name || '—';
-    const teacherSubj = s.teachers?.subject || '';
-    const className = s.classes?.name || '—';
-    const subjName = s.subjects?.name || '—';
-    const startTime = s.start_time ? s.start_time.slice(0, 5) : '—';
-    const endTime = s.end_time ? s.end_time.slice(0, 5) : '—';
+  if (role === 'siswa' && schCardsWrap) {
+    const styleTag = `
+      <style>
+        .sch-list-card {
+          display: flex;
+          flex-direction: column;
+          border: 1.5px solid var(--brd);
+          border-radius: 1rem;
+          overflow: hidden;
+          box-shadow: var(--s1);
+          background: var(--card);
+          transition: transform 0.2s, box-shadow 0.2s;
+        }
+        .sch-list-card:hover {
+          transform: translateY(-2px);
+          box-shadow: var(--s2);
+        }
+        .sch-list-h {
+          background: var(--bg2);
+          padding: 0.8rem 1.2rem;
+          border-bottom: 1px solid var(--brd);
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+        }
+        .sch-list-b {
+          padding: 1.2rem;
+          display: flex;
+          flex-direction: column;
+          gap: 1rem;
+        }
+        .sch-list-info {
+          display: flex;
+          flex-direction: column;
+          gap: 0.3rem;
+        }
+        @media (min-width: 801px) {
+          .sch-list-card {
+            flex-direction: row;
+            align-items: stretch;
+          }
+          .sch-list-h {
+            border-bottom: none;
+            border-right: 1px solid var(--brd);
+            flex-direction: column;
+            justify-content: center;
+            min-width: 140px;
+            gap: 0.5rem;
+          }
+          .sch-list-b {
+            flex-direction: row;
+            align-items: center;
+            flex: 1;
+            justify-content: space-between;
+          }
+          .sch-list-info {
+            flex: 1;
+            padding-right: 1rem;
+          }
+          .sch-list-teacher {
+            min-width: 200px;
+            margin-bottom: 0 !important;
+          }
+          .sch-list-b .btn-amb {
+            width: auto;
+            flex-shrink: 0;
+            padding: 0.6rem 1.5rem;
+          }
+        }
+      </style>
+    `;
 
-    const classCol = role !== 'siswa' ? `<td><span class="bdg bv">${className}</span></td>` : '';
+    schCardsWrap.innerHTML = styleTag + rows.map(s => {
+      const dayName = DAYS[s.day] || '—';
+      const teacherName = s.teachers?.name || '—';
+      const teacherSubj = s.teachers?.subject || '';
+      const className = s.classes?.name || '—';
+      const subjName = s.subjects?.name || '—';
+      const startTime = s.start_time ? s.start_time.slice(0, 5) : '—';
+      const endTime = s.end_time ? s.end_time.slice(0, 5) : '—';
 
-    return `<tr>
-      <td><span class="bdg ${DAY_COLORS[s.day] || 'bn'}">${dayName}</span></td>
-      <td class="tb7">${startTime} - ${endTime}</td>
-      ${classCol}
-      <td>${subjName}</td>
-      <td>
-        <div style="display:flex;align-items:center;gap:.4rem">
-          <div style="width:28px;height:28px;border-radius:50%;background:linear-gradient(135deg,var(--v),var(--v1));display:flex;align-items:center;justify-content:center;flex-shrink:0">
-            <img src="image/user.png" style="width:.9em;height:.9em;filter:brightness(10)">
-          </div>
-          <div>
-            <div style="font-weight:600;font-size:.82rem">${teacherName}</div>
-            ${teacherSubj ? `<div class="t3 txs">${teacherSubj}</div>` : ''}
-          </div>
+      return `<div class="sch-list-card">
+        <div class="sch-list-h">
+          <span class="bdg ${DAY_COLORS[s.day] || 'bn'}">${dayName}</span>
+          <span class="tb7" style="color:var(--v);font-size:.9rem">${startTime} - ${endTime}</span>
         </div>
-      </td>
-      <td>
-        <div class="flex gap1">
-          ${isAdmin ? `
-            <button class="btn btn-xs btn-out" onclick="editSchedule(${s.id})" title="Edit"><img src="image/info.png" style="width:1em;height:1em;vertical-align:middle"></button>
-            <button class="btn btn-xs btn-red" onclick="delSchedule(${s.id})" title="Hapus"><img src="image/trash.png" style="width:1em;height:1em;vertical-align:middle"></button>
-          ` : role === 'guru' ? `
-            <button class="btn btn-xs btn-pri" onclick="generateQR(${s.id}, '${subjName}', '${className}')"><img src="image/camera.png" style="width:1em;height:1em;vertical-align:middle"> Tampilkan QR</button>
-            <button class="btn btn-xs btn-out" onclick="goToInputPresensi(${s.class_id}, ${s.subject_id})"><img src="image/add-document.png" style="width:1em;height:1em;vertical-align:middle"> Input Presensi</button>
-          ` : role === 'siswa' ? `
-            <button class="btn btn-xs btn-amb" onclick="startQRScanner(${s.id}, ${s.subject_id}, ${s.class_id}, '${subjName}', '${className}')"><img src="image/camera.png" style="width:1em;height:1em;vertical-align:middle"> Absen QR</button>
-          ` : ''}
+        <div class="sch-list-b">
+          <div class="sch-list-info">
+            <div style="font-size:1.15rem;font-weight:800;color:var(--tx1);">${subjName}</div>
+            <div class="t3 txs" style="font-weight:600;">Kelas: ${className}</div>
+          </div>
+          
+          <div class="flex gap1 sch-list-teacher" style="align-items:center;margin-bottom:1.2rem;">
+            <div style="width:36px;height:36px;border-radius:50%;background:linear-gradient(135deg,var(--v),var(--v1));display:flex;align-items:center;justify-content:center;flex-shrink:0">
+              <img src="image/user.png" style="width:1.1em;height:1.1em;filter:brightness(10)">
+            </div>
+            <div>
+              <div style="font-weight:700;font-size:.85rem;color:var(--tx1)">${teacherName}</div>
+              ${teacherSubj ? `<div class="t3 txs">${teacherSubj}</div>` : ''}
+            </div>
+          </div>
+          
+          <button class="btn btn-amb wf" style="justify-content:center;border-radius:100px" onclick="startQRScanner(${s.id}, ${s.subject_id}, ${s.class_id}, '${subjName}', '${className}')">
+            <img src="image/camera.png" style="width:1.2em;height:1.2em;vertical-align:middle;filter:drop-shadow(0 2px 3px rgba(0,0,0,0.2))"> Absen QR
+          </button>
         </div>
-      </td>
-    </tr>`;
-  }).join('');
+      </div>`;
+    }).join('');
+  } else {
+    tbody.innerHTML = rows.map(s => {
+      const dayName = DAYS[s.day] || '—';
+      const teacherName = s.teachers?.name || '—';
+      const teacherSubj = s.teachers?.subject || '';
+      const className = s.classes?.name || '—';
+      const subjName = s.subjects?.name || '—';
+      const startTime = s.start_time ? s.start_time.slice(0, 5) : '—';
+      const endTime = s.end_time ? s.end_time.slice(0, 5) : '—';
+
+      const classCol = role !== 'siswa' ? `<td><span class="bdg bv">${className}</span></td>` : '';
+
+      return `<tr>
+        <td><span class="bdg ${DAY_COLORS[s.day] || 'bn'}">${dayName}</span></td>
+        <td class="tb7">${startTime} - ${endTime}</td>
+        ${classCol}
+        <td>${subjName}</td>
+        <td>
+          <div style="display:flex;align-items:center;gap:.4rem">
+            <div style="width:28px;height:28px;border-radius:50%;background:linear-gradient(135deg,var(--v),var(--v1));display:flex;align-items:center;justify-content:center;flex-shrink:0">
+              <img src="image/user.png" style="width:.9em;height:.9em;filter:brightness(10)">
+            </div>
+            <div>
+              <div style="font-weight:600;font-size:.82rem">${teacherName}</div>
+              ${teacherSubj ? `<div class="t3 txs">${teacherSubj}</div>` : ''}
+            </div>
+          </div>
+        </td>
+        <td>
+          <div class="flex gap1">
+            ${isAdmin ? `
+              <button class="btn btn-xs btn-out" onclick="editSchedule(${s.id})" title="Edit"><img src="image/info.png" style="width:1em;height:1em;vertical-align:middle"></button>
+              <button class="btn btn-xs btn-red" onclick="delSchedule(${s.id})" title="Hapus"><img src="image/trash.png" style="width:1em;height:1em;vertical-align:middle"></button>
+            ` : role === 'guru' ? `
+              <button class="btn btn-xs btn-pri" onclick="generateQR(${s.id}, '${subjName}', '${className}')"><img src="image/camera.png" style="width:1em;height:1em;vertical-align:middle"> Tampilkan QR</button>
+              <button class="btn btn-xs btn-out" onclick="goToInputPresensi(${s.class_id}, ${s.subject_id})"><img src="image/add-document.png" style="width:1em;height:1em;vertical-align:middle"> Input Presensi</button>
+            ` : ''}
+          </div>
+        </td>
+      </tr>`;
+    }).join('');
+  }
 }
 
 function goToInputPresensi(classId, subjectId) {
@@ -277,19 +404,19 @@ function renderSchStats(rows) {
 
   el.innerHTML = `
     <div class="card fcen" style="padding:1rem;flex-direction:column;text-align:center;background:linear-gradient(135deg,var(--v3),#fff);border:1.5px solid var(--v2)">
-      <div style="font-family:'Montserrat',sans-serif;font-weight:900;font-size:1.5rem;color:var(--v)">${rows.length}</div>
+      <div style="font-family:'Nunito',sans-serif;font-weight:900;font-size:1.5rem;color:var(--v)">${rows.length}</div>
       <div class="tsm t2" style="font-weight:600">Total Jadwal</div>
     </div>
     <div class="card fcen" style="padding:1rem;flex-direction:column;text-align:center;background:linear-gradient(135deg,#ecfdf5,#fff);border:1.5px solid #a7f3d0">
-      <div style="font-family:'Montserrat',sans-serif;font-weight:900;font-size:1.5rem;color:var(--grn)">${uniqueClasses.size}</div>
+      <div style="font-family:'Nunito',sans-serif;font-weight:900;font-size:1.5rem;color:var(--grn)">${uniqueClasses.size}</div>
       <div class="tsm t2" style="font-weight:600">Kelas Terjadwal</div>
     </div>
     <div class="card fcen" style="padding:1rem;flex-direction:column;text-align:center;background:linear-gradient(135deg,#fef3c7,#fff);border:1.5px solid #fcd34d">
-      <div style="font-family:'Montserrat',sans-serif;font-weight:900;font-size:1.5rem;color:var(--amb)">${uniqueTeachers.size}</div>
+      <div style="font-family:'Nunito',sans-serif;font-weight:900;font-size:1.5rem;color:var(--amb)">${uniqueTeachers.size}</div>
       <div class="tsm t2" style="font-weight:600">Guru Aktif</div>
     </div>
     <div class="card fcen" style="padding:1rem;flex-direction:column;text-align:center;background:linear-gradient(135deg,#fdf2f8,#fff);border:1.5px solid #fbcfe8">
-      <div style="font-family:'Montserrat',sans-serif;font-weight:900;font-size:1.5rem;color:var(--pnk)">${uniqueSubjects.size}</div>
+      <div style="font-family:'Nunito',sans-serif;font-weight:900;font-size:1.5rem;color:var(--pnk)">${uniqueSubjects.size}</div>
       <div class="tsm t2" style="font-weight:600">Mata Pelajaran</div>
     </div>
   `;
