@@ -11,8 +11,25 @@ async function siswa(){
   await fillClassSel('stuCls',true); await fetchStu();
 }
 async function fetchStu(clsId=''){
-  const tb=id('stuCardsWrap');
-  if(tb) tb.innerHTML=`<div style="grid-column:1/-1;text-align:center;padding:2rem"><div class="spin" style="margin:auto"></div></div>`;
+  const isAdmin = App.profile?.role === 'admin';
+  const tableCard = id('stuTableCard');
+  const cardsWrap = id('stuCardsWrap');
+
+  if (isAdmin) {
+    if (tableCard) tableCard.style.display = 'block';
+    if (cardsWrap) cardsWrap.style.display = 'none';
+  } else {
+    if (tableCard) tableCard.style.display = 'none';
+    if (cardsWrap) cardsWrap.style.display = 'grid';
+  }
+
+  const tbTbody = id('stuTbody');
+  
+  if(isAdmin && tbTbody) {
+    tbTbody.innerHTML=`<tr><td colspan="7" style="text-align:center;padding:2rem"><div class="spin" style="margin:auto"></div></td></tr>`;
+  } else if (!isAdmin && cardsWrap) {
+    cardsWrap.innerHTML=`<div style="grid-column:1/-1;text-align:center;padding:2rem"><div class="spin" style="margin:auto"></div></div>`;
+  }
   
   // Build class lookup map (no FK dependency needed)
   if (!Object.keys(classesMap).length) {
@@ -26,7 +43,8 @@ async function fetchStu(clsId=''){
   const { data, error } = await query;
   if (error) {
     console.error('fetchStu error:', error);
-    if(tb) tb.innerHTML=`<div style="grid-column:1/-1;text-align:center;padding:2rem;color:var(--red)">Gagal memuat: ${error.message}</div>`;
+    if(isAdmin && tbTbody) tbTbody.innerHTML=`<tr><td colspan="7" style="text-align:center;padding:2rem;color:var(--red)">Gagal memuat: ${error.message}</td></tr>`;
+    else if (!isAdmin && cardsWrap) cardsWrap.innerHTML=`<div style="grid-column:1/-1;text-align:center;padding:2rem;color:var(--red)">Gagal memuat: ${error.message}</div>`;
     return;
   }
   stuList = Array.isArray(data) ? data : [];
@@ -35,45 +53,69 @@ async function fetchStu(clsId=''){
 }
 
 function renderStuTable(list) {
-  const tb = id('stuCardsWrap'); if (!tb) return;
-  if (!list.length) {
-    tb.innerHTML = '<div style="grid-column:1/-1;text-align:center;padding:2rem;color:var(--tx3)">Belum ada data siswa</div>';
-    return;
+  const isAdmin = App.profile?.role === 'admin';
+  const tbTbody = id('stuTbody');
+  const cardsWrap = id('stuCardsWrap'); 
+
+  if (isAdmin) {
+    if (!tbTbody) return;
+    if (!list.length) {
+      tbTbody.innerHTML = '<tr><td colspan="7" style="text-align:center;padding:2rem;color:var(--tx3)">Belum ada data siswa</td></tr>';
+      return;
+    }
+    tbTbody.innerHTML = list.map((s, i) => `<tr>
+      <td style="font-weight:700">${s.name}</td>
+      <td class="t2">${s.nisn || '—'}</td>
+      <td class="t2">${s.no || '—'}</td>
+      <td><span class="bdg bv">${classesMap[s.class_id] || '—'}</span></td>
+      <td>${s.gender === 'P' ? '👩' : '👨'}</td>
+      <td class="t2">${s.phone || '—'}</td>
+      <td><div class="flex gap1">
+        <button class="btn btn-xs btn-out" onclick="editStu('${s.id}')"><img src="image/info.png" style="width:1.2em;height:1.2em;vertical-align:middle"></button>
+        <button class="btn btn-xs btn-red" onclick="delStu('${s.id}','${(s.name||'').replace(/'/g,"\\'")}')"><img src="image/trash.png" style="width:1.2em;height:1.2em;vertical-align:middle"></button>
+      </div></td>
+    </tr>`).join('');
+  } else {
+    if (!cardsWrap) return;
+    if (!list.length) {
+      cardsWrap.innerHTML = '<div style="grid-column:1/-1;text-align:center;padding:2rem;color:var(--tx3)">Belum ada data siswa</div>';
+      return;
+    }
+    cardsWrap.innerHTML = list.map((s, i) => `
+      <div class="card" style="display:flex;flex-direction:column;border:1.5px solid var(--brd);border-radius:1rem;overflow:hidden;box-shadow:var(--s1);transition:transform 0.2s, box-shadow 0.2s" onmouseover="this.style.transform='translateY(-2px)';this.style.boxShadow='var(--s2)'" onmouseout="this.style.transform='translateY(0)';this.style.boxShadow='var(--s1)'">
+        <div style="padding:1rem 1.2rem;background:var(--bg2);border-bottom:1px solid var(--brd);display:flex;justify-content:space-between;align-items:center">
+          <span class="bdg bv" style="font-size:0.75rem">${classesMap[s.class_id] || 'Tidak Ada Kelas'}</span>
+          <span class="bdg bn" style="font-size:0.75rem">No: ${s.no || '—'}</span>
+        </div>
+        <div style="padding:1.2rem;flex:1;display:flex;flex-direction:column">
+          <div style="display:flex;align-items:center;gap:0.8rem;margin-bottom:1rem">
+            <div style="width:40px;height:40px;border-radius:50%;background:linear-gradient(135deg,var(--v),var(--v1));display:flex;align-items:center;justify-content:center;flex-shrink:0;color:#fff;font-size:1.2rem">
+              ${s.gender === 'P' ? '👩' : '👨'}
+            </div>
+            <div>
+              <div style="font-weight:800;font-size:1.05rem;color:var(--tx1);line-height:1.2">${s.name}</div>
+              <div class="t2" style="font-size:0.8rem;margin-top:0.2rem">NISN: ${s.nisn || '—'}</div>
+            </div>
+          </div>
+          
+          <div style="margin-bottom:1.2rem;font-size:0.85rem">
+            <div style="display:flex;align-items:center;gap:0.5rem;color:var(--tx2);margin-bottom:0.4rem">
+              <span>📞</span> ${s.phone || '—'}
+            </div>
+          </div>
+          
+          <div style="margin-top:auto;display:flex;gap:0.5rem">
+            <button class="btn btn-xs btn-out" style="flex:1;justify-content:center;border-color:var(--brd);color:var(--tx2)" onclick="editStu('${s.id}')">
+              <img src="image/info.png" style="width:1.2em;height:1.2em;vertical-align:middle;filter:brightness(0.5)"> Edit
+            </button>
+            <button class="btn btn-xs btn-red" style="padding:0 0.8rem;justify-content:center" onclick="delStu('${s.id}','${(s.name||'').replace(/'/g,"\\'")}')" title="Hapus">
+              <img src="image/trash.png" style="width:1.2em;height:1.2em;vertical-align:middle">
+            </button>
+          </div>
+        </div>
+      </div>
+    `).join('');
   }
-  tb.innerHTML = list.map((s, i) => `
-    <div class="card" style="display:flex;flex-direction:column;border:1.5px solid var(--brd);border-radius:1rem;overflow:hidden;box-shadow:var(--s1);transition:transform 0.2s, box-shadow 0.2s" onmouseover="this.style.transform='translateY(-2px)';this.style.boxShadow='var(--s2)'" onmouseout="this.style.transform='translateY(0)';this.style.boxShadow='var(--s1)'">
-      <div style="padding:1rem 1.2rem;background:var(--bg2);border-bottom:1px solid var(--brd);display:flex;justify-content:space-between;align-items:center">
-        <span class="bdg bv" style="font-size:0.75rem">${classesMap[s.class_id] || 'Tidak Ada Kelas'}</span>
-        <span class="bdg bn" style="font-size:0.75rem">No: ${s.no || '—'}</span>
-      </div>
-      <div style="padding:1.2rem;flex:1;display:flex;flex-direction:column">
-        <div style="display:flex;align-items:center;gap:0.8rem;margin-bottom:1rem">
-          <div style="width:40px;height:40px;border-radius:50%;background:linear-gradient(135deg,var(--v),var(--v1));display:flex;align-items:center;justify-content:center;flex-shrink:0;color:#fff;font-size:1.2rem">
-            ${s.gender === 'P' ? '👩' : '👨'}
-          </div>
-          <div>
-            <div style="font-weight:800;font-size:1.05rem;color:var(--tx1);line-height:1.2">${s.name}</div>
-            <div class="t2" style="font-size:0.8rem;margin-top:0.2rem">NISN: ${s.nisn || '—'}</div>
-          </div>
-        </div>
-        
-        <div style="margin-bottom:1.2rem;font-size:0.85rem">
-          <div style="display:flex;align-items:center;gap:0.5rem;color:var(--tx2);margin-bottom:0.4rem">
-            <span>📞</span> ${s.phone || '—'}
-          </div>
-        </div>
-        
-        <div style="margin-top:auto;display:flex;gap:0.5rem">
-          <button class="btn btn-xs btn-out" style="flex:1;justify-content:center;border-color:var(--brd);color:var(--tx2)" onclick="editStu('${s.id}')">
-            <img src="image/info.png" style="width:1.2em;height:1.2em;vertical-align:middle;filter:brightness(0.5)"> Edit
-          </button>
-          <button class="btn btn-xs btn-red" style="padding:0 0.8rem;justify-content:center" onclick="delStu('${s.id}','${(s.name||'').replace(/'/g,"\\'")}')" title="Hapus">
-            <img src="image/trash.png" style="width:1.2em;height:1.2em;vertical-align:middle">
-          </button>
-        </div>
-      </div>
-    </div>
-  `).join('');
 }
 
 function filterStu(val) {
