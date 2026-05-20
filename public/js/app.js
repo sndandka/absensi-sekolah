@@ -120,7 +120,7 @@ function renderSbUser() {
 }
 
 function roleLbl(r) {
-  return { admin: '<img src="image/user.png" style="width:1.2em;height:1.2em;vertical-align:middle;filter:drop-shadow(0 2px 3px rgba(0,0,0,0.2))"> Administrator', guru: '<img src="image/info.png" style="width:1.2em;height:1.2em;vertical-align:middle;filter:drop-shadow(0 2px 3px rgba(0,0,0,0.2))"> Guru/Wali Kelas', siswa: '<img src="image/user.png" style="width:1.2em;height:1.2em;vertical-align:middle;filter:drop-shadow(0 2px 3px rgba(0,0,0,0.2))"> Siswa' }[r] || r || '—';
+  return { admin: '<img src="image/menejemen_user.png" style="width:1.2em;height:1.2em;vertical-align:middle;filter:drop-shadow(0 2px 3px rgba(0,0,0,0.2))"> Administrator', guru: '<img src="image/graduation-cap.png" style="width:1.2em;height:1.2em;vertical-align:middle;filter:drop-shadow(0 2px 3px rgba(0,0,0,0.2))"> Guru/Wali Kelas', siswa: '<img src="image/user.png" style="width:1.2em;height:1.2em;vertical-align:middle;filter:drop-shadow(0 2px 3px rgba(0,0,0,0.2))"> Siswa' }[r] || r || '—';
 }
 
 async function loadSchoolName() {
