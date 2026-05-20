@@ -149,24 +149,76 @@ function navigateTo(pg) {
   App.listeners.forEach(f => f()); App.listeners = [];
   App.attBuf = {};
 
-  let targetPg = pg;
-  if (pg === 'rekap_sekolah') { window._rekapMode = 'sekolah'; targetPg = 'rekap'; }
-  else if (pg === 'rekap_mapel') { window._rekapMode = 'mapel'; targetPg = 'rekap'; }
-  else { window._rekapMode = null; }
-
   document.querySelectorAll('.nav').forEach(el =>
     el.classList.toggle('on', el.dataset.pg === pg));
   document.querySelectorAll('.page').forEach(el =>
-    el.classList.toggle('on', el.id === 'pg-' + targetPg));
+    el.classList.toggle('on', el.id === 'pg-' + pg));
 
-  App.page = targetPg; closeSb();
+  App.page = pg; closeSb();
 
   const handlers = {
     dashboard, absensi, rekap, siswa, guru, kelas, mapel,
-    izin, laporan, pengumuman, profil, settings, log: activityLog, camera,
-    users: fetchUsers, jurnal, jadwal
+    izin, pengumuman, profil, settings, camera,
+    users: fetchUsers, jurnal, jadwal,
+    rekap_sekolah: rekapSekolah,
+    rekap_mapel: rekapMapel
   };
-  handlers[targetPg]?.();
+  handlers[pg]?.();
+}
+
+// ── REKAP SEKOLAH PAGE HANDLER ─────────────────────────
+async function rekapSekolah() {
+  setHdr('Rekap Absensi Sekolah', 'Pantau kehadiran siswa pada absensi pagi');
+  
+  // Populate class filter
+  const selCls = id('rekSekolahClass');
+  if (selCls && !selCls.dataset.loaded) {
+    const { data: classes } = await supabase.from('classes').select('*').order('name');
+    if (Array.isArray(classes)) {
+      selCls.innerHTML = '<option value="">Semua Kelas</option>' +
+        classes.map(c => `<option value="${c.id}">${c.name}</option>`).join('');
+    }
+    selCls.dataset.loaded = 'true';
+  }
+  
+  // Set default date to today
+  const dtInput = id('rekSekolahDate');
+  if (dtInput && !dtInput.value) {
+    dtInput.value = new Date().toISOString().split('T')[0];
+  }
+}
+
+// ── REKAP MAPEL PAGE HANDLER ───────────────────────────
+async function rekapMapel() {
+  setHdr('Rekap Absensi Mapel', 'Pantau kehadiran siswa pada mata pelajaran');
+  
+  // Populate class filter
+  const selCls = id('rekMapelClass');
+  if (selCls && !selCls.dataset.loaded) {
+    const { data: classes } = await supabase.from('classes').select('*').order('name');
+    if (Array.isArray(classes)) {
+      selCls.innerHTML = '<option value="">Semua Kelas</option>' +
+        classes.map(c => `<option value="${c.id}">${c.name}</option>`).join('');
+    }
+    selCls.dataset.loaded = 'true';
+  }
+  
+  // Populate subject filter
+  const selSubj = id('rekMapelSubject');
+  if (selSubj && !selSubj.dataset.loaded) {
+    const { data: subjects } = await supabase.from('subjects').select('*').order('name');
+    if (Array.isArray(subjects)) {
+      selSubj.innerHTML = '<option value="">Semua Mapel</option>' +
+        subjects.map(s => `<option value="${s.name}">${s.name}</option>`).join('');
+    }
+    selSubj.dataset.loaded = 'true';
+  }
+  
+  // Set default date to today
+  const dtInput = id('rekMapelDate');
+  if (dtInput && !dtInput.value) {
+    dtInput.value = new Date().toISOString().split('T')[0];
+  }
 }
 
 // ── LOGOUT (using Supabase) ──────────────────────────
