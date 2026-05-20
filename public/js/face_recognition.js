@@ -199,7 +199,7 @@ async function startFaceEnroll() {
     id('btnSnap').style.display = 'inline-flex';
     id('btnSnap').disabled = false;
     const btnStop = id('btnStopEnroll'); if (btnStop) btnStop.style.display = 'inline-flex';
-    enrollMsg('📸 Kamera siap! Klik "Ambil Foto" untuk mulai registrasi 4 pose.', '');
+    enrollMsg('Kamera siap! Klik "Ambil Foto" untuk mulai registrasi 4 pose.', '');
 
   } catch (err) {
     console.error('[FaceEnroll] Camera error:', err);
@@ -333,8 +333,8 @@ async function snapFace() {
           // ── Pose angle validated! Capture this sample ──
           samples.push(det.descriptor);
           const sampleNum = samples.length + '/' + pose.samplesNeeded;
-          btn.innerHTML = '📸 Pose ' + pose.label + ' sample ' + sampleNum + ' captured!';
-          enrollMsg('📸 Pose ' + poseNum + ' (' + pose.label + ') — sample ' + sampleNum + ' ✓ (score: ' + (det.detection.score * 100).toFixed(0) + '%, yaw: ' + yawPct + '%)', 'ok');
+          btn.innerHTML = 'Pose ' + pose.label + ' sample ' + sampleNum + ' captured!';
+          enrollMsg('Pose ' + poseNum + ' (' + pose.label + ') — sample ' + sampleNum + ' ✓ (score: ' + (det.detection.score * 100).toFixed(0) + '%, yaw: ' + yawPct + '%)', 'ok');
 
           if (samples.length < pose.samplesNeeded) {
             // Wait a bit before capturing next sample (slight movement)
@@ -441,7 +441,7 @@ function stopEnrollCam() {
   if (btnSnap) {
     btnSnap.style.display = 'none';
     btnSnap.disabled = false;
-    btnSnap.textContent = '📸 Ambil Foto';
+    btnSnap.textContent = 'Ambil Foto';
   }
 
   const btnStop = id('btnStopEnroll');
@@ -506,18 +506,18 @@ async function camera() {
       navigator.geolocation.clearWatch(window._geoWatchId);
     }
     const el = id('geoStat');
-    if (el) el.innerHTML = '<span class="bdg bn">📍 Mendapatkan GPS...</span>';
+    if (el) el.innerHTML = '<span class="bdg bn">Mendapatkan GPS...</span>';
 
     window._geoWatchId = navigator.geolocation.watchPosition(
       p => {
         geoPosition = { lat: p.coords.latitude, lng: p.coords.longitude, accuracy: p.coords.accuracy };
-        if (el) el.innerHTML = '<span class="bdg bg">📍 GPS OK (' +
+        if (el) el.innerHTML = '<span class="bdg bg">GPS OK (' +
           geoPosition.lat.toFixed(5) + ', ' + geoPosition.lng.toFixed(5) +
           ' ±' + Math.round(geoPosition.accuracy) + 'm)</span>';
       },
       err => {
         console.warn('[GPS] Error:', err.message);
-        if (el) el.innerHTML = '<span class="bdg br">📍 GPS tidak tersedia — aktifkan lokasi</span>';
+        if (el) el.innerHTML = '<span class="bdg br">GPS tidak tersedia — aktifkan lokasi</span>';
       },
       { enableHighAccuracy: true, timeout: 15000, maximumAge: 5000 }
     );
@@ -546,7 +546,7 @@ async function startCam() {
     id('btnStartCam').style.display = 'none';
     id('btnStopCam').style.display = 'inline-flex';
     id('btnCapture').style.display = 'none';
-    scanMsg('📸 Kamera aktif. Memulai pemindaian wajah otomatis...', '');
+    scanMsg('Kamera aktif. Memulai pemindaian wajah otomatis...', '');
     
     // Auto start scanning after a short delay to allow video stream to initialize
     setTimeout(doCapture, 1000);
@@ -568,7 +568,7 @@ async function doCapture() {
   const captureBtn = id('btnCapture');
   if (captureBtn) { captureBtn.style.display = 'none'; }
 
-  scanMsg('🔍 Mendeteksi dan mencocokkan wajah...', '');
+  scanMsg('Mendeteksi dan mencocokkan wajah...', '');
   id('livenessVal').textContent = 'Memproses...';
 
   let bestResult = null;
@@ -671,7 +671,7 @@ async function catatHadir() {
             p => {
               geoPosition = { lat: p.coords.latitude, lng: p.coords.longitude, accuracy: p.coords.accuracy };
               const el = id('geoStat');
-              if (el) el.innerHTML = '<span class="bdg bg">📍 GPS OK (' +
+              if (el) el.innerHTML = '<span class="bdg bg">GPS OK (' +
                 geoPosition.lat.toFixed(5) + ', ' + geoPosition.lng.toFixed(5) +
                 ' ±' + Math.round(geoPosition.accuracy) + 'm)</span>';
               clearInterval(check);
@@ -697,7 +697,7 @@ async function catatHadir() {
 
       // Tampilkan info jarak di UI
       const geoEl = id('geoStat');
-      if (geoEl) geoEl.innerHTML = '<span class="bdg ' + (dist <= maxRadius ? 'bg' : 'br') + '">📍 ' +
+      if (geoEl) geoEl.innerHTML = '<span class="bdg ' + (dist <= maxRadius ? 'bg' : 'br') + '">' +
         Math.round(dist) + 'm dari sekolah (maks ' + maxRadius + 'm) ±' + Math.round(accuracy) + 'm</span>';
 
       if (dist > maxRadius) {
