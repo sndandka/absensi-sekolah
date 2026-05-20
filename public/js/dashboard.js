@@ -201,7 +201,7 @@ async function renderAnnounces(wrId){
     <div class="ann ${a.priority==='penting'?'warn':a.priority==='info'?'info':''}">
       <div class="ann-t">${a.title}</div>
       <div class="ann-b">${a.body}</div>
-      <div class="ann-m"><span><img src="image/info.png" style="width:1.2em;height:1.2em;vertical-align:middle"> ${fdt(a.created_at)}</span><span><img src="image/info.png" style="width:1.2em;height:1.2em;vertical-align:middle"> ${a.author||'Admin'}</span></div>
+      <div class="ann-m"><span><img src="image/jadwal_pelajaran.png" style="width:1.2em;height:1.2em;vertical-align:middle"> ${fdt(a.created_at)}</span><span><img src="image/user.png" style="width:1.2em;height:1.2em;vertical-align:middle"> ${a.author||'Admin'}</span></div>
     </div>`).join('');
 }
 
