@@ -130,7 +130,7 @@
       </div>
       
       <div>
-        <h1 style="font-size:3.8rem; font-weight:900; line-height:1.15; margin-bottom:1.5rem; font-family:'Nunito',sans-serif; background:linear-gradient(135deg, #fff 0%, #a7f3d0 100%); -webkit-background-clip:text; -webkit-text-fill-color:transparent; filter:drop-shadow(0 4px 12px rgba(0,0,0,0.2));">Sistem Absensi Digital Masa Depan</h1>
+        <h1 style="font-size:3.8rem; font-weight:900; line-height:1.15; margin-bottom:1.5rem; font-family:'Nunito',sans-serif; background:linear-gradient(135deg, #fff 0%, #a7f3d0 100%); -webkit-background-clip:text; background-clip:text; -webkit-text-fill-color:transparent; filter:drop-shadow(0 4px 12px rgba(0,0,0,0.2));">Sistem Absensi Digital Masa Depan</h1>
         <p style="font-size:1.25rem; font-weight:500; opacity:0.85; line-height:1.7; max-width:550px;">Pantau kehadiran secara real-time dengan presisi tinggi menggunakan teknologi <b style="color:#6ee7b7">AI Face Recognition</b> dan deteksi <b style="color:#6ee7b7">Geo-Location</b> cerdas.</p>
       </div>
       
@@ -185,7 +185,7 @@
             <label class="fl" style="font-weight:600;color:var(--tx2);">Kata Sandi</label>
             <input id="lPass" type="password" class="fi" style="padding:0.8rem 1rem;font-size:0.95rem;background:#f9fafb;" placeholder="••••••••" required>
           </div>
-          <button id="loginBtn" type="submit" class="btn btn-pri wf" style="padding:0.9rem;font-size:1rem;font-weight:700;border-radius:10px;box-shadow:0 8px 16px rgba(75,102,54,0.25);">Masuk ke Dashboard</button>
+          <button id="loginBtn" type="submit" class="btn btn-pri wf" style="padding:0.9rem;font-size:1rem;font-weight:700;border-radius:10px;box-shadow:0 8px 16px rgba(75,102,54,0.25);">Masuk </button>
           <div style="text-align:center;margin-top:1.2rem">
             <button type="button" onclick="handleForgot()"
               style="background:none;border:none;color:var(--v);font-size:0.85rem;font-weight:600;cursor:pointer;font-family:'Nunito',sans-serif;transition:opacity 0.2s;" onmouseover="this.style.opacity='0.8'" onmouseout="this.style.opacity='1'">Lupa kata sandi Anda?</button>
@@ -207,8 +207,8 @@
           <div class="fg" id="nipWrap" style="display:none;margin-bottom:1rem;"><label class="fl" style="font-weight:600;">NIP (Wajib Guru)</label><input id="rNip" type="text" class="fi" style="background:#f9fafb;" placeholder="Nomor Induk Pegawai"></div>
           <div class="fg" style="margin-bottom:1.5rem;"><label class="fl" style="font-weight:600;">Mendaftar Sebagai</label>
             <select id="rRole" class="fi" style="background:#f9fafb;font-weight:600;" onchange="toggleRegFields(this.value)">
-              <option value="siswa">Siswa SMK</option>
-              <option value="guru">Guru / Instruktur</option>
+              <option value="siswa">Siswa </option>
+              <option value="guru">Guru </option>
             </select>
           </div>
           <script>
@@ -873,6 +873,161 @@
                   style="width:1.2em;height:1.2em;vertical-align:middle;filter:drop-shadow(0 2px 3px rgba(0,0,0,0.2))">
               </li>
             </ol>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ════════════ PAGE: REKAP KEHADIRAN (SISWA/LEGACY) ════════════ -->
+    <div id="pg-rekap" class="page">
+      <div style="margin-bottom: 1.5rem; display:flex; justify-content:flex-end;">
+        <button class="btn btn-out" style="border-radius:100px; box-shadow:var(--s1); border-color:var(--brd);"
+          onclick="exportRekap()">
+          <img src="image/add-document.png" style="width:1.2em;height:1.2em;vertical-align:middle;filter:brightness(0) opacity(0.6)">
+          Export Laporan
+        </button>
+      </div>
+
+      <div class="filter-bar-flex">
+        <div style="display:flex;align-items:center;gap:0.5rem;flex:1;min-width:180px" data-r="admin,guru">
+          <label style="font-size:0.85rem;font-weight:700;color:var(--tx)">Kelas</label>
+          <select id="rekClass" class="fi"
+            style="border-radius:100px;padding:0.6rem 1.2rem;border:none;background:var(--bg);width:100%">
+            <option value="">Semua Kelas</option>
+          </select>
+        </div>
+        <div style="display:flex;align-items:center;gap:0.5rem;flex:1;min-width:180px">
+          <label style="font-size:0.85rem;font-weight:700;color:var(--tx)">Tipe</label>
+          <select id="rekType" class="fi"
+            style="border-radius:100px;padding:0.6rem 1.2rem;border:none;background:var(--bg);width:100%">
+            <option value="">Semua Presensi</option>
+            <option value="sekolah">Absensi Sekolah</option>
+            <option value="mapel">Absensi Mapel</option>
+          </select>
+        </div>
+        <div style="display:flex;align-items:center;gap:0.5rem">
+          <label style="font-size:0.85rem;font-weight:700;color:var(--tx)">Tanggal</label>
+          <input id="rekDate" type="date" class="fi"
+            style="border-radius:100px;padding:0.6rem 1.2rem;border:none;background:var(--bg)">
+        </div>
+        <button class="btn btn-pri" style="border-radius:100px;padding:0.6rem 1.5rem;margin-left:auto"
+          onclick="loadRekap()">
+          <img src="image/search.png"
+            style="width:1.2em;height:1.2em;vertical-align:middle;filter:brightness(0) invert(1)"> Tampilkan
+        </button>
+      </div>
+
+      <div class="card mb2" id="rekSumArea"
+        style="border:1px solid var(--brd);box-shadow:var(--s1);border-radius:var(--r)">
+        <div class="card-b">
+          <div id="rekSumBars" class="g5 gap1">
+            <div style="background:var(--bg);padding:1rem;border-radius:var(--r2)">
+              <div class="fbet tsm mb1"><span class="tb7"><img src="image/checkbox.png"
+                    style="width:1.2em;height:1.2em;vertical-align:middle;"> Hadir</span><span id="rn_hadir"
+                  style="font-family:'Nunito',sans-serif;font-weight:900;color:var(--grn);font-size:1.2rem">0</span>
+              </div>
+              <div class="prog-track" style="height:6px;border-radius:100px">
+                <div id="rr_hadir" class="prog-fill" style="width:0%;background:var(--grn);border-radius:100px"></div>
+              </div>
+            </div>
+            <div style="background:var(--bg);padding:1rem;border-radius:var(--r2)">
+              <div class="fbet tsm mb1"><span class="tb7"><img src="image/info.png"
+                    style="width:1.2em;height:1.2em;vertical-align:middle;"> Terlambat</span><span id="rn_terlambat"
+                  style="font-family:'Nunito',sans-serif;font-weight:900;color:var(--pnk);font-size:1.2rem">0</span>
+              </div>
+              <div class="prog-track" style="height:6px;border-radius:100px">
+                <div id="rr_terlambat" class="prog-fill" style="width:0%;background:var(--pnk);border-radius:100px">
+                </div>
+              </div>
+            </div>
+            <div style="background:var(--bg);padding:1rem;border-radius:var(--r2)">
+              <div class="fbet tsm mb1"><span class="tb7"><img src="image/add-document.png"
+                    style="width:1.2em;height:1.2em;vertical-align:middle;"> Izin</span><span id="rn_izin"
+                  style="font-family:'Nunito',sans-serif;font-weight:900;color:var(--v);font-size:1.2rem">0</span>
+              </div>
+              <div class="prog-track" style="height:6px;border-radius:100px">
+                <div id="rr_izin" class="prog-fill" style="width:0%;background:var(--v);border-radius:100px"></div>
+              </div>
+            </div>
+            <div style="background:var(--bg);padding:1rem;border-radius:var(--r2)">
+              <div class="fbet tsm mb1"><span class="tb7"><img src="image/add.png"
+                    style="width:1.2em;height:1.2em;vertical-align:middle;"> Sakit</span><span id="rn_sakit"
+                  style="font-family:'Nunito',sans-serif;font-weight:900;color:var(--amb);font-size:1.2rem">0</span>
+              </div>
+              <div class="prog-track" style="height:6px;border-radius:100px">
+                <div id="rr_sakit" class="prog-fill" style="width:0%;background:var(--amb);border-radius:100px"></div>
+              </div>
+            </div>
+            <div style="background:var(--bg);padding:1rem;border-radius:var(--r2)">
+              <div class="fbet tsm mb1"><span class="tb7"><span
+                    style="font-weight:bold;margin:0 4px;color:var(--red)">✕</span> Alpha</span><span id="rn_alpha"
+                  style="font-family:'Nunito',sans-serif;font-weight:900;color:var(--red);font-size:1.2rem">0</span>
+              </div>
+              <div class="prog-track" style="height:6px;border-radius:100px">
+                <div id="rr_alpha" class="prog-fill" style="width:0%;background:var(--red);border-radius:100px"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ABSENSI SEKOLAH CARD -->
+      <div class="card mb2" id="rekCardSekolah">
+        <div class="card-h">
+          <div class="card-t"><img src="image/rekap_absensi_sekolah.png"
+              style="width:1.2em;height:1.2em;vertical-align:middle;filter:drop-shadow(0 2px 3px rgba(0,0,0,0.2))">
+            Absensi Sekolah</div>
+        </div>
+        <div class="card-b np">
+          <div class="tw">
+            <table>
+              <thead>
+                <tr>
+                  <th data-r="admin,guru">Nama Siswa</th>
+                  <th data-r="admin,guru">NISN</th>
+                  <th data-r="admin,guru">Kelas</th>
+                  <th>Waktu</th>
+                  <th>Petugas / Sistem</th>
+                  <th>Status</th>
+                </tr>
+              </thead>
+              <tbody id="rekTbodySekolah">
+                <tr>
+                  <td colspan="6" style="text-align:center;padding:2rem;color:var(--tx3)">Pilih filter & klik Tampilkan</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <!-- ABSENSI MAPEL CARD -->
+      <div class="card" id="rekCardMapel">
+        <div class="card-h">
+          <div class="card-t"><img src="image/rekap_absensi_mapel.png"
+              style="width:1.2em;height:1.2em;vertical-align:middle;filter:drop-shadow(0 2px 3px rgba(0,0,0,0.2))">
+            Absensi Mata Pelajaran</div>
+        </div>
+        <div class="card-b np">
+          <div class="tw">
+            <table>
+              <thead>
+                <tr>
+                  <th data-r="admin,guru">Nama Siswa</th>
+                  <th data-r="admin,guru">NISN</th>
+                  <th data-r="admin,guru">Kelas</th>
+                  <th>Mata Pelajaran</th>
+                  <th>Waktu</th>
+                  <th>Petugas / Sistem</th>
+                  <th>Status</th>
+                </tr>
+              </thead>
+              <tbody id="rekTbodyMapel">
+                <tr>
+                  <td colspan="7" style="text-align:center;padding:2rem;color:var(--tx3)">Pilih filter & klik Tampilkan</td>
+                </tr>
+              </tbody>
+            </table>
           </div>
         </div>
       </div>
