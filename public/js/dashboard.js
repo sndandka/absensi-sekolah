@@ -4,10 +4,16 @@
 
 async function dashboard() {
   const r = App.profile?.role || 'siswa';
+  
+  let sub = 'Ringkasan aktivitas Anda hari ini';
+  if (r === 'admin') sub = 'Ringkasan aktivitas sistem absensi hari ini';
+  else if (r === 'guru') sub = 'Ringkasan aktivitas mengajar hari ini';
+  else if (r === 'siswa') sub = 'Portal Kehadiran Siswa SiAbsen';
+  setHdr('Dashboard', sub);
+
   if(r === 'admin') await dashAdmin();
   else if(r === 'guru') await dashGuru();
   else if(r === 'siswa') await dashSiswa();
-
 }
 
 async function dashGuru() {
