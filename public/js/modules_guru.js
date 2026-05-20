@@ -333,7 +333,7 @@ async function fetchSchedules() {
           
           <div class="flex gap1 sch-list-teacher" style="align-items:center;margin-bottom:1.2rem;">
             <div style="width:36px;height:36px;border-radius:50%;background:linear-gradient(135deg,var(--v),var(--v1));display:flex;align-items:center;justify-content:center;flex-shrink:0">
-              <img src="image/user.png" style="width:1.1em;height:1.1em;filter:brightness(10)">
+              <img src="image/graduation-cap.png" style="width:1.1em;height:1.1em;filter:brightness(10)">
             </div>
             <div>
               <div style="font-weight:700;font-size:.85rem;color:var(--tx1)">${teacherName}</div>
@@ -367,7 +367,7 @@ async function fetchSchedules() {
         <td>
           <div style="display:flex;align-items:center;gap:.4rem">
             <div style="width:28px;height:28px;border-radius:50%;background:linear-gradient(135deg,var(--v),var(--v1));display:flex;align-items:center;justify-content:center;flex-shrink:0">
-              <img src="image/user.png" style="width:.9em;height:.9em;filter:brightness(10)">
+              <img src="image/graduation-cap.png" style="width:.9em;height:.9em;filter:brightness(10)">
             </div>
             <div>
               <div style="font-weight:600;font-size:.82rem">${teacherName}</div>
@@ -378,7 +378,7 @@ async function fetchSchedules() {
         <td>
           <div class="flex gap1">
             ${isAdmin ? `
-              <button class="btn btn-xs btn-out" onclick="editSchedule(${s.id})" title="Edit"><img src="image/info.png" style="width:1em;height:1em;vertical-align:middle"></button>
+              <button class="btn btn-xs btn-out" onclick="editSchedule(${s.id})" title="Edit"><img src="image/settings (1).png" style="width:1em;height:1em;vertical-align:middle"></button>
               <button class="btn btn-xs btn-red" onclick="delSchedule(${s.id})" title="Hapus"><img src="image/trash.png" style="width:1em;height:1em;vertical-align:middle"></button>
             ` : role === 'guru' ? `
               <button class="btn btn-xs btn-pri" onclick="generateQR(${s.id}, '${subjName}', '${className}')"><img src="image/camera.png" style="width:1em;height:1em;vertical-align:middle"> Tampilkan QR</button>
