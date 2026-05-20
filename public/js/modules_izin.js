@@ -47,20 +47,130 @@ async function izin(){
     }
   }
   
-  const tb=id('izinTbody'); if(!tb) return;
-  tb.innerHTML=list.map(r=>`<tr>
-    <td style="font-weight:700">${r.student_name||'—'}</td>
-    <td class="t2">${r.class_name||'—'}</td>
-    <td><span class="bdg ${r.type==='sakit'?'ba':'bv'}">${r.type==='sakit'?'<img src="image/add.png" style="width:1.2em;height:1.2em;vertical-align:middle"> Sakit':'<img src="image/add-document.png" style="width:1.2em;height:1.2em;vertical-align:middle"> Izin'}</span></td>
-    <td>${r.start_date}${r.end_date&&r.end_date!==r.start_date?' → '+r.end_date:''}</td>
-    <td class="t2 tsm" style="max-width:140px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${r.reason||'—'}</td>
-    <td>${r.evidence?`<button class="btn btn-xs btn-out" onclick="viewBukti('${r.id}')"><img src="image/add-document.png" style="width:1.2em;height:1.2em;vertical-align:middle"> Lihat</button>`:'<span class="t3 txs">Tanpa Bukti</span>'}</td>
-    <td><span class="bdg ${r.status==='approved'?'bg':r.status==='rejected'?'br':'ba'}">${r.status==='approved'?'<img src="image/checkbox.png" style="width:1.2em;height:1.2em;vertical-align:middle"> Disetujui':r.status==='rejected'?'<span style="font-weight:bold;margin:0 4px">✕</span> Ditolak':'<img src="image/info.png" style="width:1.2em;height:1.2em;vertical-align:middle"> Pending'}</span></td>
-    <td>${!isSiswa&&r.status==='pending'?`<div class="flex gap1">
-      <button class="btn btn-xs btn-grn" onclick="approveIzin('${r.id}')"><img src="image/checkbox.png" style="width:1.2em;height:1.2em;vertical-align:middle"></button>
-      <button class="btn btn-xs btn-red" onclick="rejectIzin('${r.id}')"><span style="font-weight:bold;margin:0 4px">✕</span></button>
-    </div>`:(isSiswa&&r.status==='pending'?'<span class="t3 txs">Menunggu...</span>':'—')}</td>
-  </tr>`).join('')||`<tr><td colspan="8" style="text-align:center;padding:2rem;color:var(--tx3)">Belum ada pengajuan</td></tr>`;
+  const tb = id('izinTbody');
+  const tableCard = id('izinTableCard');
+  const cardsWrap = id('izinCardsWrap');
+  if (!tb) return;
+
+  if (isSiswa) {
+    if (tableCard) tableCard.style.display = 'none';
+    if (cardsWrap) {
+      cardsWrap.style.display = 'flex';
+      cardsWrap.style.flexDirection = 'column';
+      cardsWrap.style.gap = '1rem';
+    }
+  } else {
+    if (tableCard) tableCard.style.display = 'block';
+    if (cardsWrap) cardsWrap.style.display = 'none';
+  }
+
+  if (isSiswa && cardsWrap) {
+    const styleTag = `
+      <style>
+        .izin-list-card {
+          display: flex;
+          flex-direction: column;
+          border: 1.5px solid var(--brd);
+          border-radius: 1rem;
+          overflow: hidden;
+          box-shadow: var(--s1);
+          background: var(--card);
+          transition: transform 0.2s, box-shadow 0.2s;
+        }
+        .izin-list-card:hover {
+          transform: translateY(-2px);
+          box-shadow: var(--s2);
+        }
+        .izin-list-h {
+          background: var(--bg2);
+          padding: 0.8rem 1.2rem;
+          border-bottom: 1px solid var(--brd);
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+        }
+        .izin-list-b {
+          padding: 1.2rem;
+          display: flex;
+          flex-direction: column;
+          gap: 1rem;
+        }
+        .izin-list-info {
+          display: flex;
+          flex-direction: column;
+          gap: 0.3rem;
+        }
+        @media (min-width: 801px) {
+          .izin-list-card {
+            flex-direction: row;
+            align-items: stretch;
+          }
+          .izin-list-h {
+            border-bottom: none;
+            border-right: 1px solid var(--brd);
+            flex-direction: column;
+            justify-content: center;
+            min-width: 140px;
+            gap: 0.5rem;
+          }
+          .izin-list-b {
+            flex-direction: row;
+            align-items: center;
+            flex: 1;
+            justify-content: space-between;
+          }
+          .izin-list-info {
+            flex: 1;
+            padding-right: 1rem;
+          }
+          .izin-list-action {
+            min-width: 150px;
+            text-align: right;
+            justify-content: flex-end;
+          }
+        }
+      </style>
+    `;
+
+    cardsWrap.innerHTML = list.length === 0 
+      ? `<div class="card fcen" style="padding:2rem;color:var(--tx3);width:100%">Belum ada pengajuan</div>`
+      : styleTag + list.map(r => {
+          const typeBadge = `<span class="bdg ${r.type==='sakit'?'ba':'bv'}">${r.type==='sakit'?'<img src="image/add.png" style="width:1.2em;height:1.2em;vertical-align:middle"> Sakit':'<img src="image/add-document.png" style="width:1.2em;height:1.2em;vertical-align:middle"> Izin'}</span>`;
+          const statusBadge = `<span class="bdg ${r.status==='approved'?'bg':r.status==='rejected'?'br':'ba'}">${r.status==='approved'?'<img src="image/checkbox.png" style="width:1.2em;height:1.2em;vertical-align:middle"> Disetujui':r.status==='rejected'?'<span style="font-weight:bold;margin:0 4px">✕</span> Ditolak':'<img src="image/info.png" style="width:1.2em;height:1.2em;vertical-align:middle"> Pending'}</span>`;
+          const dateRange = `${r.start_date}${r.end_date&&r.end_date!==r.start_date?' → '+r.end_date:''}`;
+          const buktiBtn = r.evidence ? `<button class="btn btn-xs btn-out" onclick="viewBukti('${r.id}')"><img src="image/add-document.png" style="width:1.2em;height:1.2em;vertical-align:middle"> Lihat Bukti</button>` : '<span class="t3 txs">Tanpa Bukti</span>';
+
+          return `<div class="izin-list-card">
+            <div class="izin-list-h">
+              ${typeBadge}
+              <span class="tb7" style="color:var(--v);font-size:.9rem;text-align:center">${dateRange}</span>
+            </div>
+            <div class="izin-list-b">
+              <div class="izin-list-info">
+                <div style="font-size:1.15rem;font-weight:800;color:var(--tx1);">${r.reason||'—'}</div>
+                <div class="t3 txs flex gap1" style="font-weight:600;align-items:center">Status: ${statusBadge}</div>
+              </div>
+              <div class="izin-list-action flex gap1" style="align-items:center;">
+                ${buktiBtn}
+              </div>
+            </div>
+          </div>`;
+        }).join('');
+  } else {
+    tb.innerHTML=list.map(r=>`<tr>
+      <td style="font-weight:700">${r.student_name||'—'}</td>
+      <td class="t2">${r.class_name||'—'}</td>
+      <td><span class="bdg ${r.type==='sakit'?'ba':'bv'}">${r.type==='sakit'?'<img src="image/add.png" style="width:1.2em;height:1.2em;vertical-align:middle"> Sakit':'<img src="image/add-document.png" style="width:1.2em;height:1.2em;vertical-align:middle"> Izin'}</span></td>
+      <td>${r.start_date}${r.end_date&&r.end_date!==r.start_date?' → '+r.end_date:''}</td>
+      <td class="t2 tsm" style="max-width:140px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${r.reason||'—'}</td>
+      <td>${r.evidence?`<button class="btn btn-xs btn-out" onclick="viewBukti('${r.id}')"><img src="image/add-document.png" style="width:1.2em;height:1.2em;vertical-align:middle"> Lihat</button>`:'<span class="t3 txs">Tanpa Bukti</span>'}</td>
+      <td><span class="bdg ${r.status==='approved'?'bg':r.status==='rejected'?'br':'ba'}">${r.status==='approved'?'<img src="image/checkbox.png" style="width:1.2em;height:1.2em;vertical-align:middle"> Disetujui':r.status==='rejected'?'<span style="font-weight:bold;margin:0 4px">✕</span> Ditolak':'<img src="image/info.png" style="width:1.2em;height:1.2em;vertical-align:middle"> Pending'}</span></td>
+      <td>${!isSiswa&&r.status==='pending'?`<div class="flex gap1">
+        <button class="btn btn-xs btn-grn" onclick="approveIzin('${r.id}')"><img src="image/checkbox.png" style="width:1.2em;height:1.2em;vertical-align:middle"></button>
+        <button class="btn btn-xs btn-red" onclick="rejectIzin('${r.id}')"><span style="font-weight:bold;margin:0 4px">✕</span></button>
+      </div>`:(isSiswa&&r.status==='pending'?'<span class="t3 txs">Menunggu...</span>':'—')}</td>
+    </tr>`).join('')||`<tr><td colspan="8" style="text-align:center;padding:2rem;color:var(--tx3)">Belum ada pengajuan</td></tr>`;
+  }
   
   const pc=list.filter(r=>r.status==='pending').length;
   const bdg=id('izinBdg'); if(bdg){bdg.textContent=pc;bdg.style.display=(!isSiswa&&pc>0)?'':'none';}
