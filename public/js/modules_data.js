@@ -71,7 +71,7 @@ function renderStuTable(list) {
       <td><span class="bdg bn">${s.gender || '—'}</span></td>
       <td class="t2">${s.phone || '—'}</td>
       <td><div class="flex gap1">
-        <button class="btn btn-xs btn-out" onclick="editStu('${s.id}')"><img src="image/info.png" style="width:1.2em;height:1.2em;vertical-align:middle"></button>
+        <button class="btn btn-xs btn-out" onclick="editStu('${s.id}')"><img src="image/settings (1).png" style="width:1.2em;height:1.2em;vertical-align:middle"></button>
         <button class="btn btn-xs btn-red" onclick="delStu('${s.id}','${(s.name||'').replace(/'/g,"\\'")}')"><img src="image/trash.png" style="width:1.2em;height:1.2em;vertical-align:middle"></button>
       </div></td>
     </tr>`).join('');
@@ -106,7 +106,7 @@ function renderStuTable(list) {
           
           <div style="margin-top:auto;display:flex;gap:0.5rem">
             <button class="btn btn-xs btn-out" style="flex:1;justify-content:center;border-color:var(--brd);color:var(--tx2)" onclick="editStu('${s.id}')">
-              <img src="image/info.png" style="width:1.2em;height:1.2em;vertical-align:middle;filter:brightness(0.5)"> Edit
+              <img src="image/settings (1).png" style="width:1.2em;height:1.2em;vertical-align:middle;filter:brightness(0.5)"> Edit
             </button>
             <button class="btn btn-xs btn-red" style="padding:0 0.8rem;justify-content:center" onclick="delStu('${s.id}','${(s.name||'').replace(/'/g,"\\'")}')" title="Hapus">
               <img src="image/trash.png" style="width:1.2em;height:1.2em;vertical-align:middle">
@@ -214,7 +214,7 @@ function renderTchrTable(list) {
     <td><span class="bdg bv">${g.homeroom || '—'}</span></td>
     <td class="t2">${g.phone || '—'}</td>
     <td><div class="flex gap1">
-      <button class="btn btn-xs btn-out" onclick="editGuru('${g.id}')"><img src="image/info.png" style="width:1.2em;height:1.2em;vertical-align:middle"></button>
+      <button class="btn btn-xs btn-out" onclick="editGuru('${g.id}')"><img src="image/settings (1).png" style="width:1.2em;height:1.2em;vertical-align:middle"></button>
       <button class="btn btn-xs btn-red" onclick="delGuru('${g.id}','${(g.name||'').replace(/'/g,"\\'")}')"><img src="image/trash.png" style="width:1.2em;height:1.2em;vertical-align:middle"></button>
     </div></td>
   </tr>`).join('');
@@ -335,21 +335,21 @@ function renderKelasStats(classes, students, unassigned) {
   el.innerHTML = `
     <div class="card fcen" style="padding:1.2rem;flex-direction:column;text-align:center;background:linear-gradient(135deg,var(--v3),#fff);border:1.5px solid var(--v2)">
       <div style="width:42px;height:42px;background:var(--v);border-radius:50%;display:flex;align-items:center;justify-content:center;margin-bottom:.6rem;box-shadow:0 4px 12px rgba(99,102,241,0.25)">
-        <img src="image/home.png" style="width:1.3rem;height:1.3rem;filter:brightness(10)">
+        <img src="image/data_kelas.png" style="width:1.3rem;height:1.3rem;filter:brightness(10)">
       </div>
       <div style="font-family:'Nunito',sans-serif;font-weight:900;font-size:1.6rem;color:var(--v)">${classes.length}</div>
       <div class="tsm t2" style="font-weight:600">Total Kelas</div>
     </div>
     <div class="card fcen" style="padding:1.2rem;flex-direction:column;text-align:center;background:linear-gradient(135deg,#ecfdf5,#fff);border:1.5px solid #a7f3d0">
       <div style="width:42px;height:42px;background:var(--grn);border-radius:50%;display:flex;align-items:center;justify-content:center;margin-bottom:.6rem;box-shadow:0 4px 12px rgba(16,185,129,0.25)">
-        <img src="image/user.png" style="width:1.3rem;height:1.3rem;filter:brightness(10)">
+        <img src="image/users-alt.png" style="width:1.3rem;height:1.3rem;filter:brightness(10)">
       </div>
       <div style="font-family:'Nunito',sans-serif;font-weight:900;font-size:1.6rem;color:var(--grn)">${totalStudents}</div>
       <div class="tsm t2" style="font-weight:600">Total Siswa</div>
     </div>
     <div class="card fcen" style="padding:1.2rem;flex-direction:column;text-align:center;background:linear-gradient(135deg,#fef3c7,#fff);border:1.5px solid #fcd34d">
       <div style="width:42px;height:42px;background:var(--amb);border-radius:50%;display:flex;align-items:center;justify-content:center;margin-bottom:.6rem;box-shadow:0 4px 12px rgba(245,158,11,0.25)">
-        <img src="image/info.png" style="width:1.3rem;height:1.3rem;filter:brightness(10)">
+        <img src="image/user.png" style="width:1.3rem;height:1.3rem;filter:brightness(10)">
       </div>
       <div style="font-family:'Nunito',sans-serif;font-weight:900;font-size:1.6rem;color:var(--amb)">${unassigned.length}</div>
       <div class="tsm t2" style="font-weight:600">Belum Ada Kelas</div>
@@ -391,7 +391,7 @@ function renderKelasCards(classes) {
           </div>
           <div class="flex gap1">
             <button class="btn btn-xs" style="background:rgba(255,255,255,0.2);color:#fff;border:1px solid rgba(255,255,255,0.3);backdrop-filter:blur(4px)" onclick="editKelas('${c.id}')" title="Edit">
-              <img src="image/info.png" style="width:1em;height:1em;filter:brightness(10)">
+              <img src="image/settings (1).png" style="width:1em;height:1em;filter:brightness(10)">
             </button>
             <button class="btn btn-xs" style="background:rgba(244,63,94,0.8);color:#fff;border:1px solid rgba(255,255,255,0.2)" onclick="delKelas('${c.id}','${(c.name||'').replace(/'/g,"\\\\'")}')" title="Hapus">
               <img src="image/trash.png" style="width:1em;height:1em;filter:brightness(10)">
@@ -562,9 +562,9 @@ async function mapel(){
   grid.innerHTML = mapelList.map(s => `
     <div class="card" style="padding:1.2rem;display:flex;flex-direction:column;gap:1rem;border-radius:1rem;box-shadow:var(--s1);border:1px solid var(--brd);transition:transform 0.2s;cursor:pointer" onmouseover="this.style.transform='translateY(-2px)'" onmouseout="this.style.transform='translateY(0)'">
       <div class="fbet">
-        <div style="width:48px;height:48px;border-radius:12px;background:${s.color||'#6366f1'}22;display:flex;align-items:center;justify-content:center;font-size:1.6rem;flex-shrink:0;box-shadow:inset 0 0 0 1px ${s.color||'#6366f1'}44">${s.emoji||'<img src="image/add-document.png" style="width:1.2em;height:1.2em;vertical-align:middle">'}</div>
+        <div style="width:48px;height:48px;border-radius:12px;background:${s.color||'#6366f1'}22;display:flex;align-items:center;justify-content:center;font-size:1.6rem;flex-shrink:0;box-shadow:inset 0 0 0 1px ${s.color||'#6366f1'}44">${s.emoji||'<img src="image/mata_pelajaran.png" style="width:1.2em;height:1.2em;vertical-align:middle">'}</div>
         <div class="flex gap1">
-          <button class="btn btn-xs btn-out" onclick="editMapel('${s.id}')"><img src="image/info.png" style="width:1.2em;height:1.2em;vertical-align:middle;filter:brightness(0.5)"></button>
+          <button class="btn btn-xs btn-out" onclick="editMapel('${s.id}')"><img src="image/settings (1).png" style="width:1.2em;height:1.2em;vertical-align:middle;filter:brightness(0.5)"></button>
           <button class="btn btn-xs btn-red" onclick="delMapel('${s.id}','${(s.name||'').replace(/'/g,"\\'")}')"><img src="image/trash.png" style="width:1.2em;height:1.2em;vertical-align:middle"></button>
         </div>
       </div>
