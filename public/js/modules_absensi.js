@@ -241,6 +241,143 @@ async function rekap(){
   loadRekap();
 }
 
+// ── REKAP ABSENSI SEKOLAH (TERPISAH) ──────────────────────
+async function loadRekapSekolah(){
+  const isSiswa = App.profile?.role === 'siswa';
+  const uid = App.profile?.id || App.user?.id;
+  const cls=id('rekSekolahClass')?.value, dt=id('rekSekolahDate')?.value;
+  if(!dt) return showToast('Pilih tanggal!','warning');
+  const dk=dt.replace(/-/g,'_');
+  const tbody=id('rekTbodySekolah');
+  
+  if(tbody) tbody.innerHTML=`<tr><td colspan="6" style="text-align:center;padding:2rem"><div class="spin" style="margin:auto"></div></td></tr>`;
+  
+  let query = supabase.from('attendance').select('*').eq('date_key', dk).eq('subject', 'Absensi Sekolah');
+  if(cls) query = query.eq('class_id', cls);
+  
+  if(isSiswa) {
+    let stuNisn = App.user?.user_metadata?.nisn;
+    if (!stuNisn) {
+      const { data: stu } = await supabase.from('students').select('nisn').eq('user_id', uid).single();
+      if (stu) stuNisn = stu.nisn;
+    }
+    if (stuNisn) query = query.eq('nisn', stuNisn);
+    else query = query.eq('student_user_id', uid);
+  }
+  
+  const { data: rows, error } = await query;
+  let list = Array.isArray(rows) ? rows : [];
+  
+  const sum={hadir:0,terlambat:0,izin:0,sakit:0,alpha:0};
+  list.forEach(r => { if(sum[r.status]!==undefined) sum[r.status]++; });
+
+  const tot=Object.values(sum).reduce((a,b)=>a+b,0)||1;
+  Object.entries(sum).forEach(([k,v])=>{
+    const b=id('rrs_'+k); if(b) b.style.width=Math.round(v/tot*100)+'%';
+    const n=id('rns_'+k); if(n) n.textContent=v;
+  });
+
+  list.sort((a,b)=>(a.time||0)-(b.time||0));
+  if(tbody) {
+    if(!list.length) {
+      tbody.innerHTML=`<tr><td colspan="6" style="text-align:center;padding:2rem;color:var(--tx3)">${isSiswa ? 'Anda belum memiliki riwayat absensi sekolah pada tanggal ini' : 'Tidak ada data absensi sekolah'}</td></tr>`;
+    } else {
+      tbody.innerHTML=list.map(r=>{
+        const adminCols = !isSiswa ? `
+          <td style="font-weight:700">${r.name||'—'}</td>
+          <td class="t2">${r.nisn||'—'}</td>
+          <td><span class="bdg bb">${r.class_name||'—'}</span></td>
+        ` : '';
+        return `<tr>
+          ${adminCols}
+          <td>${ftm(r.time)}</td>
+          <td class="t2 txs">${r.teacher_name||'Sistem (AI)'}</td>
+          <td>${mkBadge(r.status)}</td>
+        </tr>`;
+      }).join('');
+    }
+  }
+
+  window._rekapSekolahData=list;
+}
+
+function exportRekapSekolah(){
+  const d=window._rekapSekolahData; if(!d?.length) return showToast('Load rekap dulu!','warning');
+  const h='Nama,NISN,Kelas,Jam,Petugas,Status\n';
+  const rows=d.map(r=>`${r.name||''},${r.nisn||''},${r.class_name||''},${ftm(r.time)},${r.teacher_name||'Sistem'},${r.status||''}`).join('\n');
+  dl(h+rows,'rekap_sekolah_'+Date.now()+'.csv');
+}
+
+// ── REKAP ABSENSI MAPEL (TERPISAH) ────────────────────────
+async function loadRekapMapel(){
+  const isSiswa = App.profile?.role === 'siswa';
+  const uid = App.profile?.id || App.user?.id;
+  const cls=id('rekMapelClass')?.value, dt=id('rekMapelDate')?.value, subj=id('rekMapelSubject')?.value;
+  if(!dt) return showToast('Pilih tanggal!','warning');
+  const dk=dt.replace(/-/g,'_');
+  const tbody=id('rekTbodyMapel');
+  
+  if(tbody) tbody.innerHTML=`<tr><td colspan="7" style="text-align:center;padding:2rem"><div class="spin" style="margin:auto"></div></td></tr>`;
+  
+  let query = supabase.from('attendance').select('*').eq('date_key', dk).neq('subject', 'Absensi Sekolah');
+  if(cls) query = query.eq('class_id', cls);
+  if(subj) query = query.eq('subject', subj);
+  
+  if(isSiswa) {
+    let stuNisn = App.user?.user_metadata?.nisn;
+    if (!stuNisn) {
+      const { data: stu } = await supabase.from('students').select('nisn').eq('user_id', uid).single();
+      if (stu) stuNisn = stu.nisn;
+    }
+    if (stuNisn) query = query.eq('nisn', stuNisn);
+    else query = query.eq('student_user_id', uid);
+  }
+  
+  const { data: rows, error } = await query;
+  let list = Array.isArray(rows) ? rows : [];
+  
+  const sum={hadir:0,terlambat:0,izin:0,sakit:0,alpha:0};
+  list.forEach(r => { if(sum[r.status]!==undefined) sum[r.status]++; });
+
+  const tot=Object.values(sum).reduce((a,b)=>a+b,0)||1;
+  Object.entries(sum).forEach(([k,v])=>{
+    const b=id('rrm_'+k); if(b) b.style.width=Math.round(v/tot*100)+'%';
+    const n=id('rnm_'+k); if(n) n.textContent=v;
+  });
+
+  list.sort((a,b)=>(a.time||0)-(b.time||0));
+  if(tbody) {
+    if(!list.length) {
+      tbody.innerHTML=`<tr><td colspan="7" style="text-align:center;padding:2rem;color:var(--tx3)">${isSiswa ? 'Anda belum memiliki riwayat absensi mapel pada tanggal ini' : 'Tidak ada data absensi mapel'}</td></tr>`;
+    } else {
+      tbody.innerHTML=list.map(r=>{
+        const adminCols = !isSiswa ? `
+          <td style="font-weight:700">${r.name||'—'}</td>
+          <td class="t2">${r.nisn||'—'}</td>
+          <td><span class="bdg bb">${r.class_name||'—'}</span></td>
+        ` : '';
+        return `<tr>
+          ${adminCols}
+          <td class="t2" style="font-weight:600;color:var(--v)"><div style="display:flex;align-items:center"><span class="bdg bb" style="font-size:10px;padding:2px 6px;margin-right:5px"><img src="image/add-document.png" style="width:1.2em;height:1.2em;vertical-align:middle"> MAPEL</span> ${r.subject||'—'}</div></td>
+          <td>${ftm(r.time)}</td>
+          <td class="t2 txs">${r.teacher_name||'Sistem (AI)'}</td>
+          <td>${mkBadge(r.status)}</td>
+        </tr>`;
+      }).join('');
+    }
+  }
+
+  window._rekapMapelData=list;
+}
+
+function exportRekapMapel(){
+  const d=window._rekapMapelData; if(!d?.length) return showToast('Load rekap dulu!','warning');
+  const h='Nama,NISN,Kelas,Mapel,Jam,Guru,Status\n';
+  const rows=d.map(r=>`${r.name||''},${r.nisn||''},${r.class_name||''},${r.subject||''},${ftm(r.time)},${r.teacher_name||''},${r.status||''}`).join('\n');
+  dl(h+rows,'rekap_mapel_'+Date.now()+'.csv');
+}
+
+// ── REKAP LEGACY (UNTUK SISWA) ────────────────────────────
 async function loadRekap(){
   const isSiswa = App.profile?.role === 'siswa';
   const uid = App.profile?.id || App.user?.id;
