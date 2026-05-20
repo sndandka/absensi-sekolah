@@ -297,7 +297,7 @@ function exportLaporan(){
 
 /* 9. PENGUMUMAN */
 async function pengumuman(){
-  setHdr('Pengumuman','Kelola informasi & pengumuman sekolah');
+  setHdr('Pengumuman','Informasi penting untuk seluruh warga sekolah');
   const { data, error } = await supabase.from('announcements').select('*').order('created_at', { ascending: false });
   const items = Array.isArray(data) ? data : [];
   const w=id('annWrap'); if(!w) return;
