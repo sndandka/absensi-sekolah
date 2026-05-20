@@ -40,7 +40,7 @@ async function profil() {
       </div>
     </div>
     <div class="g2">
-      <div class="card"><div class="card-h"><div class="card-t"><img src="image/add-document.png" style="width:1.2em;height:1.2em;vertical-align:middle;filter:drop-shadow(0 2px 3px rgba(0,0,0,0.2))"> Data Diri</div></div><div class="card-b">
+      <div class="card"><div class="card-h"><div class="card-t"><img src="image/user.png" style="width:1.2em;height:1.2em;vertical-align:middle;filter:drop-shadow(0 2px 3px rgba(0,0,0,0.2))"> Data Diri</div></div><div class="card-b">
         <form onsubmit="saveStudentProfil(event)">
           <div class="fg"><label class="fl">Nama Lengkap</label><input id="pName" type="text" class="fi" value="${u.name || ''}" required></div>
           ${isSiswa ? `<div class="fg"><label class="fl">Kelas (Informasi)</label><select id="pClsId" class="fi" disabled><option value="">Pilih Kelas</option>${classes.map(c => `<option value="${c.id}" ${extra.class_id == c.id ? 'selected' : ''}>${c.name}</option>`).join('')}</select></div>
@@ -48,10 +48,10 @@ async function profil() {
           <div class="fg"><label class="fl">NISN (Informasi)</label><input type="text" class="fi" value="${extra.nisn || ''}" disabled></div>` : ''}
           ${u.role === 'guru' ? `<div class="fg"><label class="fl">NIP (Informasi)</label><input type="text" class="fi" value="${extra.nip || ''}" disabled></div>
           <div class="fg"><label class="fl">Mata Pelajaran (Informasi)</label><input type="text" class="fi" value="${extra.subject || ''}" disabled></div>` : ''}
-          <button type="submit" class="btn btn-pri wf mt1"><img src="image/add-document.png" style="width:1.2em;height:1.2em;vertical-align:middle;filter:drop-shadow(0 2px 3px rgba(0,0,0,0.2))"> Simpan Perubahan</button>
+          <button type="submit" class="btn btn-pri wf mt1"><img src="image/checkbox.png" style="width:1.2em;height:1.2em;vertical-align:middle;filter:drop-shadow(0 2px 3px rgba(0,0,0,0.2))"> Simpan Perubahan</button>
         </form>
       </div></div>
-      <div class="card"><div class="card-h"><div class="card-t"><img src="image/info.png" style="width:1.2em;height:1.2em;vertical-align:middle;filter:drop-shadow(0 2px 3px rgba(0,0,0,0.2))"> Keamanan</div></div><div class="card-b">
+      <div class="card"><div class="card-h"><div class="card-t"><img src="image/settings (1).png" style="width:1.2em;height:1.2em;vertical-align:middle;filter:drop-shadow(0 2px 3px rgba(0,0,0,0.2))"> Keamanan</div></div><div class="card-b">
         <div class="card-t mb2" style="font-size:1rem">Ganti Password</div>
         <form onsubmit="changePw(event)">
           <div class="fg"><label class="fl">Password Baru</label><input id="pwNew" type="password" class="fi" placeholder="Min. 6 karakter" required></div>
