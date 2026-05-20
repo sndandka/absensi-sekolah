@@ -32,20 +32,20 @@ async function dashAdmin(){
   
   const updateStats = async () => {
     // Hadir
-    const { count: h } = await supabase.from('attendance').select('*', { count: 'exact', head: true }).eq('date_key', today).eq('status', 'hadir');
+    const { count: h } = await supabase.from('attendance').select('*', { count: 'exact', head: true }).eq('date_key', today).eq('subject_key', 'pagi').eq('status', 'hadir');
     sv('dH', h || 0);
     // Alpha
-    const { count: a } = await supabase.from('attendance').select('*', { count: 'exact', head: true }).eq('date_key', today).eq('status', 'alpha');
+    const { count: a } = await supabase.from('attendance').select('*', { count: 'exact', head: true }).eq('date_key', today).eq('subject_key', 'pagi').eq('status', 'alpha');
     sv('dA', a || 0);
     // Izin/Sakit
-    const { count: i } = await supabase.from('attendance').select('*', { count: 'exact', head: true }).eq('date_key', today).in('status', ['izin', 'sakit']);
+    const { count: i } = await supabase.from('attendance').select('*', { count: 'exact', head: true }).eq('date_key', today).eq('subject_key', 'pagi').in('status', ['izin', 'sakit']);
     sv('dI', i || 0);
     // Terlambat
-    const { count: t } = await supabase.from('attendance').select('*', { count: 'exact', head: true }).eq('date_key', today).eq('status', 'terlambat');
+    const { count: t } = await supabase.from('attendance').select('*', { count: 'exact', head: true }).eq('date_key', today).eq('subject_key', 'pagi').eq('status', 'terlambat');
     sv('dT', t || 0);
 
     // Recent
-    const { data: recent } = await supabase.from('attendance').select('*').eq('date_key', today).order('time', { ascending: false }).limit(8);
+    const { data: recent } = await supabase.from('attendance').select('*').eq('date_key', today).eq('subject_key', 'pagi').order('time', { ascending: false }).limit(8);
     renderRecentAtt(recent);
   };
 
@@ -77,7 +77,7 @@ async function drawWeekChart(){
   // Fetch last 7 days of attendance
   // Note: For a real app, this should be a grouped query. 
   // Here we'll do a simple mock or fetch last 50 and group by day.
-  const { data: rows } = await supabase.from('attendance').select('date_key, status').limit(200);
+  const { data: rows } = await supabase.from('attendance').select('date_key, status').eq('subject_key', 'pagi').limit(200);
   
   const days = ['Min','Sen','Sel','Rab','Kam','Jum','Sab'];
   const chartData = [];
