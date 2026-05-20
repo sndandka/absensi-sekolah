@@ -240,7 +240,7 @@ function initSettingsMap(lat, lng, radius) {
   // Add draggable marker
   _schoolMarker = L.marker([defLat, defLng], { icon: schoolIcon, draggable: true })
     .addTo(_settingsMap)
-    .bindPopup('<b>📍 Titik Pusat Sekolah</b><br>Seret untuk memindahkan')
+    .bindPopup('<b>Titik Pusat Sekolah</b><br>Seret untuk memindahkan')
     .openPopup();
 
   // Add radius circle
