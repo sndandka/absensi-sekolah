@@ -276,7 +276,7 @@
           Pengumuman
         </div>
         <div class="nav" data-pg="jadwal" onclick="navigateTo('jadwal')">
-          <span class="nav-ic"><img src="image/info.png"
+          <span class="nav-ic"><img src="image/jadwal_pelajaran.png"
               style="width:1.2em;height:1.2em;vertical-align:middle;filter:drop-shadow(0 2px 3px rgba(0,0,0,0.2))"></span>
           Jadwal Pelajaran
         </div>
@@ -329,16 +329,16 @@
         </div>
       </div>
       <div data-r="admin">
-        <div class="sb-lbl">ABSENSI</div>
-        <div class="nav" data-pg="absensi" onclick="navigateTo('absensi')">
-          <span class="nav-ic"><img src="image/checkbox.png"
+        <div class="sb-lbl">MONITORING</div>
+        <div class="nav" data-pg="rekap_sekolah" onclick="navigateTo('rekap_sekolah')">
+          <span class="nav-ic"><img src="image/rekap_absensi_sekolah.png"
               style="width:1.2em;height:1.2em;vertical-align:middle;filter:drop-shadow(0 2px 3px rgba(0,0,0,0.2))"></span>
-          Absensi Mapel
+          Rekap Absensi Sekolah
         </div>
-        <div class="nav" data-pg="rekap" onclick="navigateTo('rekap')">
-          <span class="nav-ic"><img src="image/add-document.png"
+        <div class="nav" data-pg="rekap_mapel" onclick="navigateTo('rekap_mapel')">
+          <span class="nav-ic"><img src="image/rekap_absensi_mapel.png"
               style="width:1.2em;height:1.2em;vertical-align:middle;filter:drop-shadow(0 2px 3px rgba(0,0,0,0.2))"></span>
-          Rekap Absensi
+          Rekap Absensi Mapel
         </div>
         <div class="nav" data-pg="izin" onclick="navigateTo('izin')">
           <span class="nav-ic"><img src="image/add-document.png"
@@ -353,12 +353,12 @@
           Data Siswa
         </div>
         <div class="nav" data-pg="kelas" onclick="navigateTo('kelas')">
-          <span class="nav-ic"><img src="image/home.png"
+          <span class="nav-ic"><img src="image/data_kelas.png"
               style="width:1.2em;height:1.2em;vertical-align:middle;filter:drop-shadow(0 2px 3px rgba(0,0,0,0.2))"></span>
           Data Kelas
         </div>
         <div class="nav" data-pg="mapel" onclick="navigateTo('mapel')">
-          <span class="nav-ic"><img src="image/add-document.png"
+          <span class="nav-ic"><img src="image/mata_pelajaran.png"
               style="width:1.2em;height:1.2em;vertical-align:middle;filter:drop-shadow(0 2px 3px rgba(0,0,0,0.2))"></span>
           Mata Pelajaran
         </div>
@@ -368,7 +368,7 @@
           Data Guru
         </div>
         <div class="nav" data-pg="jadwal" onclick="navigateTo('jadwal')">
-          <span class="nav-ic"><img src="image/info.png"
+          <span class="nav-ic"><img src="image/jadwal_pelajaran.png"
               style="width:1.2em;height:1.2em;vertical-align:middle;filter:drop-shadow(0 2px 3px rgba(0,0,0,0.2))"></span>
           Jadwal Pelajaran
         </div>
@@ -378,19 +378,14 @@
       <div data-r="admin">
         <div class="sb-lbl">GENERAL</div>
         <div class="nav" data-pg="users" onclick="navigateTo('users')">
-          <span class="nav-ic"><img src="image/users-alt.png"
+          <span class="nav-ic"><img src="image/menejemen_user.png"
               style="width:1.2em;height:1.2em;vertical-align:middle;filter:drop-shadow(0 2px 3px rgba(0,0,0,0.2))"></span>
           Manajemen User
         </div>
-        <div class="nav" data-pg="laporan" onclick="navigateTo('laporan')">
-          <span class="nav-ic"><img src="image/add-document.png"
+        <div class="nav" data-pg="pengumuman" onclick="navigateTo('pengumuman')">
+          <span class="nav-ic"><img src="image/bell.png"
               style="width:1.2em;height:1.2em;vertical-align:middle;filter:drop-shadow(0 2px 3px rgba(0,0,0,0.2))"></span>
-          Laporan Global
-        </div>
-        <div class="nav" data-pg="log" onclick="navigateTo('log')">
-          <span class="nav-ic"><img src="image/info.png"
-              style="width:1.2em;height:1.2em;vertical-align:middle;filter:drop-shadow(0 2px 3px rgba(0,0,0,0.2))"></span>
-          Log Aktivitas
+          Pengumuman
         </div>
         <div class="nav" data-pg="settings" onclick="navigateTo('settings')">
           <span class="nav-ic"><img src="image/settings (1).png"
@@ -883,101 +878,100 @@
       </div>
     </div>
 
-    <!-- ════════════ PAGE: REKAP ════════════ -->
-    <div id="pg-rekap" class="page">
+    <!-- ════════════ PAGE: REKAP ABSENSI SEKOLAH ════════════ -->
+    <div id="pg-rekap_sekolah" class="page">
 
-      <div style="margin-bottom: 1rem; display:flex; justify-content:flex-end;">
+      <div style="margin-bottom: 1rem; display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:1rem;">
+        <h2 style="font-size:1.5rem;font-weight:900;color:var(--tx);margin:0;font-family:'Nunito',sans-serif;">
+          <img src="image/rekap_absensi_sekolah.png" style="width:1.2em;height:1.2em;vertical-align:middle;filter:drop-shadow(0 2px 3px rgba(0,0,0,0.2))">
+          Rekap Absensi Sekolah (Pagi)
+        </h2>
         <button class="btn btn-out" style="border-radius:100px; box-shadow:var(--s1); border-color:var(--brd);"
-          onclick="exportRekap()">Export Laporan</button>
+          onclick="exportRekapSekolah()">
+          <img src="image/add-document.png" style="width:1.2em;height:1.2em;vertical-align:middle;filter:brightness(0) opacity(0.6)">
+          Export Laporan
+        </button>
       </div>
 
       <div class="filter-bar-flex">
         <div style="display:flex;align-items:center;gap:0.5rem;flex:1;min-width:180px" data-r="admin,guru">
           <label style="font-size:0.85rem;font-weight:700;color:var(--tx)">Kelas</label>
-          <select id="rekClass" class="fi"
+          <select id="rekSekolahClass" class="fi"
             style="border-radius:100px;padding:0.6rem 1.2rem;border:none;background:var(--bg);width:100%">
             <option value="">Semua Kelas</option>
           </select>
         </div>
         <div style="display:flex;align-items:center;gap:0.5rem">
           <label style="font-size:0.85rem;font-weight:700;color:var(--tx)">Tanggal</label>
-          <input id="rekDate" type="date" class="fi"
+          <input id="rekSekolahDate" type="date" class="fi"
             style="border-radius:100px;padding:0.6rem 1.2rem;border:none;background:var(--bg)">
         </div>
-        <div style="display:flex;align-items:center;gap:0.5rem;flex:1;min-width:180px" data-r="admin,guru">
-          <label style="font-size:0.85rem;font-weight:700;color:var(--tx)">Jenis</label>
-          <select id="rekType" class="fi" onchange="loadRekap()"
-            style="border-radius:100px;padding:0.6rem 1.2rem;border:none;background:var(--bg);width:100%">
-            <option value="">Semua Jenis</option>
-            <option value="sekolah">Absensi Sekolah</option>
-            <option value="mapel">Absensi Mapel</option>
-          </select>
-        </div>
         <button class="btn btn-pri" style="border-radius:100px;padding:0.6rem 1.5rem;margin-left:auto"
-          onclick="loadRekap()">
+          onclick="loadRekapSekolah()">
           <img src="image/search.png"
             style="width:1.2em;height:1.2em;vertical-align:middle;filter:brightness(0) invert(1)"> Tampilkan
         </button>
       </div>
 
-      <div class="card mb2" id="rekSumArea"
+      <div class="card mb2" id="rekSekolahSumArea"
         style="border:1px solid var(--brd);box-shadow:var(--s1);border-radius:var(--r)">
         <div class="card-b">
-          <div id="rekSumBars" class="g5 gap1">
+          <div id="rekSekolahSumBars" class="g5 gap1">
             <div style="background:var(--bg);padding:1rem;border-radius:var(--r2)">
               <div class="fbet tsm mb1"><span class="tb7"><img src="image/checkbox.png"
-                    style="width:1.2em;height:1.2em;vertical-align:middle;"> Hadir</span><span id="rn_hadir"
+                    style="width:1.2em;height:1.2em;vertical-align:middle;"> Hadir</span><span id="rns_hadir"
                   style="font-family:'Nunito',sans-serif;font-weight:900;color:var(--grn);font-size:1.2rem">0</span>
               </div>
               <div class="prog-track" style="height:6px;border-radius:100px">
-                <div id="rr_hadir" class="prog-fill" style="width:0%;background:var(--grn);border-radius:100px"></div>
+                <div id="rrs_hadir" class="prog-fill" style="width:0%;background:var(--grn);border-radius:100px"></div>
               </div>
             </div>
             <div style="background:var(--bg);padding:1rem;border-radius:var(--r2)">
               <div class="fbet tsm mb1"><span class="tb7"><img src="image/info.png"
-                    style="width:1.2em;height:1.2em;vertical-align:middle;"> Terlambat</span><span id="rn_terlambat"
+                    style="width:1.2em;height:1.2em;vertical-align:middle;"> Terlambat</span><span id="rns_terlambat"
                   style="font-family:'Nunito',sans-serif;font-weight:900;color:var(--pnk);font-size:1.2rem">0</span>
               </div>
               <div class="prog-track" style="height:6px;border-radius:100px">
-                <div id="rr_terlambat" class="prog-fill" style="width:0%;background:var(--pnk);border-radius:100px">
+                <div id="rrs_terlambat" class="prog-fill" style="width:0%;background:var(--pnk);border-radius:100px">
                 </div>
               </div>
             </div>
             <div style="background:var(--bg);padding:1rem;border-radius:var(--r2)">
               <div class="fbet tsm mb1"><span class="tb7"><img src="image/add-document.png"
-                    style="width:1.2em;height:1.2em;vertical-align:middle;"> Izin</span><span id="rn_izin"
+                    style="width:1.2em;height:1.2em;vertical-align:middle;"> Izin</span><span id="rns_izin"
                   style="font-family:'Nunito',sans-serif;font-weight:900;color:var(--v);font-size:1.2rem">0</span>
               </div>
               <div class="prog-track" style="height:6px;border-radius:100px">
-                <div id="rr_izin" class="prog-fill" style="width:0%;background:var(--v);border-radius:100px"></div>
+                <div id="rrs_izin" class="prog-fill" style="width:0%;background:var(--v);border-radius:100px"></div>
               </div>
             </div>
             <div style="background:var(--bg);padding:1rem;border-radius:var(--r2)">
               <div class="fbet tsm mb1"><span class="tb7"><img src="image/add.png"
-                    style="width:1.2em;height:1.2em;vertical-align:middle;"> Sakit</span><span id="rn_sakit"
+                    style="width:1.2em;height:1.2em;vertical-align:middle;"> Sakit</span><span id="rns_sakit"
                   style="font-family:'Nunito',sans-serif;font-weight:900;color:var(--amb);font-size:1.2rem">0</span>
               </div>
               <div class="prog-track" style="height:6px;border-radius:100px">
-                <div id="rr_sakit" class="prog-fill" style="width:0%;background:var(--amb);border-radius:100px"></div>
+                <div id="rrs_sakit" class="prog-fill" style="width:0%;background:var(--amb);border-radius:100px"></div>
               </div>
             </div>
             <div style="background:var(--bg);padding:1rem;border-radius:var(--r2)">
               <div class="fbet tsm mb1"><span class="tb7"><span
-                    style="font-weight:bold;margin:0 4px;color:var(--red)">✕</span> Alpha</span><span id="rn_alpha"
+                    style="font-weight:bold;margin:0 4px;color:var(--red)">✕</span> Alpha</span><span id="rns_alpha"
                   style="font-family:'Nunito',sans-serif;font-weight:900;color:var(--red);font-size:1.2rem">0</span>
               </div>
               <div class="prog-track" style="height:6px;border-radius:100px">
-                <div id="rr_alpha" class="prog-fill" style="width:0%;background:var(--red);border-radius:100px"></div>
+                <div id="rrs_alpha" class="prog-fill" style="width:0%;background:var(--red);border-radius:100px"></div>
               </div>
             </div>
           </div>
         </div>
       </div>
-      <div class="card mb2" id="rekCardSekolah">
+
+      <div class="card">
         <div class="card-h">
-          <div class="card-t"><img src="image/home.png"
+          <div class="card-t"><img src="image/rekap_absensi_sekolah.png"
               style="width:1.2em;height:1.2em;vertical-align:middle;filter:drop-shadow(0 2px 3px rgba(0,0,0,0.2))">
-            Rekap Absensi Sekolah</div>
+            Data Absensi Sekolah</div>
         </div>
         <div class="card-b np">
           <div class="tw">
@@ -1002,12 +996,109 @@
           </div>
         </div>
       </div>
+    </div>
 
-      <div class="card" id="rekCardMapel">
+    <!-- ════════════ PAGE: REKAP ABSENSI MAPEL ════════════ -->
+    <div id="pg-rekap_mapel" class="page">
+
+      <div style="margin-bottom: 1rem; display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:1rem;">
+        <h2 style="font-size:1.5rem;font-weight:900;color:var(--tx);margin:0;font-family:'Nunito',sans-serif;">
+          <img src="image/rekap_absensi_mapel.png" style="width:1.2em;height:1.2em;vertical-align:middle;filter:drop-shadow(0 2px 3px rgba(0,0,0,0.2))">
+          Rekap Absensi Mata Pelajaran
+        </h2>
+        <button class="btn btn-out" style="border-radius:100px; box-shadow:var(--s1); border-color:var(--brd);"
+          onclick="exportRekapMapel()">
+          <img src="image/add-document.png" style="width:1.2em;height:1.2em;vertical-align:middle;filter:brightness(0) opacity(0.6)">
+          Export Laporan
+        </button>
+      </div>
+
+      <div class="filter-bar-flex">
+        <div style="display:flex;align-items:center;gap:0.5rem;flex:1;min-width:180px" data-r="admin,guru">
+          <label style="font-size:0.85rem;font-weight:700;color:var(--tx)">Kelas</label>
+          <select id="rekMapelClass" class="fi"
+            style="border-radius:100px;padding:0.6rem 1.2rem;border:none;background:var(--bg);width:100%">
+            <option value="">Semua Kelas</option>
+          </select>
+        </div>
+        <div style="display:flex;align-items:center;gap:0.5rem;flex:1;min-width:180px" data-r="admin,guru">
+          <label style="font-size:0.85rem;font-weight:700;color:var(--tx)">Mapel</label>
+          <select id="rekMapelSubject" class="fi"
+            style="border-radius:100px;padding:0.6rem 1.2rem;border:none;background:var(--bg);width:100%">
+            <option value="">Semua Mapel</option>
+          </select>
+        </div>
+        <div style="display:flex;align-items:center;gap:0.5rem">
+          <label style="font-size:0.85rem;font-weight:700;color:var(--tx)">Tanggal</label>
+          <input id="rekMapelDate" type="date" class="fi"
+            style="border-radius:100px;padding:0.6rem 1.2rem;border:none;background:var(--bg)">
+        </div>
+        <button class="btn btn-pri" style="border-radius:100px;padding:0.6rem 1.5rem;margin-left:auto"
+          onclick="loadRekapMapel()">
+          <img src="image/search.png"
+            style="width:1.2em;height:1.2em;vertical-align:middle;filter:brightness(0) invert(1)"> Tampilkan
+        </button>
+      </div>
+
+      <div class="card mb2" id="rekMapelSumArea"
+        style="border:1px solid var(--brd);box-shadow:var(--s1);border-radius:var(--r)">
+        <div class="card-b">
+          <div id="rekMapelSumBars" class="g5 gap1">
+            <div style="background:var(--bg);padding:1rem;border-radius:var(--r2)">
+              <div class="fbet tsm mb1"><span class="tb7"><img src="image/checkbox.png"
+                    style="width:1.2em;height:1.2em;vertical-align:middle;"> Hadir</span><span id="rnm_hadir"
+                  style="font-family:'Nunito',sans-serif;font-weight:900;color:var(--grn);font-size:1.2rem">0</span>
+              </div>
+              <div class="prog-track" style="height:6px;border-radius:100px">
+                <div id="rrm_hadir" class="prog-fill" style="width:0%;background:var(--grn);border-radius:100px"></div>
+              </div>
+            </div>
+            <div style="background:var(--bg);padding:1rem;border-radius:var(--r2)">
+              <div class="fbet tsm mb1"><span class="tb7"><img src="image/info.png"
+                    style="width:1.2em;height:1.2em;vertical-align:middle;"> Terlambat</span><span id="rnm_terlambat"
+                  style="font-family:'Nunito',sans-serif;font-weight:900;color:var(--pnk);font-size:1.2rem">0</span>
+              </div>
+              <div class="prog-track" style="height:6px;border-radius:100px">
+                <div id="rrm_terlambat" class="prog-fill" style="width:0%;background:var(--pnk);border-radius:100px">
+                </div>
+              </div>
+            </div>
+            <div style="background:var(--bg);padding:1rem;border-radius:var(--r2)">
+              <div class="fbet tsm mb1"><span class="tb7"><img src="image/add-document.png"
+                    style="width:1.2em;height:1.2em;vertical-align:middle;"> Izin</span><span id="rnm_izin"
+                  style="font-family:'Nunito',sans-serif;font-weight:900;color:var(--v);font-size:1.2rem">0</span>
+              </div>
+              <div class="prog-track" style="height:6px;border-radius:100px">
+                <div id="rrm_izin" class="prog-fill" style="width:0%;background:var(--v);border-radius:100px"></div>
+              </div>
+            </div>
+            <div style="background:var(--bg);padding:1rem;border-radius:var(--r2)">
+              <div class="fbet tsm mb1"><span class="tb7"><img src="image/add.png"
+                    style="width:1.2em;height:1.2em;vertical-align:middle;"> Sakit</span><span id="rnm_sakit"
+                  style="font-family:'Nunito',sans-serif;font-weight:900;color:var(--amb);font-size:1.2rem">0</span>
+              </div>
+              <div class="prog-track" style="height:6px;border-radius:100px">
+                <div id="rrm_sakit" class="prog-fill" style="width:0%;background:var(--amb);border-radius:100px"></div>
+              </div>
+            </div>
+            <div style="background:var(--bg);padding:1rem;border-radius:var(--r2)">
+              <div class="fbet tsm mb1"><span class="tb7"><span
+                    style="font-weight:bold;margin:0 4px;color:var(--red)">✕</span> Alpha</span><span id="rnm_alpha"
+                  style="font-family:'Nunito',sans-serif;font-weight:900;color:var(--red);font-size:1.2rem">0</span>
+              </div>
+              <div class="prog-track" style="height:6px;border-radius:100px">
+                <div id="rrm_alpha" class="prog-fill" style="width:0%;background:var(--red);border-radius:100px"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="card">
         <div class="card-h">
-          <div class="card-t"><img src="image/add-document.png"
+          <div class="card-t"><img src="image/rekap_absensi_mapel.png"
               style="width:1.2em;height:1.2em;vertical-align:middle;filter:drop-shadow(0 2px 3px rgba(0,0,0,0.2))">
-            Rekap Absensi Mata Pelajaran</div>
+            Data Absensi Mata Pelajaran</div>
         </div>
         <div class="card-b np">
           <div class="tw">
@@ -1201,114 +1292,6 @@
       <div id="izinCardsWrap" style="display:none"></div>
     </div>
 
-    <!-- ════════════ PAGE: LAPORAN GLOBAL ════════════ -->
-    <div id="pg-laporan" class="page">
-      <div class="card mb3">
-        <div class="card-h">
-          <div class="card-t"><img src="image/add-document.png"
-              style="width:1.2em;height:1.2em;vertical-align:middle;filter:drop-shadow(0 2px 3px rgba(0,0,0,0.2))">
-            Filter Laporan</div>
-        </div>
-        <div class="card-b">
-          <div class="filter-grid">
-            <div class="fg" style="margin:0"><label class="fl">Kelas</label><select id="lapClass" class="fi">
-                <option value="">Semua Kelas</option>
-              </select></div>
-            <div class="fg" style="margin:0"><label class="fl">Dari</label><input id="lapFrom" type="date" class="fi">
-            </div>
-            <div class="fg" style="margin:0"><label class="fl">Sampai</label><input id="lapTo" type="date" class="fi">
-            </div>
-            <div class="flex gap1">
-              <button class="btn btn-pri" onclick="genLaporan()"><img src="image/search.png"
-                  style="width:1.2em;height:1.2em;vertical-align:middle;filter:drop-shadow(0 2px 3px rgba(0,0,0,0.2))">
-                Generate</button>
-              <button class="btn btn-out" onclick="exportLaporan()"><img src="image/add-document.png"
-                  style="width:1.2em;height:1.2em;vertical-align:middle;filter:drop-shadow(0 2px 3px rgba(0,0,0,0.2))">
-                CSV</button>
-            </div>
-          </div>
-        </div>
-      </div>
-      <!-- summary bars -->
-      <div class="card mb3">
-        <div class="card-b">
-          <div id="lapSumBars" class="g5">
-            <div>
-              <div class="fbet tsm mb1"><span class="tb7"><img src="image/checkbox.png"
-                    style="width:1.2em;height:1.2em;vertical-align:middle;filter:drop-shadow(0 2px 3px rgba(0,0,0,0.2))">
-                  Hadir</span><span id="bn_hadir"
-                  style="font-family:'Nunito',sans-serif;font-weight:900;color:var(--grn)">0</span></div>
-              <div class="prog-track">
-                <div id="br_hadir" class="prog-fill" style="width:0%;background:var(--grn)"></div>
-              </div>
-            </div>
-            <div>
-              <div class="fbet tsm mb1"><span class="tb7"><img src="image/info.png"
-                    style="width:1.2em;height:1.2em;vertical-align:middle;filter:drop-shadow(0 2px 3px rgba(0,0,0,0.2))">
-                  Terlambat</span><span id="bn_terlambat"
-                  style="font-family:'Nunito',sans-serif;font-weight:900;color:var(--pnk)">0</span></div>
-              <div class="prog-track">
-                <div id="br_terlambat" class="prog-fill" style="width:0%;background:var(--pnk)"></div>
-              </div>
-            </div>
-            <div>
-              <div class="fbet tsm mb1"><span class="tb7"><img src="image/add-document.png"
-                    style="width:1.2em;height:1.2em;vertical-align:middle;filter:drop-shadow(0 2px 3px rgba(0,0,0,0.2))">
-                  Izin</span><span id="bn_izin"
-                  style="font-family:'Nunito',sans-serif;font-weight:900;color:var(--v)">0</span></div>
-              <div class="prog-track">
-                <div id="br_izin" class="prog-fill" style="width:0%;background:var(--v)"></div>
-              </div>
-            </div>
-            <div>
-              <div class="fbet tsm mb1"><span class="tb7"><img src="image/add.png"
-                    style="width:1.2em;height:1.2em;vertical-align:middle;filter:drop-shadow(0 2px 3px rgba(0,0,0,0.2))">
-                  Sakit</span><span id="bn_sakit"
-                  style="font-family:'Nunito',sans-serif;font-weight:900;color:var(--amb)">0</span></div>
-              <div class="prog-track">
-                <div id="br_sakit" class="prog-fill" style="width:0%;background:var(--amb)"></div>
-              </div>
-            </div>
-            <div>
-              <div class="fbet tsm mb1"><span class="tb7"><span style="font-weight:bold;margin:0 4px">✕</span>
-                  Alpha</span><span id="bn_alpha"
-                  style="font-family:'Nunito',sans-serif;font-weight:900;color:var(--red)">0</span></div>
-              <div class="prog-track">
-                <div id="br_alpha" class="prog-fill" style="width:0%;background:var(--red)"></div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-      <div class="card">
-        <div class="card-b np">
-          <div class="tw">
-            <table>
-              <thead>
-                <tr>
-                  <th>Tanggal</th>
-                  <th>Nama</th>
-                  <th>NISN</th>
-                  <th>Kelas</th>
-                  <th>Mapel</th>
-                  <th>Jam</th>
-                  <th>Status</th>
-                </tr>
-              </thead>
-              <tbody id="lapTbody">
-                <tr>
-                  <td colspan="7" style="text-align:center;padding:2rem;color:var(--tx3)">Pilih filter & klik Generate
-                  </td>
-                </tr>
-              </tbody>
-            </table>
-          </div>
-        </div>
-      </div>
-    </div>
-
-
-
     <!-- ════════════ PAGE: JADWAL MENGAJAR ════════════ -->
     <div id="pg-jadwal" class="page">
       <!-- Filter bar -->
@@ -1373,12 +1356,21 @@
 
     <div id="pg-pengumuman" class="page">
       <div class="fbet mb3 fwrap gap1">
-        <div></div>
+        <div>
+          <h2 style="font-size:1.5rem;font-weight:900;color:var(--tx);margin:0;font-family:'Nunito',sans-serif;">
+            <img src="image/bell.png" style="width:1.2em;height:1.2em;vertical-align:middle;filter:drop-shadow(0 2px 3px rgba(0,0,0,0.2))">
+            Pengumuman Sekolah
+          </h2>
+          <p style="font-size:0.9rem;color:var(--tx2);margin:0.3rem 0 0 0;">Informasi penting untuk seluruh warga sekolah</p>
+        </div>
         <div data-r="admin,guru">
-          <button class="btn btn-pri" onclick="openMdl('annMdl')">+ Buat Pengumuman</button>
+          <button class="btn btn-pri" onclick="openMdl('annMdl')">
+            <img src="image/add.png" style="width:1.2em;height:1.2em;vertical-align:middle;filter:brightness(0) invert(1)">
+            Buat Pengumuman
+          </button>
         </div>
       </div>
-      <div style="max-width:680px">
+      <div style="max-width:800px">
         <div id="annWrap"></div>
       </div>
     </div>
@@ -1544,36 +1536,6 @@
               </button>
             </div>
           </form>
-        </div>
-      </div>
-    </div>
-
-    <!-- ════════════ PAGE: ACTIVITY LOG ════════════ -->
-    <div id="pg-log" class="page">
-      <div class="card">
-        <div class="card-h">
-          <div class="card-t"><img src="image/add-document.png"
-              style="width:1.2em;height:1.2em;vertical-align:middle;filter:drop-shadow(0 2px 3px rgba(0,0,0,0.2))">
-            Log Aktivitas Sistem</div><button class="btn btn-xs btn-out" onclick="activityLog()"><img
-              src="image/info.png"
-              style="width:1.2em;height:1.2em;vertical-align:middle;filter:drop-shadow(0 2px 3px rgba(0,0,0,0.2))">
-            Refresh</button>
-        </div>
-        <div class="card-b np">
-          <div class="tw">
-            <table>
-              <thead>
-                <tr>
-                  <th>Waktu</th>
-                  <th>Pengguna</th>
-                  <th>Role</th>
-                  <th>Aksi</th>
-                  <th>Detail</th>
-                </tr>
-              </thead>
-              <tbody id="logTbody"></tbody>
-            </table>
-          </div>
         </div>
       </div>
     </div>
