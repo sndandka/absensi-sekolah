@@ -299,12 +299,12 @@ document.addEventListener('click', e => {
 });
 
 // ── SIDEBAR TOGGLE ───────────────────────────────────────
-function toggleSb() { id('sidebar')?.classList.toggle('open'); }
-function closeSb() { id('sidebar')?.classList.remove('open'); }
+function toggleSb() { id('sidebar')?.classList.toggle('on'); }
+function closeSb() { id('sidebar')?.classList.remove('on'); }
 document.addEventListener('click', e => {
   const sb = id('sidebar');
-  if (sb?.classList.contains('open') && !sb.contains(e.target) && !e.target.closest('#hamBtn'))
-    sb.classList.remove('open');
+  if (sb?.classList.contains('on') && !sb.contains(e.target) && !e.target.closest('.sb-tgl'))
+    sb.classList.remove('on');
 });
 
 // ── CLASS / SUBJECT SELECTS ──────────────────────────────
