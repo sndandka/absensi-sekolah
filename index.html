@@ -1088,25 +1088,8 @@
             Tambah Siswa</button>
         </div>
       </div>
-      <div class="card">
-        <div class="card-b np">
-          <div class="tw">
-            <table>
-              <thead>
-                <tr>
-                  <th>Siswa</th>
-                  <th>NISN</th>
-                  <th>No.</th>
-                  <th>Kelas</th>
-                  <th>JK</th>
-                  <th>Telepon</th>
-                  <th>Aksi</th>
-                </tr>
-              </thead>
-              <tbody id="stuTbody"></tbody>
-            </table>
-          </div>
-        </div>
+      <div id="stuCardsWrap" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 1rem;">
+        <!-- Data Siswa Cards will be rendered here -->
       </div>
     </div>
 
@@ -1175,7 +1158,7 @@
             style="width:1.2em;height:1.2em;vertical-align:middle;filter:drop-shadow(0 2px 3px rgba(0,0,0,0.2))">
           Ajukan Izin/Sakit</button>
       </div>
-      <div class="card">
+      <div class="card" id="izinTableCard">
         <div class="card-b np">
           <div class="tw">
             <table>
@@ -1196,6 +1179,8 @@
           </div>
         </div>
       </div>
+      <!-- Cards for Siswa -->
+      <div id="izinCardsWrap" style="display:none"></div>
     </div>
 
     <!-- ════════════ PAGE: LAPORAN GLOBAL ════════════ -->
