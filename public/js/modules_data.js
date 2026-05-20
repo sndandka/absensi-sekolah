@@ -68,7 +68,7 @@ function renderStuTable(list) {
       <td class="t2">${s.nisn || '—'}</td>
       <td class="t2">${s.no || '—'}</td>
       <td><span class="bdg bv">${classesMap[s.class_id] || '—'}</span></td>
-      <td>${s.gender === 'P' ? '👩' : '👨'}</td>
+      <td><span class="bdg bn">${s.gender || '—'}</span></td>
       <td class="t2">${s.phone || '—'}</td>
       <td><div class="flex gap1">
         <button class="btn btn-xs btn-out" onclick="editStu('${s.id}')"><img src="image/info.png" style="width:1.2em;height:1.2em;vertical-align:middle"></button>
@@ -89,8 +89,8 @@ function renderStuTable(list) {
         </div>
         <div style="padding:1.2rem;flex:1;display:flex;flex-direction:column">
           <div style="display:flex;align-items:center;gap:0.8rem;margin-bottom:1rem">
-            <div style="width:40px;height:40px;border-radius:50%;background:linear-gradient(135deg,var(--v),var(--v1));display:flex;align-items:center;justify-content:center;flex-shrink:0;color:#fff;font-size:1.2rem">
-              ${s.gender === 'P' ? '👩' : '👨'}
+            <div style="width:40px;height:40px;border-radius:50%;background:linear-gradient(135deg,var(--v),var(--v1));display:flex;align-items:center;justify-content:center;flex-shrink:0;color:#fff;font-size:1rem;font-weight:700">
+              ${s.gender || '?'}
             </div>
             <div>
               <div style="font-weight:800;font-size:1.05rem;color:var(--tx1);line-height:1.2">${s.name}</div>
@@ -420,8 +420,8 @@ function renderKelasCards(classes) {
           <div class="prog-fill" style="width:${fillPct}%;background:${fillColor};border-radius:3px;transition:width .6s ease"></div>
         </div>
         <div class="flex gap1 tsm t3" style="margin-top:.4rem;justify-content:space-between">
-          <span>👨 ${maleCount} L</span>
-          <span>👩 ${femaleCount} P</span>
+          <span><strong>${maleCount}</strong> Laki-laki</span>
+          <span><strong>${femaleCount}</strong> Perempuan</span>
         </div>
       </div>
 
@@ -448,7 +448,7 @@ function renderKelasCards(classes) {
                     <td style="padding:.5rem .6rem;color:var(--tx3)">${i+1}</td>
                     <td style="padding:.5rem .6rem;font-weight:600">${s.name}</td>
                     <td style="padding:.5rem .6rem;color:var(--tx2);font-family:monospace;font-size:.8rem">${s.nisn||'—'}</td>
-                    <td style="padding:.5rem .6rem;text-align:center">${s.gender==='P'?'👩':'👨'}</td>
+                    <td style="padding:.5rem .6rem;text-align:center"><span class="bdg bn">${s.gender||'—'}</span></td>
                     <td style="padding:.5rem .6rem;color:var(--tx2)">${s.phone||'—'}</td>
                   </tr>`).join('')}
                 </tbody>
