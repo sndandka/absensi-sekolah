@@ -43,8 +43,8 @@ async function profil() {
       <div class="card"><div class="card-h"><div class="card-t"><img src="image/add-document.png" style="width:1.2em;height:1.2em;vertical-align:middle;filter:drop-shadow(0 2px 3px rgba(0,0,0,0.2))"> Data Diri</div></div><div class="card-b">
         <form onsubmit="saveStudentProfil(event)">
           <div class="fg"><label class="fl">Nama Lengkap</label><input id="pName" type="text" class="fi" value="${u.name || ''}" required></div>
-          ${isSiswa ? `<div class="fg"><label class="fl">Kelas</label><select id="pClsId" class="fi" required><option value="">Pilih Kelas</option>${classes.map(c => `<option value="${c.id}" ${extra.class_id == c.id ? 'selected' : ''}>${c.name}</option>`).join('')}</select></div>
-          <div class="fg"><label class="fl">Nomor Absen</label><input id="pNo" type="number" class="fi" value="${extra.no || ''}"></div>
+          ${isSiswa ? `<div class="fg"><label class="fl">Kelas (Informasi)</label><select id="pClsId" class="fi" disabled><option value="">Pilih Kelas</option>${classes.map(c => `<option value="${c.id}" ${extra.class_id == c.id ? 'selected' : ''}>${c.name}</option>`).join('')}</select></div>
+          <div class="fg"><label class="fl">Nomor Absen (Informasi)</label><input id="pNo" type="number" class="fi" value="${extra.no || ''}" disabled></div>
           <div class="fg"><label class="fl">NISN (Informasi)</label><input type="text" class="fi" value="${extra.nisn || ''}" disabled></div>` : ''}
           ${u.role === 'guru' ? `<div class="fg"><label class="fl">NIP (Informasi)</label><input type="text" class="fi" value="${extra.nip || ''}" disabled></div>
           <div class="fg"><label class="fl">Mata Pelajaran (Informasi)</label><input type="text" class="fi" value="${extra.subject || ''}" disabled></div>` : ''}
@@ -111,11 +111,7 @@ async function saveStudentProfil(e) {
     if (err1) throw err1;
 
     if (role === 'siswa') {
-      const clsEl = id('pClsId');
-      const class_id = parseInt(clsEl.value);
-      const class_name = clsEl.selectedIndex > 0 ? clsEl.options[clsEl.selectedIndex].text : null;
-      const no = parseInt(id('pNo').value) || 0;
-      const { error: err2 } = await supabase.from('students').update({ name, class_id, class_name, no }).eq('user_id', uid);
+      const { error: err2 } = await supabase.from('students').update({ name }).eq('user_id', uid);
       if (err2) throw err2;
     }
 
