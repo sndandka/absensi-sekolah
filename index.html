@@ -1088,7 +1088,27 @@
             Tambah Siswa</button>
         </div>
       </div>
-      <div id="stuCardsWrap" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 1rem;">
+      <div id="stuTableCard" class="card" style="display:none;">
+        <div class="card-b np">
+          <div class="tw">
+            <table>
+              <thead>
+                <tr>
+                  <th>Siswa</th>
+                  <th>NISN</th>
+                  <th>No.</th>
+                  <th>Kelas</th>
+                  <th>JK</th>
+                  <th>Telepon</th>
+                  <th>Aksi</th>
+                </tr>
+              </thead>
+              <tbody id="stuTbody"></tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+      <div id="stuCardsWrap" style="display: none; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 1rem;">
         <!-- Data Siswa Cards will be rendered here -->
       </div>
     </div>
