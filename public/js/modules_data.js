@@ -11,8 +11,8 @@ async function siswa(){
   await fillClassSel('stuCls',true); await fetchStu();
 }
 async function fetchStu(clsId=''){
-  const tb=id('stuTbody');
-  if(tb) tb.innerHTML=`<tr><td colspan="7" style="text-align:center;padding:2rem"><div class="spin" style="margin:auto"></div></td></tr>`;
+  const tb=id('stuCardsWrap');
+  if(tb) tb.innerHTML=`<div style="grid-column:1/-1;text-align:center;padding:2rem"><div class="spin" style="margin:auto"></div></div>`;
   
   // Build class lookup map (no FK dependency needed)
   if (!Object.keys(classesMap).length) {
@@ -26,7 +26,7 @@ async function fetchStu(clsId=''){
   const { data, error } = await query;
   if (error) {
     console.error('fetchStu error:', error);
-    if(tb) tb.innerHTML=`<tr><td colspan="7" style="text-align:center;padding:2rem;color:var(--red)">Gagal memuat: ${error.message}</td></tr>`;
+    if(tb) tb.innerHTML=`<div style="grid-column:1/-1;text-align:center;padding:2rem;color:var(--red)">Gagal memuat: ${error.message}</div>`;
     return;
   }
   stuList = Array.isArray(data) ? data : [];
@@ -35,23 +35,45 @@ async function fetchStu(clsId=''){
 }
 
 function renderStuTable(list) {
-  const tb = id('stuTbody'); if (!tb) return;
+  const tb = id('stuCardsWrap'); if (!tb) return;
   if (!list.length) {
-    tb.innerHTML = '<tr><td colspan="7" style="text-align:center;padding:2rem;color:var(--tx3)">Belum ada data siswa</td></tr>';
+    tb.innerHTML = '<div style="grid-column:1/-1;text-align:center;padding:2rem;color:var(--tx3)">Belum ada data siswa</div>';
     return;
   }
-  tb.innerHTML = list.map((s, i) => `<tr>
-    <td style="font-weight:700">${s.name}</td>
-    <td class="t2">${s.nisn || '—'}</td>
-    <td class="t2">${s.no || '—'}</td>
-    <td><span class="bdg bv">${classesMap[s.class_id] || '—'}</span></td>
-    <td>${s.gender === 'P' ? '👩' : '👨'}</td>
-    <td class="t2">${s.phone || '—'}</td>
-    <td><div class="flex gap1">
-      <button class="btn btn-xs btn-out" onclick="editStu('${s.id}')"><img src="image/info.png" style="width:1.2em;height:1.2em;vertical-align:middle"></button>
-      <button class="btn btn-xs btn-red" onclick="delStu('${s.id}','${(s.name||'').replace(/'/g,"\\'")}')"><img src="image/trash.png" style="width:1.2em;height:1.2em;vertical-align:middle"></button>
-    </div></td>
-  </tr>`).join('');
+  tb.innerHTML = list.map((s, i) => `
+    <div class="card" style="display:flex;flex-direction:column;border:1.5px solid var(--brd);border-radius:1rem;overflow:hidden;box-shadow:var(--s1);transition:transform 0.2s, box-shadow 0.2s" onmouseover="this.style.transform='translateY(-2px)';this.style.boxShadow='var(--s2)'" onmouseout="this.style.transform='translateY(0)';this.style.boxShadow='var(--s1)'">
+      <div style="padding:1rem 1.2rem;background:var(--bg2);border-bottom:1px solid var(--brd);display:flex;justify-content:space-between;align-items:center">
+        <span class="bdg bv" style="font-size:0.75rem">${classesMap[s.class_id] || 'Tidak Ada Kelas'}</span>
+        <span class="bdg bn" style="font-size:0.75rem">No: ${s.no || '—'}</span>
+      </div>
+      <div style="padding:1.2rem;flex:1;display:flex;flex-direction:column">
+        <div style="display:flex;align-items:center;gap:0.8rem;margin-bottom:1rem">
+          <div style="width:40px;height:40px;border-radius:50%;background:linear-gradient(135deg,var(--v),var(--v1));display:flex;align-items:center;justify-content:center;flex-shrink:0;color:#fff;font-size:1.2rem">
+            ${s.gender === 'P' ? '👩' : '👨'}
+          </div>
+          <div>
+            <div style="font-weight:800;font-size:1.05rem;color:var(--tx1);line-height:1.2">${s.name}</div>
+            <div class="t2" style="font-size:0.8rem;margin-top:0.2rem">NISN: ${s.nisn || '—'}</div>
+          </div>
+        </div>
+        
+        <div style="margin-bottom:1.2rem;font-size:0.85rem">
+          <div style="display:flex;align-items:center;gap:0.5rem;color:var(--tx2);margin-bottom:0.4rem">
+            <span>📞</span> ${s.phone || '—'}
+          </div>
+        </div>
+        
+        <div style="margin-top:auto;display:flex;gap:0.5rem">
+          <button class="btn btn-xs btn-out" style="flex:1;justify-content:center;border-color:var(--brd);color:var(--tx2)" onclick="editStu('${s.id}')">
+            <img src="image/info.png" style="width:1.2em;height:1.2em;vertical-align:middle;filter:brightness(0.5)"> Edit
+          </button>
+          <button class="btn btn-xs btn-red" style="padding:0 0.8rem;justify-content:center" onclick="delStu('${s.id}','${(s.name||'').replace(/'/g,"\\'")}')" title="Hapus">
+            <img src="image/trash.png" style="width:1.2em;height:1.2em;vertical-align:middle">
+          </button>
+        </div>
+      </div>
+    </div>
+  `).join('');
 }
 
 function filterStu(val) {
@@ -273,21 +295,21 @@ function renderKelasStats(classes, students, unassigned) {
       <div style="width:42px;height:42px;background:var(--v);border-radius:50%;display:flex;align-items:center;justify-content:center;margin-bottom:.6rem;box-shadow:0 4px 12px rgba(99,102,241,0.25)">
         <img src="image/home.png" style="width:1.3rem;height:1.3rem;filter:brightness(10)">
       </div>
-      <div style="font-family:'Montserrat',sans-serif;font-weight:900;font-size:1.6rem;color:var(--v)">${classes.length}</div>
+      <div style="font-family:'Nunito',sans-serif;font-weight:900;font-size:1.6rem;color:var(--v)">${classes.length}</div>
       <div class="tsm t2" style="font-weight:600">Total Kelas</div>
     </div>
     <div class="card fcen" style="padding:1.2rem;flex-direction:column;text-align:center;background:linear-gradient(135deg,#ecfdf5,#fff);border:1.5px solid #a7f3d0">
       <div style="width:42px;height:42px;background:var(--grn);border-radius:50%;display:flex;align-items:center;justify-content:center;margin-bottom:.6rem;box-shadow:0 4px 12px rgba(16,185,129,0.25)">
         <img src="image/user.png" style="width:1.3rem;height:1.3rem;filter:brightness(10)">
       </div>
-      <div style="font-family:'Montserrat',sans-serif;font-weight:900;font-size:1.6rem;color:var(--grn)">${totalStudents}</div>
+      <div style="font-family:'Nunito',sans-serif;font-weight:900;font-size:1.6rem;color:var(--grn)">${totalStudents}</div>
       <div class="tsm t2" style="font-weight:600">Total Siswa</div>
     </div>
     <div class="card fcen" style="padding:1.2rem;flex-direction:column;text-align:center;background:linear-gradient(135deg,#fef3c7,#fff);border:1.5px solid #fcd34d">
       <div style="width:42px;height:42px;background:var(--amb);border-radius:50%;display:flex;align-items:center;justify-content:center;margin-bottom:.6rem;box-shadow:0 4px 12px rgba(245,158,11,0.25)">
         <img src="image/info.png" style="width:1.3rem;height:1.3rem;filter:brightness(10)">
       </div>
-      <div style="font-family:'Montserrat',sans-serif;font-weight:900;font-size:1.6rem;color:var(--amb)">${unassigned.length}</div>
+      <div style="font-family:'Nunito',sans-serif;font-weight:900;font-size:1.6rem;color:var(--amb)">${unassigned.length}</div>
       <div class="tsm t2" style="font-weight:600">Belum Ada Kelas</div>
     </div>
   `;
@@ -318,7 +340,7 @@ function renderKelasCards(classes) {
         <div style="position:absolute;bottom:-30px;right:30px;width:60px;height:60px;background:rgba(255,255,255,0.05);border-radius:50%"></div>
         <div class="fbet" style="position:relative;z-index:1">
           <div>
-            <div style="font-family:'Montserrat',sans-serif;font-weight:900;font-size:1.2rem;margin-bottom:.2rem">${c.name}</div>
+            <div style="font-family:'Nunito',sans-serif;font-weight:900;font-size:1.2rem;margin-bottom:.2rem">${c.name}</div>
             <div style="display:flex;gap:.4rem;align-items:center;flex-wrap:wrap">
               <span class="bdg" style="background:rgba(255,255,255,0.2);color:#fff;font-size:.7rem;backdrop-filter:blur(4px)">${c.grade || '—'}</span>
               ${c.major ? `<span class="bdg" style="background:rgba(255,255,255,0.2);color:#fff;font-size:.7rem;backdrop-filter:blur(4px)">${c.major}</span>` : ''}
