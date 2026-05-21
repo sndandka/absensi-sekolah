@@ -26,7 +26,7 @@ async function absensi(){
 function renderAttEmpty(){
   const w=id('attGrid'); if(!w) return;
   w.innerHTML=`<div style="text-align:center;padding:3rem;color:var(--tx3);grid-column:1/-1">
-    <div style="font-size:3rem;margin-bottom:.8rem;color:var(--tx2)"><img src="image/search.png" style="width:1.2em;height:1.2em;vertical-align:middle;filter:drop-shadow(0 2px 3px rgba(0,0,0,0.2))"></div>
+    <div style="font-size:3rem;margin-bottom:.8rem;color:var(--tx2)"><img src="image/add-document.png" style="width:1.2em;height:1.2em;vertical-align:middle;filter:drop-shadow(0 2px 3px rgba(0,0,0,0.2))"></div>
     <div style="font-weight:700;margin-bottom:.3rem">Pilih Kelas & Mata Pelajaran</div>
     <div style="font-size:.83rem">Klik "Muat Siswa" untuk memulai</div>
   </div>`;
@@ -80,11 +80,11 @@ async function loadAttStudents(){
     App.attBuf[s.id] = existMap[key] || activePermits[s.user_id] || null;
   });
 
-  if(btn){btn.innerHTML='<img src="image/search.png" style="width:1.2em;height:1.2em;vertical-align:middle;filter:drop-shadow(0 2px 3px rgba(0,0,0,0.2))"> Muat Ulang';btn.disabled=false;}
+  if(btn){btn.innerHTML='<img src="image/info.png" style="width:1.2em;height:1.2em;vertical-align:middle;filter:drop-shadow(0 2px 3px rgba(0,0,0,0.2))"> Muat Ulang';btn.disabled=false;}
   const info=id('attInfo');
-  if(info) info.innerHTML=`<span class="bdg bv"><img src="image/data_kelas.png" style="width:1.2em;height:1.2em;vertical-align:middle;filter:drop-shadow(0 2px 3px rgba(0,0,0,0.2))"> ${attClassName}</span>
-    <span class="bdg bb"><img src="image/mata_pelajaran.png" style="width:1.2em;height:1.2em;vertical-align:middle;filter:drop-shadow(0 2px 3px rgba(0,0,0,0.2))"> ${attSubject}</span>
-    <span class="bdg bn"><img src="image/jadwal_pelajaran.png" style="width:1.2em;height:1.2em;vertical-align:middle;filter:drop-shadow(0 2px 3px rgba(0,0,0,0.2))"> ${attDate.replace(/_/g,'-')}</span>`;
+  if(info) info.innerHTML=`<span class="bdg bv"><img src="image/add-document.png" style="width:1.2em;height:1.2em;vertical-align:middle;filter:drop-shadow(0 2px 3px rgba(0,0,0,0.2))"> ${attClassName}</span>
+    <span class="bdg bb">${attSubject}</span>
+    <span class="bdg bn"><img src="image/info.png" style="width:1.2em;height:1.2em;vertical-align:middle;filter:drop-shadow(0 2px 3px rgba(0,0,0,0.2))"> ${attDate.replace(/_/g,'-')}</span>`;
   renderAttGrid();
   updateAttSummary();
 }
@@ -128,7 +128,7 @@ function updateAttSummary(){
   const el=id('attSum'); if(!el) return;
   el.innerHTML=`<span class="bdg bg"><img src="image/checkbox.png" style="width:1.2em;height:1.2em;vertical-align:middle;filter:drop-shadow(0 2px 3px rgba(0,0,0,0.2))"> ${c.hadir}</span><span class="bdg bp"><img src="image/info.png" style="width:1.2em;height:1.2em;vertical-align:middle;filter:drop-shadow(0 2px 3px rgba(0,0,0,0.2))"> ${c.terlambat}</span>
     <span class="bdg bv"><img src="image/add-document.png" style="width:1.2em;height:1.2em;vertical-align:middle;filter:drop-shadow(0 2px 3px rgba(0,0,0,0.2))"> ${c.izin}</span><span class="bdg ba"><img src="image/add.png" style="width:1.2em;height:1.2em;vertical-align:middle;filter:drop-shadow(0 2px 3px rgba(0,0,0,0.2))"> ${c.sakit}</span>
-    <span class="bdg br"><span style="font-weight:bold;margin:0 4px">✕</span> ${c.alpha}</span><span class="bdg bn"><img src="image/search.png" style="width:1.2em;height:1.2em;vertical-align:middle;filter:drop-shadow(0 2px 3px rgba(0,0,0,0.2))"> ${c.kosong}</span>`;
+    <span class="bdg br"><span style="font-weight:bold;margin:0 4px">✕</span> ${c.alpha}</span><span class="bdg bn"><img src="image/info.png" style="width:1.2em;height:1.2em;vertical-align:middle;filter:drop-shadow(0 2px 3px rgba(0,0,0,0.2))"> ${c.kosong}</span>`;
 }
 
 async function saveAbsensi(){
@@ -164,7 +164,7 @@ async function saveAbsensi(){
     showToast('Gagal menyimpan: ' + error.message, 'error');
   }
 
-  if(btn){btn.innerHTML='<img src="image/checkbox.png" style="width:1.2em;height:1.2em;vertical-align:middle"> Simpan Absensi';btn.disabled=false;}
+  if(btn){btn.innerHTML='<img src="image/add-document.png" style="width:1.2em;height:1.2em;vertical-align:middle"> Simpan Absensi';btn.disabled=false;}
 }
 
 /* ╔══════════════════════════════╗
@@ -358,7 +358,7 @@ async function loadRekapMapel(){
         ` : '';
         return `<tr>
           ${adminCols}
-          <td class="t2" style="font-weight:600;color:var(--v)"><div style="display:flex;align-items:center"><span class="bdg bb" style="font-size:10px;padding:2px 6px;margin-right:5px"><img src="image/mata_pelajaran.png" style="width:1.2em;height:1.2em;vertical-align:middle"> MAPEL</span> ${r.subject||'—'}</div></td>
+          <td class="t2" style="font-weight:600;color:var(--v)"><div style="display:flex;align-items:center"><span class="bdg bb" style="font-size:10px;padding:2px 6px;margin-right:5px"><img src="image/add-document.png" style="width:1.2em;height:1.2em;vertical-align:middle"> MAPEL</span> ${r.subject||'—'}</div></td>
           <td>${ftm(r.time)}</td>
           <td class="t2 txs">${r.teacher_name||'Sistem (AI)'}</td>
           <td>${mkBadge(r.status)}</td>
@@ -459,7 +459,7 @@ async function loadRekap(){
         ` : '';
         return `<tr>
           ${adminCols}
-          <td class="t2" style="font-weight:600;color:var(--v)"><div style="display:flex;align-items:center"><span class="bdg bb" style="font-size:10px;padding:2px 6px;margin-right:5px"><img src="image/mata_pelajaran.png" style="width:1.2em;height:1.2em;vertical-align:middle"> MAPEL</span> ${r.subject||'—'}</div></td>
+          <td class="t2" style="font-weight:600;color:var(--v)"><div style="display:flex;align-items:center"><span class="bdg bb" style="font-size:10px;padding:2px 6px;margin-right:5px"><img src="image/add-document.png" style="width:1.2em;height:1.2em;vertical-align:middle"> MAPEL</span> ${r.subject||'—'}</div></td>
           <td>${ftm(r.time)}</td>
           <td class="t2 txs">${r.teacher_name||'Sistem (AI)'}</td>
           <td>${mkBadge(r.status)}</td>
