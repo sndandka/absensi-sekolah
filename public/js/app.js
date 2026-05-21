@@ -158,7 +158,7 @@ function navigateTo(pg) {
 
   const handlers = {
     dashboard, absensi, rekap, siswa, guru, kelas, mapel,
-    izin, pengumuman, profil, settings, camera,
+    izin, pengumuman, profil, settings, camera, verifikasi,
     users: fetchUsers, jurnal, jadwal,
     rekap_sekolah: rekapSekolah,
     rekap_mapel: rekapMapel
