@@ -194,9 +194,12 @@
             <input id="lPass" type="password" class="fi" style="padding:0.75rem 1rem;font-size:0.9rem;background:#f9fafb;" placeholder="••••••••" required>
           </div>
           <button id="loginBtn" type="submit" class="btn btn-pri wf" style="padding:0.85rem;font-size:0.98rem;font-weight:700;border-radius:10px;box-shadow:0 8px 16px rgba(75,102,54,0.25);">Masuk ke Dashboard</button>
-          <div style="text-align:center;margin-top:1rem">
+          <div style="text-align:center;margin-top:1rem;display:flex;gap:1rem;justify-content:center;flex-wrap:wrap;">
             <button type="button" onclick="handleForgot()"
               style="background:none;border:none;color:var(--v);font-size:0.82rem;font-weight:600;cursor:pointer;font-family:'Nunito',sans-serif;transition:opacity 0.2s;" onmouseover="this.style.opacity='0.8'" onmouseout="this.style.opacity='1'">Lupa kata sandi Anda?</button>
+            <span style="color:var(--brd)">|</span>
+            <button type="button" onclick="showResetPasswordModal()"
+              style="background:none;border:none;color:var(--v);font-size:0.82rem;font-weight:600;cursor:pointer;font-family:'Nunito',sans-serif;transition:opacity 0.2s;" onmouseover="this.style.opacity='0.8'" onmouseout="this.style.opacity='1'">Reset Password</button>
           </div>
         </form>
       </div>
