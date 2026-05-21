@@ -38,6 +38,51 @@ async function loadAttStudents(){
   attDate = id('absDate')?.value?.replace(/-/g,'_');
   if(!attClassId||!attSubjectKey||!attDate) return showToast('Pilih kelas, mapel & tanggal!','warning');
 
+  // ── VALIDASI JADWAL MENGAJAR GURU ──
+  const isGuru = App.profile?.role === 'guru';
+  if(isGuru) {
+    const tId = await getTeacherId();
+    if(tId) {
+      // Get current day and time
+      const selectedDate = new Date(attDate.replace(/_/g,'-'));
+      const dayOfWeek = selectedDate.toLocaleDateString('id-ID', { weekday: 'long' });
+      const currentTime = new Date().toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit', hour12: false });
+      
+      // Check if teacher has schedule for this class, subject, and day
+      const { data: schedules } = await supabase
+        .from('schedules')
+        .select('*')
+        .eq('teacher_id', tId)
+        .eq('class_id', attClassId)
+        .eq('subject_id', attSubjectKey)
+        .eq('day', dayOfWeek);
+      
+      if(!schedules || schedules.length === 0) {
+        const btn=id('btnLoad'); 
+        if(btn){btn.innerHTML='<img src="image/info.png" style="width:1.2em;height:1.2em;vertical-align:middle;filter:drop-shadow(0 2px 3px rgba(0,0,0,0.2))"> Muat Data Siswa';btn.disabled=false;}
+        return showToast(`Anda tidak memiliki jadwal mengajar untuk kelas dan mapel ini pada hari ${dayOfWeek}!`, 'error', 5000);
+      }
+      
+      // Check if current time is within schedule time
+      const schedule = schedules[0];
+      const startTime = schedule.start_time;
+      const endTime = schedule.end_time;
+      
+      // Allow 15 minutes before and 30 minutes after schedule
+      const scheduleStart = new Date(`2000-01-01 ${startTime}`);
+      scheduleStart.setMinutes(scheduleStart.getMinutes() - 15);
+      const scheduleEnd = new Date(`2000-01-01 ${endTime}`);
+      scheduleEnd.setMinutes(scheduleEnd.getMinutes() + 30);
+      const currentDateTime = new Date(`2000-01-01 ${currentTime}`);
+      
+      if(currentDateTime < scheduleStart || currentDateTime > scheduleEnd) {
+        const btn=id('btnLoad'); 
+        if(btn){btn.innerHTML='<img src="image/info.png" style="width:1.2em;height:1.2em;vertical-align:middle;filter:drop-shadow(0 2px 3px rgba(0,0,0,0.2))"> Muat Data Siswa';btn.disabled=false;}
+        return showToast(`Jadwal mengajar Anda: ${startTime} - ${endTime}. Anda hanya bisa absen 15 menit sebelum hingga 30 menit setelah jadwal.`, 'warning', 6000);
+      }
+    }
+  }
+
   const { data: cls } = await supabase.from('classes').select('name').eq('id', attClassId).single();
   attClassName = cls?.name || attClassId;
   const { data: subj } = await supabase.from('subjects').select('name').eq('id', attSubjectKey).single();
@@ -92,32 +137,77 @@ async function loadAttStudents(){
 function renderAttGrid(){
   const w=id('attGrid'); if(!w) return;
   if(!attStudents.length){ w.innerHTML=`<div style="text-align:center;padding:2rem;color:var(--tx3)">Tidak ada siswa</div>`; return; }
+  
+  // Change grid to single column for horizontal cards
+  w.style.gridTemplateColumns = '1fr';
+  w.style.gap = '0.75rem';
+  
   w.innerHTML=attStudents.map((s,i)=>{
     const st=App.attBuf[s.id]||'';
-    return `<div class="att-card ${st}" id="ac_${s.id}">
-      <div class="att-top">
-        <div class="att-av av-${st||'default'}" id="av_${s.id}">${(s.name||'?').substring(0,2).toUpperCase()}</div>
-        <div><div class="att-name">${s.name}</div><div class="att-nisn">NISN: ${s.nisn||'—'} · No.${s.no||i+1}</div></div>
+    const statusColor = {
+      hadir: 'var(--grn)',
+      izin: 'var(--v)',
+      sakit: 'var(--amb)',
+      alpha: 'var(--red)',
+      terlambat: 'var(--pnk)'
+    };
+    
+    return `<div class="att-card-horizontal ${st}" id="ac_${s.id}" style="display:flex;align-items:center;gap:1rem;padding:1rem 1.2rem;background:var(--card);border:1px solid var(--brd);border-radius:12px;transition:all 0.2s;">
+      <div class="att-av av-${st||'default'}" id="av_${s.id}" style="width:50px;height:50px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:1.1rem;flex-shrink:0;background:${st ? statusColor[st] : 'var(--bg2)'};color:#fff;">${(s.name||'?').substring(0,2).toUpperCase()}</div>
+      <div style="flex:1;min-width:0;">
+        <div class="att-name" style="font-weight:700;font-size:0.95rem;color:var(--tx1);margin-bottom:0.2rem;">${s.name}</div>
+        <div class="att-nisn" style="font-size:0.8rem;color:var(--tx3);">NISN: ${s.nisn||'—'} · No. ${s.no||i+1}</div>
       </div>
-      <div class="att-btns">
-        <button class="sb h ${st==='hadir'?'on':''}" onclick="setSt('${s.id}','hadir')"><img src="image/checkbox.png" style="width:1.2em;height:1.2em;vertical-align:middle;filter:drop-shadow(0 2px 3px rgba(0,0,0,0.2))"> Hadir</button>
-        <button class="sb i ${st==='izin'?'on':''}" onclick="setSt('${s.id}','izin')"><img src="image/add-document.png" style="width:1.2em;height:1.2em;vertical-align:middle;filter:drop-shadow(0 2px 3px rgba(0,0,0,0.2))"> Izin</button>
-        <button class="sb s ${st==='sakit'?'on':''}" onclick="setSt('${s.id}','sakit')"><img src="image/add.png" style="width:1.2em;height:1.2em;vertical-align:middle;filter:drop-shadow(0 2px 3px rgba(0,0,0,0.2))"> Sakit</button>
-        <button class="sb a ${st==='alpha'?'on':''}" onclick="setSt('${s.id}','alpha')"><span style="font-weight:bold;margin:0 4px">✕</span> Alpha</button>
-        <button class="sb t ${st==='terlambat'?'on':''}" onclick="setSt('${s.id}','terlambat')"><img src="image/info.png" style="width:1.2em;height:1.2em;vertical-align:middle;filter:drop-shadow(0 2px 3px rgba(0,0,0,0.2))"> Lmbt</button>
+      <div style="flex-shrink:0;min-width:180px;">
+        <select class="fi" id="sel_${s.id}" onchange="setStFromSelect('${s.id}')" style="padding:0.65rem 1rem;font-size:0.88rem;font-weight:600;border:2px solid ${st ? statusColor[st] : 'var(--brd)'};border-radius:8px;background:${st ? statusColor[st]+'15' : 'var(--bg)'};color:${st ? statusColor[st] : 'var(--tx2)'};cursor:pointer;width:100%;">
+          <option value="" ${!st?'selected':''}>-- Pilih Status --</option>
+          <option value="hadir" ${st==='hadir'?'selected':''}>Hadir</option>
+          <option value="izin" ${st==='izin'?'selected':''}>Izin</option>
+          <option value="sakit" ${st==='sakit'?'selected':''}>Sakit</option>
+          <option value="alpha" ${st==='alpha'?'selected':''}>Alpha</option>
+          <option value="terlambat" ${st==='terlambat'?'selected':''}>Terlambat</option>
+        </select>
       </div>
     </div>`;
   }).join('');
 }
 
+function setStFromSelect(sid){
+  const sel = id('sel_'+sid);
+  if(!sel) return;
+  const status = sel.value;
+  if(!status) return;
+  setSt(sid, status);
+}
+
 function setSt(sid,status){
   App.attBuf[sid]=status;
-  const c=id('ac_'+sid), av=id('av_'+sid);
-  if(c) c.className=`att-card ${status}`;
-  if(av) av.className=`att-av av-${status}`;
-  c?.querySelectorAll('.sb').forEach(b=>b.classList.remove('on'));
-  const mp={hadir:'h',izin:'i',sakit:'s',alpha:'a',terlambat:'t'};
-  c?.querySelector(`.sb.${mp[status]}`)?.classList.add('on');
+  const c=id('ac_'+sid), av=id('av_'+sid), sel=id('sel_'+sid);
+  
+  const statusColor = {
+    hadir: 'var(--grn)',
+    izin: 'var(--v)',
+    sakit: 'var(--amb)',
+    alpha: 'var(--red)',
+    terlambat: 'var(--pnk)'
+  };
+  
+  // Update card class
+  if(c) c.className=`att-card-horizontal ${status}`;
+  
+  // Update avatar
+  if(av) {
+    av.className=`att-av av-${status}`;
+    av.style.background = statusColor[status] || 'var(--bg2)';
+  }
+  
+  // Update select styling
+  if(sel) {
+    sel.style.borderColor = statusColor[status] || 'var(--brd)';
+    sel.style.background = (statusColor[status] || 'var(--bg)') + '15';
+    sel.style.color = statusColor[status] || 'var(--tx2)';
+    sel.value = status;
+  }
   updateAttSummary();
 }
 function setAllSt(status){ attStudents.forEach(s=>setSt(s.id,status)); }
