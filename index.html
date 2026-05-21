@@ -4,7 +4,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1">
-  <title>SiAbsen SMK — Sistem Absensi Digital Masa Depan</title>
+  <title>SiAbsen — Sistem Absensi Digital Masa Depan</title>
   <meta name="description" content="Sistem absensi digital unggulan untuk SMK — siswa, guru, dan admin">
   <link rel="stylesheet" href="public/css/app.css">
   <!-- Leaflet.js for interactive maps (no API key needed) -->
@@ -52,9 +52,18 @@
       }
     }
     
+    @keyframes float {
+      0%, 100% {
+        transform: translateY(0px);
+      }
+      50% {
+        transform: translateY(-20px);
+      }
+    }
+    
     .glass-card {
       background: rgba(255,255,255,0.1);
-      padding: 1.5rem;
+      padding: 1.2rem;
       border-radius: 1rem;
       backdrop-filter: blur(12px);
       -webkit-backdrop-filter: blur(12px);
@@ -74,7 +83,7 @@
       position: relative;
       z-index: 1;
       width: 100%;
-      max-width: 440px;
+      max-width: 400px;
     }
     
     @media (min-width: 801px) {
@@ -83,7 +92,7 @@
         backdrop-filter: blur(16px);
         -webkit-backdrop-filter: blur(16px);
         border: 1px solid rgba(255,255,255,0.5);
-        padding: 3rem 2.5rem;
+        padding: 2.5rem;
         border-radius: 1.5rem;
         box-shadow: 0 15px 35px rgba(0,0,0,0.15), 0 5px 15px rgba(0,0,0,0.05);
       }
@@ -114,98 +123,114 @@
 <!-- ══════════════════════════════════════════════════════
      AUTH SCREEN
 ══════════════════════════════════════════════════════════ -->
-<div id="authWrap" style="display:none;min-height:100vh;background: linear-gradient(135deg, rgba(16, 42, 19, 0.8), rgba(5, 18, 7, 0.95)), url('image/Baground%20landing%20page.png') center/cover no-repeat; align-items:stretch;justify-content:center;flex-direction:row;position:relative;overflow:hidden;">
+<div id="authWrap" style="display:none;height:100vh;background: linear-gradient(135deg, rgba(16, 42, 19, 0.8), rgba(5, 18, 7, 0.95)), url('image/Baground%20landing%20page.png') center/cover no-repeat; align-items:stretch;justify-content:center;flex-direction:row;position:relative;overflow:hidden;">
   
   <!-- Animated glow effects in background -->
   <div style="position:absolute;top:-20%;left:-10%;width:50vw;height:50vw;background:radial-gradient(circle, rgba(74, 182, 85, 0.15) 0%, transparent 70%);border-radius:50%;filter:blur(60px);animation:float 10s ease-in-out infinite;"></div>
   <div style="position:absolute;bottom:-20%;right:-10%;width:60vw;height:60vw;background:radial-gradient(circle, rgba(16, 185, 129, 0.1) 0%, transparent 70%);border-radius:50%;filter:blur(80px);animation:float 12s ease-in-out infinite reverse;"></div>
 
   <!-- LEFT SIDE: LANDING PAGE -->
-  <div class="auth-landing" style="flex:1.4; background:transparent; color:#fff; display:flex; flex-direction:column; justify-content:center; padding:4rem 6rem; position:relative; z-index:10;">
+  <div class="auth-landing" style="flex:1.4; background:transparent; color:#fff; display:flex; flex-direction:column; justify-content:center; padding:3rem 4rem; position:relative; z-index:10; overflow:hidden;">
     
-    <div style="position:relative; z-index:1; max-width:650px; display:flex; flex-direction:column; gap:2.5rem;">
+    <div style="position:relative; z-index:1; max-width:600px; display:flex; flex-direction:column; gap:1.8rem;">
       <div style="display:flex; align-items:center; justify-content:center; margin-bottom:-0.5rem;">
-        <img src="image/putih.png" style="width:120px; height:120px; object-fit:contain; filter:drop-shadow(0 6px 20px rgba(0,0,0,0.4))">
+        <img src="image/putih.png" style="width:100px; height:100px; object-fit:contain; filter:drop-shadow(0 6px 20px rgba(0,0,0,0.4))">
       </div>
       
       <div>
-        <h1 style="font-size:3.8rem; font-weight:900; line-height:1.15; margin-bottom:1.5rem; font-family:'Nunito',sans-serif; background:linear-gradient(135deg, #fff 0%, #a7f3d0 100%); -webkit-background-clip:text; -webkit-text-fill-color:transparent; filter:drop-shadow(0 4px 12px rgba(0,0,0,0.2));">Sistem Absensi Digital Masa Depan</h1>
-        <p style="font-size:1.25rem; font-weight:500; opacity:0.85; line-height:1.7; max-width:550px;">Pantau kehadiran secara real-time dengan presisi tinggi menggunakan teknologi <b style="color:#6ee7b7">AI Face Recognition</b> dan deteksi <b style="color:#6ee7b7">Geo-Location</b> cerdas.</p>
+        <h1 style="font-size:3rem; font-weight:900; line-height:1.15; margin-bottom:1rem; font-family:'Nunito',sans-serif; background:linear-gradient(135deg, #fff 0%, #a7f3d0 100%); -webkit-background-clip:text; background-clip:text; -webkit-text-fill-color:transparent; filter:drop-shadow(0 4px 12px rgba(0,0,0,0.2));">Sistem Absensi Digital Masa Depan</h1>
+        <p style="font-size:1.1rem; font-weight:500; opacity:0.85; line-height:1.6; max-width:520px;">Pantau kehadiran secara real-time dengan presisi tinggi menggunakan teknologi <b style="color:#6ee7b7">AI Face Recognition</b> dan deteksi <b style="color:#6ee7b7">Geo-Location</b> cerdas.</p>
       </div>
       
-      <div style="display:grid; grid-template-columns:1fr 1fr; gap:1.8rem; margin-top:1rem;">
-        <div class="glass-card" style="animation:float 6s ease-in-out infinite;">
-          <div style="width:50px;height:50px;background:linear-gradient(135deg, #10b981, #047857);border-radius:14px;display:flex;align-items:center;justify-content:center;font-size:1.8rem;margin-bottom:1.2rem;box-shadow:0 10px 20px rgba(16,185,129,0.3);">🤖</div>
-          <div style="font-weight:800; font-size:1.2rem; margin-bottom:0.6rem; letter-spacing:0.3px;">Face Recognition</div>
-          <div style="font-size:0.95rem; color:rgba(255,255,255,0.75); line-height:1.6;">Absensi instan dengan kecepatan kilat & akurasi tinggi menggunakan AI Tiny Face.</div>
+      <div style="display:grid; grid-template-columns:1fr 1fr; gap:1.5rem; margin-top:0.5rem;">
+        <div class="glass-card" style="animation:float 6s ease-in-out infinite; padding:1.2rem;">
+          <div style="width:45px;height:45px;background:linear-gradient(135deg, #10b981, #047857);border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:1.6rem;margin-bottom:1rem;box-shadow:0 10px 20px rgba(16,185,129,0.3);">🤖</div>
+          <div style="font-weight:800; font-size:1.1rem; margin-bottom:0.5rem; letter-spacing:0.3px;">Face Recognition</div>
+          <div style="font-size:0.88rem; color:rgba(255,255,255,0.75); line-height:1.5;">Absensi instan dengan kecepatan kilat & akurasi tinggi menggunakan AI Tiny Face.</div>
         </div>
-        <div class="glass-card" style="animation:float 7s ease-in-out infinite reverse; animation-delay: 1s;">
-          <div style="width:50px;height:50px;background:linear-gradient(135deg, #3b82f6, #1d4ed8);border-radius:14px;display:flex;align-items:center;justify-content:center;font-size:1.8rem;margin-bottom:1.2rem;box-shadow:0 10px 20px rgba(59,130,246,0.3);">📍</div>
-          <div style="font-weight:800; font-size:1.2rem; margin-bottom:0.6rem; letter-spacing:0.3px;">Geo-Location Pintar</div>
-          <div style="font-size:0.95rem; color:rgba(255,255,255,0.75); line-height:1.6;">Validasi otomatis kehadiran siswa di dalam radius area sekolah yang telah ditentukan.</div>
+        <div class="glass-card" style="animation:float 7s ease-in-out infinite reverse; animation-delay: 1s; padding:1.2rem;">
+          <div style="width:45px;height:45px;background:linear-gradient(135deg, #3b82f6, #1d4ed8);border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:1.6rem;margin-bottom:1rem;box-shadow:0 10px 20px rgba(59,130,246,0.3);">📍</div>
+          <div style="font-weight:800; font-size:1.1rem; margin-bottom:0.5rem; letter-spacing:0.3px;">Geo-Location Pintar</div>
+          <div style="font-size:0.88rem; color:rgba(255,255,255,0.75); line-height:1.5;">Validasi otomatis kehadiran siswa di dalam radius area sekolah yang telah ditentukan.</div>
         </div>
       </div>
     </div>
   </div>
 
   <!-- RIGHT SIDE: AUTH BOX -->
-  <div style="flex:1; display:flex; align-items:center; justify-content:center; position:relative; padding:2rem; z-index:10; background:rgba(0,0,0,0.15); backdrop-filter:blur(8px);">
-    <div class="auth-card" style="max-width:420px; width:100%; box-shadow:0 25px 50px -12px rgba(0,0,0,0.4); border-radius:1.5rem; background:#fff; padding:2.5rem; position:relative; overflow:hidden;">
+  <div style="flex:1; display:flex; align-items:center; justify-content:center; position:relative; padding:2rem; z-index:10; background:rgba(0,0,0,0.15); backdrop-filter:blur(8px); overflow-y:auto;">
+    <div class="auth-card" style="max-width:420px; width:100%; box-shadow:0 25px 50px -12px rgba(0,0,0,0.4); border-radius:1.5rem; background:#fff; padding:2.5rem; position:relative; margin:auto;">
       
       <!-- Aesthetic accent top -->
-      <div style="position:absolute;top:0;left:0;right:0;height:6px;background:linear-gradient(90deg, var(--v), #10b981, var(--v1));"></div>
+      <div style="position:absolute;top:0;left:0;right:0;height:5px;background:linear-gradient(90deg, var(--v), #10b981, var(--v1));"></div>
 
       <!-- Logo -->
-      <div style="display:flex;flex-direction:column;align-items:center;margin-bottom:2rem;gap:0.8rem">
-        <img src="image/logo_smk.png" style="width:110px;height:110px;object-fit:contain;filter:drop-shadow(0 8px 16px rgba(75,102,54,0.2))">
-        <p style="color:var(--tx2);font-size:0.9rem;font-weight:600;margin:0;letter-spacing:0.5px;">Pusat Keunggulan Absensi Digital</p>
+      <div style="display:flex;flex-direction:column;align-items:center;margin-bottom:1.8rem;gap:0.5rem">
+        <img src="image/logo_smk.png" style="width:85px;height:85px;object-fit:contain;filter:drop-shadow(0 6px 12px rgba(75,102,54,0.2))">
+        <p style="color:var(--tx2);font-size:0.82rem;font-weight:600;margin:0;letter-spacing:0.3px;">Pusat Keunggulan Absensi Digital</p>
       </div>
 
       <!-- Tabs -->
-      <div style="display:flex;background:var(--bg2);border:1px solid var(--brd);border-radius:12px;padding:4px;margin-bottom:1.8rem;box-shadow:inset 0 2px 4px rgba(0,0,0,0.05);">
+      <div style="display:flex;background:var(--bg2);border:1px solid var(--brd);border-radius:10px;padding:4px;margin-bottom:1.8rem;box-shadow:inset 0 2px 4px rgba(0,0,0,0.05);">
         <button id="tabLogin" onclick="switchTab('login')"
-          style="flex:1;padding:0.7rem;border-radius:8px;border:none;background:var(--v);color:#fff;font-weight:700;font-size:0.9rem;font-family:'Nunito',sans-serif;cursor:pointer;transition:all .3s;box-shadow:0 4px 10px rgba(75,102,54,0.3);">Masuk</button>
+          style="flex:1;padding:0.65rem;border-radius:8px;border:none;background:var(--v);color:#fff;font-weight:700;font-size:0.88rem;font-family:'Nunito',sans-serif;cursor:pointer;transition:all .3s;box-shadow:0 4px 10px rgba(75,102,54,0.3);">Masuk</button>
         <button id="tabReg" onclick="switchTab('reg')"
-          style="flex:1;padding:0.7rem;border-radius:8px;border:none;background:transparent;color:var(--tx2);font-weight:600;font-size:0.9rem;font-family:'Nunito',sans-serif;cursor:pointer;transition:all .3s;">Daftar Akun</button>
+          style="flex:1;padding:0.65rem;border-radius:8px;border:none;background:transparent;color:var(--tx2);font-weight:600;font-size:0.88rem;font-family:'Nunito',sans-serif;cursor:pointer;transition:all .3s;">Daftar Akun</button>
       </div>
 
       <!-- LOGIN BOX -->
       <div id="boxLogin">
-        <div style="margin-bottom:1.5rem">
-          <h2 style="font-size:1.4rem;margin-bottom:0.4rem;font-weight:800;color:var(--tx1);">Selamat Datang!</h2>
-          <p style="font-size:0.9rem;color:var(--tx2);margin:0;">Silakan masuk ke portal SiAbsen SMK Anda.</p>
+        <div style="margin-bottom:1.3rem">
+          <h2 style="font-size:1.3rem;margin-bottom:0.3rem;font-weight:800;color:var(--tx1);">Selamat Datang!</h2>
+          <p style="font-size:0.85rem;color:var(--tx2);margin:0;">Silakan masuk ke portal SiAbsen Anda.</p>
         </div>
         <form onsubmit="handleLogin(event)">
+          <div class="fg" style="margin-bottom:1rem;">
+            <label class="fl" style="font-weight:600;color:var(--tx2);font-size:0.85rem;margin-bottom:0.4rem;">Alamat Email</label>
+            <input id="lEmail" type="email" class="fi" style="padding:0.75rem 1rem;font-size:0.9rem;background:#f9fafb;" placeholder="email@smk-anda.sch.id" required>
+          </div>
           <div class="fg" style="margin-bottom:1.2rem;">
-            <label class="fl" style="font-weight:600;color:var(--tx2);">Alamat Email</label>
-            <input id="lEmail" type="email" class="fi" style="padding:0.8rem 1rem;font-size:0.95rem;background:#f9fafb;" placeholder="email@smk-anda.sch.id" required>
+            <label class="fl" style="font-weight:600;color:var(--tx2);font-size:0.85rem;margin-bottom:0.4rem;">Kata Sandi</label>
+            <input id="lPass" type="password" class="fi" style="padding:0.75rem 1rem;font-size:0.9rem;background:#f9fafb;" placeholder="••••••••" required>
           </div>
-          <div class="fg" style="margin-bottom:1.5rem;">
-            <label class="fl" style="font-weight:600;color:var(--tx2);">Kata Sandi</label>
-            <input id="lPass" type="password" class="fi" style="padding:0.8rem 1rem;font-size:0.95rem;background:#f9fafb;" placeholder="••••••••" required>
-          </div>
-          <button id="loginBtn" type="submit" class="btn btn-pri wf" style="padding:0.9rem;font-size:1rem;font-weight:700;border-radius:10px;box-shadow:0 8px 16px rgba(75,102,54,0.25);">Masuk ke Dashboard</button>
-          <div style="text-align:center;margin-top:1.2rem">
+          <button id="loginBtn" type="submit" class="btn btn-pri wf" style="padding:0.85rem;font-size:0.98rem;font-weight:700;border-radius:10px;box-shadow:0 8px 16px rgba(75,102,54,0.25);">Masuk ke Dashboard</button>
+          <div style="text-align:center;margin-top:1rem">
             <button type="button" onclick="handleForgot()"
-              style="background:none;border:none;color:var(--v);font-size:0.85rem;font-weight:600;cursor:pointer;font-family:'Nunito',sans-serif;transition:opacity 0.2s;" onmouseover="this.style.opacity='0.8'" onmouseout="this.style.opacity='1'">Lupa kata sandi Anda?</button>
+              style="background:none;border:none;color:var(--v);font-size:0.82rem;font-weight:600;cursor:pointer;font-family:'Nunito',sans-serif;transition:opacity 0.2s;" onmouseover="this.style.opacity='0.8'" onmouseout="this.style.opacity='1'">Lupa kata sandi Anda?</button>
           </div>
         </form>
       </div>
 
       <!-- REGISTER BOX -->
       <div id="boxReg" style="display:none;">
-        <div style="margin-bottom:1.5rem">
-          <h2 style="font-size:1.4rem;margin-bottom:0.4rem;font-weight:800;color:var(--tx1);">Buat Akun Baru</h2>
-          <p style="font-size:0.9rem;color:var(--tx2);margin:0;">Daftar untuk mulai menggunakan SiAbsen.</p>
+        <div style="margin-bottom:1.3rem">
+          <h2 style="font-size:1.3rem;margin-bottom:0.3rem;font-weight:800;color:var(--tx1);">Buat Akun Baru</h2>
+          <p style="font-size:0.85rem;color:var(--tx2);margin:0;">Daftar untuk mulai menggunakan SiAbsen.</p>
         </div>
         <form onsubmit="handleRegister(event)">
-          <div class="fg" style="margin-bottom:1rem;"><label class="fl" style="font-weight:600;">Nama Lengkap</label><input id="rName" type="text" class="fi" style="background:#f9fafb;" placeholder="Nama lengkap Anda" required></div>
-          <div class="fg" style="margin-bottom:1rem;"><label class="fl" style="font-weight:600;">Alamat Email</label><input id="rEmail" type="email" class="fi" style="background:#f9fafb;" placeholder="email@sekolah.sch.id" required></div>
-          <div class="fg" style="margin-bottom:1rem;"><label class="fl" style="font-weight:600;">Kata Sandi</label><input id="rPass" type="password" class="fi" style="background:#f9fafb;" placeholder="Min. 6 karakter" required></div>
-          <div class="fg" id="nisnWrap" style="margin-bottom:1rem;"><label class="fl" style="font-weight:600;">NISN (Wajib Siswa)</label><input id="rNisn" type="text" class="fi" style="background:#f9fafb;" placeholder="10 Digit NISN"></div>
-          <div class="fg" id="nipWrap" style="display:none;margin-bottom:1rem;"><label class="fl" style="font-weight:600;">NIP (Wajib Guru)</label><input id="rNip" type="text" class="fi" style="background:#f9fafb;" placeholder="Nomor Induk Pegawai"></div>
-          <div class="fg" style="margin-bottom:1.5rem;"><label class="fl" style="font-weight:600;">Mendaftar Sebagai</label>
-            <select id="rRole" class="fi" style="background:#f9fafb;font-weight:600;" onchange="toggleRegFields(this.value)">
+          <div class="fg" style="margin-bottom:1rem;">
+            <label class="fl" style="font-weight:600;color:var(--tx2);font-size:0.85rem;margin-bottom:0.4rem;">Nama Lengkap</label>
+            <input id="rName" type="text" class="fi" style="background:#f9fafb;padding:0.75rem 1rem;font-size:0.9rem;" placeholder="Nama lengkap Anda" required>
+          </div>
+          <div class="fg" style="margin-bottom:1rem;">
+            <label class="fl" style="font-weight:600;color:var(--tx2);font-size:0.85rem;margin-bottom:0.4rem;">Alamat Email</label>
+            <input id="rEmail" type="email" class="fi" style="background:#f9fafb;padding:0.75rem 1rem;font-size:0.9rem;" placeholder="email@sekolah.sch.id" required>
+          </div>
+          <div class="fg" style="margin-bottom:1rem;">
+            <label class="fl" style="font-weight:600;color:var(--tx2);font-size:0.85rem;margin-bottom:0.4rem;">Kata Sandi</label>
+            <input id="rPass" type="password" class="fi" style="background:#f9fafb;padding:0.75rem 1rem;font-size:0.9rem;" placeholder="Min. 6 karakter" required>
+          </div>
+          <div class="fg" id="nisnWrap" style="margin-bottom:1rem;">
+            <label class="fl" style="font-weight:600;color:var(--tx2);font-size:0.85rem;margin-bottom:0.4rem;">NISN (Wajib Siswa)</label>
+            <input id="rNisn" type="text" class="fi" style="background:#f9fafb;padding:0.75rem 1rem;font-size:0.9rem;" placeholder="10 Digit NISN">
+          </div>
+          <div class="fg" id="nipWrap" style="display:none;margin-bottom:1rem;">
+            <label class="fl" style="font-weight:600;color:var(--tx2);font-size:0.85rem;margin-bottom:0.4rem;">NIP (Wajib Guru)</label>
+            <input id="rNip" type="text" class="fi" style="background:#f9fafb;padding:0.75rem 1rem;font-size:0.9rem;" placeholder="Nomor Induk Pegawai">
+          </div>
+          <div class="fg" style="margin-bottom:1.5rem;">
+            <label class="fl" style="font-weight:600;color:var(--tx2);font-size:0.85rem;margin-bottom:0.4rem;">Mendaftar Sebagai</label>
+            <select id="rRole" class="fi" style="background:#f9fafb;font-weight:600;padding:0.75rem 1rem;font-size:0.9rem;" onchange="toggleRegFields(this.value)">
               <option value="siswa">Siswa SMK</option>
               <option value="guru">Guru / Instruktur</option>
             </select>
@@ -217,7 +242,7 @@
             }
             toggleRegFields('siswa');
           </script>
-          <button id="regBtn" type="submit" class="btn btn-pri wf" style="padding:0.9rem;font-size:1rem;font-weight:700;border-radius:10px;box-shadow:0 8px 16px rgba(75,102,54,0.25);">Daftar Sekarang</button>
+          <button id="regBtn" type="submit" class="btn btn-pri wf" style="padding:0.85rem;font-size:0.98rem;font-weight:700;border-radius:10px;box-shadow:0 8px 16px rgba(75,102,54,0.25);">Daftar Sekarang</button>
         </form>
       </div>
 
@@ -259,9 +284,9 @@
           <span class="nav-new">PAGI</span>
         </div>
         <div class="nav" data-pg="rekap" onclick="navigateTo('rekap')">
-          <span class="nav-ic"><img src="image/add-document.png"
+          <span class="nav-ic"><img src="image/data_kelas.png"
               style="width:1.2em;height:1.2em;vertical-align:middle;filter:drop-shadow(0 2px 3px rgba(0,0,0,0.2))"></span>
-          Rekap Kehadiran
+          Rekap Absensi Kelas
         </div>
         <div class="nav" data-pg="izin" onclick="navigateTo('izin')">
           <span class="nav-ic"><img src="image/add-document.png"
@@ -872,6 +897,117 @@
                   style="width:1.2em;height:1.2em;vertical-align:middle;filter:drop-shadow(0 2px 3px rgba(0,0,0,0.2))">
               </li>
             </ol>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ════════════ PAGE: REKAP ABSENSI KELAS (SISWA) ════════════ -->
+    <div id="pg-rekap" class="page">
+      
+      <div class="filter-bar-flex" style="margin-bottom:1.5rem">
+        <div style="display:flex;align-items:center;gap:0.5rem;flex:1" data-r="admin,guru">
+          <label style="font-size:0.85rem;font-weight:700;color:var(--tx)">Kelas</label>
+          <select id="rekClass" class="fi" style="border-radius:100px;padding:0.6rem 1.2rem;border:none;background:var(--bg);width:100%">
+            <option value="">Semua Kelas</option>
+          </select>
+        </div>
+        <div style="display:flex;align-items:center;gap:0.5rem;flex:1">
+          <label style="font-size:0.85rem;font-weight:700;color:var(--tx)">Jenis</label>
+          <select id="rekType" class="fi" style="border-radius:100px;padding:0.6rem 1.2rem;border:none;background:var(--bg);width:100%">
+            <option value="">Semua Absensi</option>
+            <option value="sekolah">Absensi Sekolah</option>
+            <option value="mapel">Absensi Mapel</option>
+          </select>
+        </div>
+        <div style="display:flex;align-items:center;gap:0.5rem">
+          <label style="font-size:0.85rem;font-weight:700;color:var(--tx)">Tanggal</label>
+          <input id="rekDate" type="date" class="fi" style="border-radius:100px;padding:0.6rem 1.2rem;border:none;background:var(--bg)">
+        </div>
+        <button class="btn btn-pri" style="border-radius:100px;padding:0.6rem 1.5rem;margin-left:auto" onclick="loadRekap()">
+          <img src="image/search.png" style="width:1.2em;height:1.2em;vertical-align:middle;filter:brightness(0) invert(1)"> Tampilkan
+        </button>
+      </div>
+
+      <!-- Statistik Summary -->
+      <div class="card mb2" style="border:1px solid var(--brd);box-shadow:var(--s1);border-radius:var(--r)">
+        <div class="card-b">
+          <div class="g5 gap1">
+            <div style="background:var(--bg);padding:1rem;border-radius:var(--r2)">
+              <div class="fbet tsm mb1"><span class="tb7"><img src="image/checkbox.png" style="width:1.2em;height:1.2em;vertical-align:middle;"> Hadir</span><span id="rn_hadir" style="font-family:'Nunito',sans-serif;font-weight:900;color:var(--grn);font-size:1.2rem">0</span></div>
+              <div class="prog-track" style="height:6px;border-radius:100px"><div id="rr_hadir" class="prog-fill" style="width:0%;background:var(--grn);border-radius:100px"></div></div>
+            </div>
+            <div style="background:var(--bg);padding:1rem;border-radius:var(--r2)">
+              <div class="fbet tsm mb1"><span class="tb7"><img src="image/info.png" style="width:1.2em;height:1.2em;vertical-align:middle;"> Terlambat</span><span id="rn_terlambat" style="font-family:'Nunito',sans-serif;font-weight:900;color:var(--pnk);font-size:1.2rem">0</span></div>
+              <div class="prog-track" style="height:6px;border-radius:100px"><div id="rr_terlambat" class="prog-fill" style="width:0%;background:var(--pnk);border-radius:100px"></div></div>
+            </div>
+            <div style="background:var(--bg);padding:1rem;border-radius:var(--r2)">
+              <div class="fbet tsm mb1"><span class="tb7"><img src="image/add-document.png" style="width:1.2em;height:1.2em;vertical-align:middle;"> Izin</span><span id="rn_izin" style="font-family:'Nunito',sans-serif;font-weight:900;color:var(--v);font-size:1.2rem">0</span></div>
+              <div class="prog-track" style="height:6px;border-radius:100px"><div id="rr_izin" class="prog-fill" style="width:0%;background:var(--v);border-radius:100px"></div></div>
+            </div>
+            <div style="background:var(--bg);padding:1rem;border-radius:var(--r2)">
+              <div class="fbet tsm mb1"><span class="tb7"><img src="image/add.png" style="width:1.2em;height:1.2em;vertical-align:middle;"> Sakit</span><span id="rn_sakit" style="font-family:'Nunito',sans-serif;font-weight:900;color:var(--amb);font-size:1.2rem">0</span></div>
+              <div class="prog-track" style="height:6px;border-radius:100px"><div id="rr_sakit" class="prog-fill" style="width:0%;background:var(--amb);border-radius:100px"></div></div>
+            </div>
+            <div style="background:var(--bg);padding:1rem;border-radius:var(--r2)">
+              <div class="fbet tsm mb1"><span class="tb7"><span style="font-weight:bold;margin:0 4px;color:var(--red)">✕</span> Alpha</span><span id="rn_alpha" style="font-family:'Nunito',sans-serif;font-weight:900;color:var(--red);font-size:1.2rem">0</span></div>
+              <div class="prog-track" style="height:6px;border-radius:100px"><div id="rr_alpha" class="prog-fill" style="width:0%;background:var(--red);border-radius:100px"></div></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Rekap Absensi Sekolah -->
+      <div class="card mb2" id="rekCardSekolah">
+        <div class="card-h">
+          <div class="card-t"><img src="image/rekap_absensi_sekolah.png" style="width:1.2em;height:1.2em;vertical-align:middle;filter:drop-shadow(0 2px 3px rgba(0,0,0,0.2))"> Absensi Sekolah (Pagi)</div>
+          <button class="btn btn-xs btn-out" onclick="exportRekap()"><img src="image/add-document.png" style="width:1em;height:1em;vertical-align:middle;"> Export</button>
+        </div>
+        <div class="card-b np">
+          <div class="tw">
+            <table>
+              <thead>
+                <tr>
+                  <th data-r="admin,guru">Nama Siswa</th>
+                  <th data-r="admin,guru">NISN</th>
+                  <th data-r="admin,guru">Kelas</th>
+                  <th>Waktu</th>
+                  <th>Petugas / Sistem</th>
+                  <th>Status</th>
+                </tr>
+              </thead>
+              <tbody id="rekTbodySekolah">
+                <tr><td colspan="6" style="text-align:center;padding:2rem;color:var(--tx3)">Pilih tanggal & klik Tampilkan</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <!-- Rekap Absensi Mapel -->
+      <div class="card" id="rekCardMapel">
+        <div class="card-h">
+          <div class="card-t"><img src="image/rekap_absensi_mapel.png" style="width:1.2em;height:1.2em;vertical-align:middle;filter:drop-shadow(0 2px 3px rgba(0,0,0,0.2))"> Absensi Mata Pelajaran</div>
+          <button class="btn btn-xs btn-out" onclick="exportRekap()"><img src="image/add-document.png" style="width:1em;height:1em;vertical-align:middle;"> Export</button>
+        </div>
+        <div class="card-b np">
+          <div class="tw">
+            <table>
+              <thead>
+                <tr>
+                  <th data-r="admin,guru">Nama Siswa</th>
+                  <th data-r="admin,guru">NISN</th>
+                  <th data-r="admin,guru">Kelas</th>
+                  <th>Mapel</th>
+                  <th>Waktu</th>
+                  <th>Guru</th>
+                  <th>Status</th>
+                </tr>
+              </thead>
+              <tbody id="rekTbodyMapel">
+                <tr><td colspan="7" style="text-align:center;padding:2rem;color:var(--tx3)">Pilih tanggal & klik Tampilkan</td></tr>
+              </tbody>
+            </table>
           </div>
         </div>
       </div>
