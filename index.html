@@ -102,6 +102,37 @@
       .auth-landing { display: none !important; }
       .auth-card { padding: 1.5rem; background: #ffffff; border-radius: 1.5rem; box-shadow: 0 10px 30px rgba(0,0,0,0.1); }
     }
+    
+    .pagination {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 0.5rem;
+      margin-top: 1.5rem;
+      flex-wrap: wrap;
+    }
+    .pagination button {
+      padding: 0.5rem 0.8rem;
+      border: 1px solid var(--brd);
+      background: #fff;
+      color: var(--tx1);
+      border-radius: 0.5rem;
+      cursor: pointer;
+      font-weight: 600;
+      transition: all 0.2s;
+    }
+    .pagination button:hover:not(:disabled) {
+      background: var(--bg2);
+    }
+    .pagination button.active {
+      background: var(--v);
+      color: #fff;
+      border-color: var(--v);
+    }
+    .pagination button:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
   </style>
 </head>
 
@@ -280,6 +311,7 @@
 
       <!-- Siswa -->
       <div data-r="siswa">
+        <div class="sb-lbl">Presensi & Kehadiran</div>
         <div class="nav" data-pg="camera" onclick="navigateTo('camera')">
           <span class="nav-ic"><img src="image/camera.png"
               style="width:1.2em;height:1.2em;vertical-align:middle;filter:drop-shadow(0 2px 3px rgba(0,0,0,0.2))"></span>
@@ -297,20 +329,29 @@
           Ajukan Izin/Sakit
           <span class="nav-bdg" id="izinBdgSiswa" style="display:none">0</span>
         </div>
-        <div class="nav" data-pg="pengumuman" onclick="navigateTo('pengumuman')">
-          <span class="nav-ic"><img src="image/bell.png"
-              style="width:1.2em;height:1.2em;vertical-align:middle;filter:drop-shadow(0 2px 3px rgba(0,0,0,0.2))"></span>
-          Pengumuman
-        </div>
+
+        <div class="sb-lbl">Akademik & Info</div>
         <div class="nav" data-pg="jadwal" onclick="navigateTo('jadwal')">
           <span class="nav-ic"><img src="image/jadwal_pelajaran.png"
               style="width:1.2em;height:1.2em;vertical-align:middle;filter:drop-shadow(0 2px 3px rgba(0,0,0,0.2))"></span>
           Jadwal Pelajaran
         </div>
+        <div class="nav" data-pg="pengumuman" onclick="navigateTo('pengumuman')">
+          <span class="nav-ic"><img src="image/bell.png"
+              style="width:1.2em;height:1.2em;vertical-align:middle;filter:drop-shadow(0 2px 3px rgba(0,0,0,0.2))"></span>
+          Pengumuman
+        </div>
+
+        <div class="sb-lbl">Lainnya</div>
         <div class="nav" data-pg="profil" onclick="navigateTo('profil')">
           <span class="nav-ic"><img src="image/user.png"
               style="width:1.2em;height:1.2em;vertical-align:middle;filter:drop-shadow(0 2px 3px rgba(0,0,0,0.2))"></span>
           Profil Saya
+        </div>
+        <div class="nav" data-pg="verifikasi" onclick="navigateTo('verifikasi')">
+          <span class="nav-ic"><img src="image/camera.png"
+              style="width:1.2em;height:1.2em;vertical-align:middle;filter:drop-shadow(0 2px 3px rgba(0,0,0,0.2))"></span>
+          Verifikasi Wajah
         </div>
       </div>
 
@@ -861,7 +902,7 @@
             <canvas id="scanCvs" style="display:none"></canvas>
             <div id="scanMsg" style="font-size:.86rem;font-weight:600;color:var(--tx2);margin-bottom:.9rem">Klik "Buka
               Kamera" untuk mulai</div>
-            <div style="font-size:.78rem;color:var(--tx3);margin-bottom:1rem">
+            <div style="font-size:.78rem;color:var(--tx3);margin-bottom:1rem;display:none;">
               <img src="image/info.png"
                 style="width:1.2em;height:1.2em;vertical-align:middle;filter:drop-shadow(0 2px 3px rgba(0,0,0,0.2))">
               Liveness Score: <strong id="livenessVal" style="color:var(--v)">—</strong>
@@ -1330,6 +1371,7 @@
       <div id="stuCardsWrap" style="display: none; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 1rem;">
         <!-- Data Siswa Cards will be rendered here -->
       </div>
+      <div id="stuPagination" class="pagination"></div>
     </div>
 
     <!-- ════════════ PAGE: DATA GURU ════════════ -->
@@ -1360,6 +1402,7 @@
           </div>
         </div>
       </div>
+      <div id="guruPagination" class="pagination"></div>
     </div>
 
     <!-- ════════════ PAGE: KELAS ════════════ -->
@@ -1479,6 +1522,7 @@
       </div>
       <!-- Cards for Siswa -->
       <div id="schCardsWrap" class="g3" style="display:none"></div>
+      <div id="schPagination" class="pagination"></div>
     </div>
 
     <!-- ════════════ PAGE: PENGUMUMAN ════════════ -->
@@ -1497,6 +1541,11 @@
       <div style="max-width:800px">
         <div id="annWrap"></div>
       </div>
+    </div>
+
+    <!-- ════════════ PAGE: VERIFIKASI WAJAH ════════════ -->
+    <div id="pg-verifikasi" class="page">
+      <div style="max-width:680px;margin:0 auto" id="verifikasiWrap"></div>
     </div>
 
     <!-- ════════════ PAGE: PROFIL ════════════ -->
@@ -1692,8 +1741,7 @@
           <div class="fg"><label class="fl">Kelas</label><select id="stuClsId" class="fi">
               <option value="">—</option>
             </select></div>
-          <div class="fg"><label class="fl">Nama Orang Tua</label><input id="stuParent" type="text" class="fi"></div>
-          <div class="fg"><label class="fl">HP Orang Tua</label><input id="stuParentPh" type="tel" class="fi"></div>
+
         </div>
         <div class="mf"><button type="button" class="btn btn-out" onclick="closeMdl('stuMdl')">Batal</button><button
             type="submit" class="btn btn-pri"><img src="image/add-document.png"
