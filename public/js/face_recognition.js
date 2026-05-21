@@ -594,7 +594,7 @@ async function doCapture() {
             scanMsg('⚠️ Wajah terdeteksi sebagai: ' + result.student.name + ' (bukan Anda)', 'err');
           }
         } else if (result.student) {
-          scanMsg('🔄 Kecocokan: ' + result.percent + '% — perlu ≥60%. Coba ubah posisi...', '');
+          scanMsg('🔄 Wajah belum cocok (perlu ≥60%). Coba ubah posisi...', '');
         }
       } else {
         scanMsg('👤 Wajah tidak terdeteksi. Posisikan wajah di lingkaran.', '');
@@ -606,7 +606,7 @@ async function doCapture() {
   }
 
   if (bestResult && bestResult.passed) {
-    scanMsg('✅ Identitas COCOK! (' + bestResult.percent + '%) — ' + bestResult.student.name, 'ok');
+    scanMsg('✅ Identitas COCOK! — ' + bestResult.student.name, 'ok');
     id('btnCatatHdr').disabled = false;
     id('btnCatatHdr').innerHTML = '🚀 Catat Kehadiran Sekarang';
     id('btnCatatHdr').classList.add('pulse');
