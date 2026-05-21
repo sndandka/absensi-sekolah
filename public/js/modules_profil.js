@@ -60,8 +60,20 @@ async function profil() {
         </form>
       </div></div>
     </div>
-    ${isSiswa ? `<div class="card mt2" style="border:2px dashed var(--v2);background:var(--v3);">
-      <div class="card-h"><div class="card-t"><img src="image/camera.png" style="width:1.2em;height:1.2em;vertical-align:middle;filter:drop-shadow(0 2px 3px rgba(0,0,0,0.2))"> Verifikasi Wajah (AI Face Recognition)</div></div>
+    `;
+}
+
+async function verifikasi() {
+  setHdr('Verifikasi Wajah', 'Daftarkan wajah Anda untuk absensi mandiri');
+  const uid = App.profile?.id; if (!uid) return;
+  const w = id('verifikasiWrap'); if (!w) return;
+
+  const { data: stu } = await supabase.from('students').select('*').eq('user_id', uid).single();
+  const extra = stu || {};
+
+  w.innerHTML = `
+    <div class="card" style="border:2px dashed var(--v2);background:var(--v3);">
+      <div class="card-h"><div class="card-t"><img src="image/camera.png" style="width:1.2em;height:1.2em;vertical-align:middle;filter:drop-shadow(0 2px 3px rgba(0,0,0,0.2))"> Pendaftaran Verifikasi Wajah (AI Face Recognition)</div></div>
       <div class="card-b">
         <div class="fcen" style="flex-direction:column;gap:1.5rem;padding:1.5rem 0;">
           <!-- Face Status Badge -->
@@ -99,7 +111,7 @@ async function profil() {
           </div>
         </div>
       </div>
-    </div>`: ''}`;
+    </div>`;
 }
 
 async function saveStudentProfil(e) {
