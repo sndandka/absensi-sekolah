@@ -132,6 +132,9 @@ async function saveJournal(e) {
 const DAYS = ['Minggu', 'Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat', 'Sabtu'];
 const DAY_COLORS = ['bn', 'bv', 'bb', 'bg', 'ba', 'bp', 'bs', 'bn'];
 
+let schList = [];
+let schPage = 1, schPerPage = 10;
+
 async function jadwal() {
   setHdr('Jadwal Pelajaran', 'Kelola jadwal kegiatan belajar mengajar');
 
@@ -207,6 +210,17 @@ async function fetchSchedules() {
   if (error) { console.error('Fetch schedules error:', error); return; }
   if (!Array.isArray(rows)) return;
 
+  schList = rows;
+  schPage = 1;
+  renderSchTable();
+}
+
+function renderSchTable() {
+  const rows = schList;
+  const tbody = id('scheduleTbody');
+  const role = App.profile.role;
+  const isAdmin = role === 'admin';
+
   // Render stats for admin
   if (isAdmin) {
     renderSchStats(rows);
@@ -231,11 +245,19 @@ async function fetchSchedules() {
     if (schCardsWrap) schCardsWrap.style.display = 'none';
   }
 
-  if (!rows.length) {
+  const totalItems = rows.length;
+  const totalPages = Math.ceil(totalItems / schPerPage);
+  if (schPage > totalPages && totalPages > 0) schPage = totalPages;
+  const startIdx = (schPage - 1) * schPerPage;
+  const pagedList = rows.slice(startIdx, startIdx + schPerPage);
+
+  renderSchPagination(totalItems);
+
+  if (!pagedList.length) {
     if (role === 'siswa' && schCardsWrap) {
       schCardsWrap.innerHTML = `<div class="card fcen" style="padding:2rem;color:var(--tx3);width:100%">Belum ada jadwal pelajaran</div>`;
     }
-    tbody.innerHTML = `<tr><td colspan="6" style="text-align:center;padding:2rem;color:var(--tx3)">Belum ada jadwal pelajaran</td></tr>`;
+    if (tbody) tbody.innerHTML = `<tr><td colspan="6" style="text-align:center;padding:2rem;color:var(--tx3)">Belum ada jadwal pelajaran</td></tr>`;
     return;
   }
 
@@ -311,7 +333,7 @@ async function fetchSchedules() {
       </style>
     `;
 
-    schCardsWrap.innerHTML = styleTag + rows.map(s => {
+    schCardsWrap.innerHTML = styleTag + pagedList.map(s => {
       const dayName = DAYS[s.day] || '—';
       const teacherName = s.teachers?.name || '—';
       const teacherSubj = s.teachers?.subject || '';
@@ -348,7 +370,7 @@ async function fetchSchedules() {
       </div>`;
     }).join('');
   } else {
-    tbody.innerHTML = rows.map(s => {
+    if (tbody) tbody.innerHTML = pagedList.map(s => {
       const dayName = DAYS[s.day] || '—';
       const teacherName = s.teachers?.name || '—';
       const teacherSubj = s.teachers?.subject || '';
@@ -389,6 +411,29 @@ async function fetchSchedules() {
       </tr>`;
     }).join('');
   }
+}
+
+function renderSchPagination(totalItems) {
+  const container = id('schPagination');
+  if(!container) return;
+  const totalPages = Math.ceil(totalItems / schPerPage);
+  if(totalPages <= 1) { container.innerHTML = ''; return; }
+  
+  let html = `<button ${schPage === 1 ? 'disabled' : ''} onclick="changeSchPage(${schPage - 1})">Prev</button>`;
+  for (let i = 1; i <= totalPages; i++) {
+    if (i === 1 || i === totalPages || (i >= schPage - 1 && i <= schPage + 1)) {
+      html += `<button class="${i === schPage ? 'active' : ''}" onclick="changeSchPage(${i})">${i}</button>`;
+    } else if (i === schPage - 2 || i === schPage + 2) {
+      html += `<span style="padding:0 5px;color:var(--tx2)">...</span>`;
+    }
+  }
+  html += `<button ${schPage === totalPages ? 'disabled' : ''} onclick="changeSchPage(${schPage + 1})">Next</button>`;
+  container.innerHTML = html.replace(/(<span[^>]*>\.\.\.<\/span>)+/g, '<span style="padding:0 5px;color:var(--tx2)">...</span>');
+}
+
+function changeSchPage(p) {
+  schPage = p;
+  renderSchTable();
 }
 
 function goToInputPresensi(classId, subjectId) {
