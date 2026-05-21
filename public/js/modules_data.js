@@ -6,11 +6,13 @@
    ║  3. DATA SISWA               ║
    ╚══════════════════════════════╝ */
 let stuList=[], classesMap={};
+let stuPage=1, stuPerPage=10;
 async function siswa(){
   setHdr('Data Siswa','Manajemen data siswa sekolah');
   await fillClassSel('stuCls',true); await fetchStu();
 }
 async function fetchStu(clsId=''){
+  stuPage = 1;
   const isAdmin = App.profile?.role === 'admin';
   const tableCard = id('stuTableCard');
   const cardsWrap = id('stuCardsWrap');
@@ -57,13 +59,21 @@ function renderStuTable(list) {
   const tbTbody = id('stuTbody');
   const cardsWrap = id('stuCardsWrap'); 
 
+  const totalItems = list.length;
+  const totalPages = Math.ceil(totalItems / stuPerPage);
+  if (stuPage > totalPages && totalPages > 0) stuPage = totalPages;
+  const startIdx = (stuPage - 1) * stuPerPage;
+  const pagedList = list.slice(startIdx, startIdx + stuPerPage);
+
+  renderStuPagination(totalItems);
+
   if (isAdmin) {
     if (!tbTbody) return;
-    if (!list.length) {
+    if (!pagedList.length) {
       tbTbody.innerHTML = '<tr><td colspan="7" style="text-align:center;padding:2rem;color:var(--tx3)">Belum ada data siswa</td></tr>';
       return;
     }
-    tbTbody.innerHTML = list.map((s, i) => `<tr>
+    tbTbody.innerHTML = pagedList.map((s, i) => `<tr>
       <td style="font-weight:700">${s.name}</td>
       <td class="t2">${s.nisn || '—'}</td>
       <td class="t2">${s.no || '—'}</td>
@@ -77,11 +87,11 @@ function renderStuTable(list) {
     </tr>`).join('');
   } else {
     if (!cardsWrap) return;
-    if (!list.length) {
+    if (!pagedList.length) {
       cardsWrap.innerHTML = '<div style="grid-column:1/-1;text-align:center;padding:2rem;color:var(--tx3)">Belum ada data siswa</div>';
       return;
     }
-    cardsWrap.innerHTML = list.map((s, i) => `
+    cardsWrap.innerHTML = pagedList.map((s, i) => `
       <div class="card" style="display:flex;flex-direction:column;border:1.5px solid var(--brd);border-radius:1rem;overflow:hidden;box-shadow:var(--s1);transition:transform 0.2s, box-shadow 0.2s" onmouseover="this.style.transform='translateY(-2px)';this.style.boxShadow='var(--s2)'" onmouseout="this.style.transform='translateY(0)';this.style.boxShadow='var(--s1)'">
         <div style="padding:1rem 1.2rem;background:var(--bg2);border-bottom:1px solid var(--brd);display:flex;justify-content:space-between;align-items:center">
           <span class="bdg bv" style="font-size:0.75rem">${classesMap[s.class_id] || 'Tidak Ada Kelas'}</span>
@@ -118,7 +128,38 @@ function renderStuTable(list) {
   }
 }
 
+function renderStuPagination(totalItems) {
+  const container = id('stuPagination');
+  if(!container) return;
+  const totalPages = Math.ceil(totalItems / stuPerPage);
+  if(totalPages <= 1) { container.innerHTML = ''; return; }
+  
+  let html = `<button ${stuPage === 1 ? 'disabled' : ''} onclick="changeStuPage(${stuPage - 1})">Prev</button>`;
+  for (let i = 1; i <= totalPages; i++) {
+    if (i === 1 || i === totalPages || (i >= stuPage - 1 && i <= stuPage + 1)) {
+      html += `<button class="${i === stuPage ? 'active' : ''}" onclick="changeStuPage(${i})">${i}</button>`;
+    } else if (i === stuPage - 2 || i === stuPage + 2) {
+      html += `<span style="padding:0 5px;color:var(--tx2)">...</span>`;
+    }
+  }
+  html += `<button ${stuPage === totalPages ? 'disabled' : ''} onclick="changeStuPage(${stuPage + 1})">Next</button>`;
+  container.innerHTML = html.replace(/(<span[^>]*>\.\.\.<\/span>)+/g, '<span style="padding:0 5px;color:var(--tx2)">...</span>');
+}
+
+function changeStuPage(p) {
+  stuPage = p;
+  const searchInput = document.querySelector('#pg-siswa input[type="search"]');
+  const val = searchInput ? searchInput.value : '';
+  if(val) {
+    const v = val.toLowerCase();
+    renderStuTable(stuList.filter(s => (s.name||'').toLowerCase().includes(v) || (s.nisn||'').toLowerCase().includes(v)));
+  } else {
+    renderStuTable(stuList);
+  }
+}
+
 function filterStu(val) {
+  stuPage = 1;
   if(!val) return renderStuTable(stuList);
   const v = val.toLowerCase();
   renderStuTable(stuList.filter(s => (s.name||'').toLowerCase().includes(v) || (s.nisn||'').toLowerCase().includes(v)));
@@ -141,8 +182,7 @@ async function editStu(eid) {
   id('stuNo').value = s.no || '';
   id('stuGender').value = s.gender || 'L';
   id('stuPhone').value = s.phone || '';
-  id('stuParent').value = s.parent_name || '';
-  id('stuParentPh').value = s.parent_phone || '';
+
   await fillClassSel('stuClsId');
   id('stuClsId').value = s.class_id || '';
   id('stuMdlTitle').textContent = 'Edit Siswa';
@@ -158,8 +198,7 @@ async function saveStu(e){
     no: parseInt(id('stuNo').value) || 0,
     gender: id('stuGender').value,
     phone: id('stuPhone').value.trim() || null,
-    parent_name: id('stuParent').value.trim() || null,
-    parent_phone: id('stuParentPh').value.trim() || null,
+
     class_id: parseInt(id('stuClsId').value) || null
   };
 
@@ -193,7 +232,9 @@ async function delStu(eid,name){
 }
 
 let tchrList = [];
+let guruPage = 1, guruPerPage = 10;
 async function guru(){
+  guruPage = 1;
   setHdr('Data Guru','Manajemen data guru & wali kelas');
   const { data, error } = await supabase.from('teachers').select('*').order('name');
   if (error) console.error('fetch guru error:', error);
@@ -203,11 +244,20 @@ async function guru(){
 
 function renderTchrTable(list) {
   const tb = id('guruTbody'); if (!tb) return;
-  if (!list.length) {
+
+  const totalItems = list.length;
+  const totalPages = Math.ceil(totalItems / guruPerPage);
+  if (guruPage > totalPages && totalPages > 0) guruPage = totalPages;
+  const startIdx = (guruPage - 1) * guruPerPage;
+  const pagedList = list.slice(startIdx, startIdx + guruPerPage);
+
+  renderGuruPagination(totalItems);
+
+  if (!pagedList.length) {
     tb.innerHTML = '<tr><td colspan="6" style="text-align:center;padding:2rem;color:var(--tx3)">Belum ada data guru</td></tr>';
     return;
   }
-  tb.innerHTML = list.map(g => `<tr>
+  tb.innerHTML = pagedList.map(g => `<tr>
     <td style="font-weight:700">${g.name}</td>
     <td class="t2">${g.nip || '—'}</td>
     <td class="t2">${g.subject || '—'}</td>
@@ -220,7 +270,38 @@ function renderTchrTable(list) {
   </tr>`).join('');
 }
 
+function renderGuruPagination(totalItems) {
+  const container = id('guruPagination');
+  if(!container) return;
+  const totalPages = Math.ceil(totalItems / guruPerPage);
+  if(totalPages <= 1) { container.innerHTML = ''; return; }
+  
+  let html = `<button ${guruPage === 1 ? 'disabled' : ''} onclick="changeGuruPage(${guruPage - 1})">Prev</button>`;
+  for (let i = 1; i <= totalPages; i++) {
+    if (i === 1 || i === totalPages || (i >= guruPage - 1 && i <= guruPage + 1)) {
+      html += `<button class="${i === guruPage ? 'active' : ''}" onclick="changeGuruPage(${i})">${i}</button>`;
+    } else if (i === guruPage - 2 || i === guruPage + 2) {
+      html += `<span style="padding:0 5px;color:var(--tx2)">...</span>`;
+    }
+  }
+  html += `<button ${guruPage === totalPages ? 'disabled' : ''} onclick="changeGuruPage(${guruPage + 1})">Next</button>`;
+  container.innerHTML = html.replace(/(<span[^>]*>\.\.\.<\/span>)+/g, '<span style="padding:0 5px;color:var(--tx2)">...</span>');
+}
+
+function changeGuruPage(p) {
+  guruPage = p;
+  const searchInput = document.querySelector('#pg-guru input[type="search"]');
+  const val = searchInput ? searchInput.value : '';
+  if(val) {
+    const v = val.toLowerCase();
+    renderTchrTable(tchrList.filter(g => (g.name||'').toLowerCase().includes(v) || (g.nip||'').toLowerCase().includes(v)));
+  } else {
+    renderTchrTable(tchrList);
+  }
+}
+
 function filterGuru(val) {
+  guruPage = 1;
   if(!val) return renderTchrTable(tchrList);
   const v = val.toLowerCase();
   renderTchrTable(tchrList.filter(g => (g.name||'').toLowerCase().includes(v) || (g.nip||'').toLowerCase().includes(v)));
