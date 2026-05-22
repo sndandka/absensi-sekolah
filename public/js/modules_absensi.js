@@ -37,9 +37,9 @@ function renderRS() {
   if(rsIsSiswa) {
     if(!pagedList.length) tbody.innerHTML = `<tr><td colspan="3" style="text-align:center;padding:2rem;color:var(--tx3)">Anda belum memiliki riwayat absensi pagi pada rentang tanggal ini</td></tr>`;
     else tbody.innerHTML = pagedList.map(r=>`<tr>
-      <td>${ftm(r.time)}</td>
-      <td class="t2 txs">${r.teacher_name||'Sistem (AI)'}</td>
-      <td>${mkBadge(r.status)}</td>
+      <td data-label="Waktu">${ftm(r.time)}</td>
+      <td data-label="Guru Piket" class="t2 txs">${r.teacher_name||'Sistem (AI)'}</td>
+      <td data-label="Status">${mkBadge(r.status)}</td>
     </tr>`).join('');
   } else {
     if(!pagedList.length) tbody.innerHTML = `<tr><td colspan="8" style="text-align:center;padding:2rem;color:var(--tx3)">Tidak ada data absensi sekolah pada tanggal yang dipilih</td></tr>`;
@@ -70,10 +70,10 @@ function renderRM() {
   if(rmIsSiswa) {
     if(!pagedList.length) tbody.innerHTML = `<tr><td colspan="4" style="text-align:center;padding:2rem;color:var(--tx3)">Anda belum memiliki riwayat absensi mapel pada rentang tanggal ini</td></tr>`;
     else tbody.innerHTML = pagedList.map(r=>`<tr>
-      <td class="t2" style="font-weight:600;color:var(--v)"><div style="display:flex;align-items:center"><span class="bdg bb" style="font-size:10px;padding:2px 6px;margin-right:5px"><img src="image/add-document.png" style="width:1.2em;height:1.2em;vertical-align:middle"> MAPEL</span> ${r.subject||'—'}</div></td>
-      <td>${ftm(r.time)}</td>
-      <td class="t2 txs">${r.teacher_name||'Sistem (AI)'}</td>
-      <td>${mkBadge(r.status)}</td>
+      <td data-label="Mapel" class="t2" style="font-weight:600;color:var(--v)"><div style="display:flex;align-items:center"><span class="bdg bb" style="font-size:10px;padding:2px 6px;margin-right:5px"><img src="image/add-document.png" style="width:1.2em;height:1.2em;vertical-align:middle"> MAPEL</span> ${r.subject||'—'}</div></td>
+      <td data-label="Waktu">${ftm(r.time)}</td>
+      <td data-label="Guru" class="t2 txs">${r.teacher_name||'Sistem (AI)'}</td>
+      <td data-label="Status">${mkBadge(r.status)}</td>
     </tr>`).join('');
   } else {
     if(!pagedList.length) tbody.innerHTML = `<tr><td colspan="8" style="text-align:center;padding:2rem;color:var(--tx3)">Tidak ada data absensi mapel pada tanggal yang dipilih</td></tr>`;
@@ -820,10 +820,10 @@ async function loadRekap(){
         ` : '';
         return `<tr>
           ${adminCols}
-          <td class="t2" style="font-weight:600;color:var(--v)"><div style="display:flex;align-items:center"><span class="bdg bb" style="font-size:10px;padding:2px 6px;margin-right:5px"><img src="image/add-document.png" style="width:1.2em;height:1.2em;vertical-align:middle"> MAPEL</span> ${r.subject||'—'}</div></td>
-          <td>${ftm(r.time)}</td>
-          <td class="t2 txs">${r.teacher_name||'Sistem (AI)'}</td>
-          <td>${mkBadge(r.status)}</td>
+          <td data-label="Mapel" class="t2" style="font-weight:600;color:var(--v)"><div style="display:flex;align-items:center"><span class="bdg bb" style="font-size:10px;padding:2px 6px;margin-right:5px"><img src="image/add-document.png" style="width:1.2em;height:1.2em;vertical-align:middle"> MAPEL</span> ${r.subject||'—'}</div></td>
+          <td data-label="Waktu">${ftm(r.time)}</td>
+          <td data-label="Guru" class="t2 txs">${r.teacher_name||'Sistem (AI)'}</td>
+          <td data-label="Status">${mkBadge(r.status)}</td>
         </tr>`;
       }).join('');
     }
