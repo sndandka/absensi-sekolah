@@ -4,19 +4,66 @@
 
 async function handleLogin(e){
   e.preventDefault();
-  const email = id('lEmail').value.trim(), pass = id('lPass').value;
+  const role = window._loginRole || 'siswa';
+  const pass = id('lPass').value;
   const btn = id('loginBtn');
-  if(!email||!pass) return showToast('Isi email dan password!','warning');
-  btn.innerHTML='<div class="spin"></div>'; btn.disabled=true;
-  try{
-    const { data, error } = await supabase.auth.signInWithPassword({ email, password: pass });
-    if(error) throw error;
-    
-    // Login success - reload session
-    await checkSession();
-  }catch(err){
-    showToast('Login gagal: '+err.message,'error');
-    btn.innerHTML='Masuk →'; btn.disabled=false;
+
+  if(role === 'siswa') {
+    // Student login via NISN
+    const nisn = id('lNisn')?.value.trim();
+    if(!nisn || !pass) return showToast('Isi NISN dan password!','warning');
+    btn.innerHTML='<div class="spin"></div>'; btn.disabled=true;
+
+    try {
+      const { data: email, error: rpcErr } = await supabase.rpc('get_email_by_nisn', { p_nisn: nisn });
+
+      if(rpcErr || !email) {
+        btn.innerHTML='Masuk'; btn.disabled=false;
+        return showToast('NISN tidak ditemukan atau akun belum terhubung. Pastikan NISN sudah terdaftar dan sudah registrasi akun.','error');
+      }
+
+      const { data, error } = await supabase.auth.signInWithPassword({ email, password: pass });
+      if(error) throw error;
+      await checkSession();
+    } catch(err) {
+      showToast('Login gagal: '+err.message,'error');
+      btn.innerHTML='Masuk'; btn.disabled=false;
+    }
+  } else if(role === 'guru') {
+    // Teacher login via NIP
+    const nip = id('lNip')?.value.trim();
+    if(!nip || !pass) return showToast('Isi NIP dan password!','warning');
+    btn.innerHTML='<div class="spin"></div>'; btn.disabled=true;
+
+    try {
+      const { data: email, error: rpcErr } = await supabase.rpc('get_email_by_nip', { p_nip: nip });
+
+      if(rpcErr || !email) {
+        btn.innerHTML='Masuk'; btn.disabled=false;
+        return showToast('NIP tidak ditemukan atau akun belum terhubung. Pastikan NIP sudah terdaftar dan sudah registrasi akun.','error');
+      }
+
+      const { data, error } = await supabase.auth.signInWithPassword({ email, password: pass });
+      if(error) throw error;
+      await checkSession();
+    } catch(err) {
+      showToast('Login gagal: '+err.message,'error');
+      btn.innerHTML='Masuk'; btn.disabled=false;
+    }
+  } else {
+    // Admin login via email
+    const email = id('lEmail')?.value.trim();
+    if(!email || !pass) return showToast('Isi email dan password!','warning');
+    btn.innerHTML='<div class="spin"></div>'; btn.disabled=true;
+
+    try {
+      const { data, error } = await supabase.auth.signInWithPassword({ email, password: pass });
+      if(error) throw error;
+      await checkSession();
+    } catch(err) {
+      showToast('Login gagal: '+err.message,'error');
+      btn.innerHTML='Masuk'; btn.disabled=false;
+    }
   }
 }
 
