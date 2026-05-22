@@ -131,7 +131,7 @@ async function dashSiswa(){
   
   // Get settings
   const { data: sRows } = await supabase.from('settings').select('*');
-  const sets = {}; sRows.forEach(r => sets[r.setting_key] = r.setting_value);
+  const sets = {}; if (sRows) sRows.forEach(r => sets[r.setting_key] = r.setting_value);
   
   // Fill Header
   if (stu) {
