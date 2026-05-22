@@ -259,19 +259,6 @@
           <p style="font-size:0.85rem;color:var(--tx2);margin:0;">Silakan masuk ke portal SiAbsen Anda.</p>
         </div>
         <form onsubmit="handleLogin(event)">
-          <!-- Role Selector (3 tabs) -->
-          <div class="fg" style="margin-bottom:1rem;">
-            <label class="fl" style="font-weight:600;color:var(--tx2);font-size:0.85rem;margin-bottom:0.4rem;">Masuk Sebagai</label>
-            <div style="display:flex;background:var(--bg2);border:1px solid var(--brd);border-radius:10px;padding:3px;">
-              <button type="button" id="loginRoleSiswa" onclick="switchLoginRole('siswa')"
-                style="flex:1;padding:0.55rem;border-radius:8px;border:none;background:var(--v);color:#fff;font-weight:700;font-size:0.82rem;cursor:pointer;transition:all .3s;box-shadow:0 2px 6px rgba(75,102,54,0.25);">🎓 Siswa</button>
-              <button type="button" id="loginRoleGuru" onclick="switchLoginRole('guru')"
-                style="flex:1;padding:0.55rem;border-radius:8px;border:none;background:transparent;color:var(--tx2);font-weight:600;font-size:0.82rem;cursor:pointer;transition:all .3s;">👨‍🏫 Guru</button>
-              <button type="button" id="loginRoleAdmin" onclick="switchLoginRole('admin')"
-                style="flex:1;padding:0.55rem;border-radius:8px;border:none;background:transparent;color:var(--tx2);font-weight:600;font-size:0.82rem;cursor:pointer;transition:all .3s;">🛡️ Admin</button>
-            </div>
-          </div>
-
           <!-- NISN Field (for Siswa) -->
           <div class="fg" id="loginNisnWrap" style="margin-bottom:1rem;">
             <label class="fl" style="font-weight:600;color:var(--tx2);font-size:0.85rem;margin-bottom:0.4rem;">NISN</label>
@@ -293,11 +280,22 @@
               placeholder="email@smk-anda.sch.id">
           </div>
 
-          <div class="fg" style="margin-bottom:1.2rem;">
+          <div class="fg" style="margin-bottom:1rem;">
             <label class="fl" style="font-weight:600;color:var(--tx2);font-size:0.85rem;margin-bottom:0.4rem;">Kata Sandi</label>
             <input id="lPass" type="password" class="fi"
               style="padding:0.75rem 1rem;font-size:0.9rem;background:#f9fafb;" placeholder="••••••••" required>
           </div>
+
+          <!-- Role Selector (dropdown, below password) -->
+          <div class="fg" style="margin-bottom:1.2rem;">
+            <label class="fl" style="font-weight:600;color:var(--tx2);font-size:0.85rem;margin-bottom:0.4rem;">Masuk Sebagai</label>
+            <select id="loginRoleSelect" class="fi" style="padding:0.75rem 1rem;font-size:0.9rem;background:#f9fafb;font-weight:600;" onchange="switchLoginRole(this.value)">
+              <option value="siswa">Siswa</option>
+              <option value="guru">Guru</option>
+              <option value="admin">Admin</option>
+            </select>
+          </div>
+
           <button id="loginBtn" type="submit" class="btn btn-pri wf"
             style="padding:0.85rem;font-size:0.98rem;font-weight:700;border-radius:10px;box-shadow:0 8px 16px rgba(75,102,54,0.25);">Masuk</button>
           <div style="text-align:center;margin-top:1rem;">
@@ -311,26 +309,12 @@
         window._loginRole = 'siswa';
         function switchLoginRole(role) {
           window._loginRole = role;
-          const btns = {
-            siswa: document.getElementById('loginRoleSiswa'),
-            guru: document.getElementById('loginRoleGuru'),
-            admin: document.getElementById('loginRoleAdmin')
-          };
-          const wraps = {
+          var wraps = {
             siswa: document.getElementById('loginNisnWrap'),
             guru: document.getElementById('loginNipWrap'),
             admin: document.getElementById('loginEmailWrap')
           };
-          // Reset all buttons
-          Object.values(btns).forEach(b => {
-            b.style.background = 'transparent'; b.style.color = 'var(--tx2)';
-            b.style.boxShadow = 'none';
-          });
-          // Activate selected
-          btns[role].style.background = 'var(--v)'; btns[role].style.color = '#fff';
-          btns[role].style.boxShadow = '0 2px 6px rgba(75,102,54,0.25)';
-          // Show/hide fields
-          Object.values(wraps).forEach(w => w.style.display = 'none');
+          Object.values(wraps).forEach(function(w) { w.style.display = 'none'; });
           wraps[role].style.display = 'block';
         }
       </script>
