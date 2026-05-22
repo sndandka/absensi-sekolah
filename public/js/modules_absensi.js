@@ -127,7 +127,6 @@ async function absensi() {
     const nowTimeStr = new Date().toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit', hour12: false });
     const nowTime = new Date(`2000-01-01 ${nowTimeStr}`);
 
-    let currentMatch = null;
 
     if (Array.isArray(schData)) {
       schData.forEach(s => {
@@ -140,7 +139,7 @@ async function absensi() {
           const en = new Date(`2000-01-01 ${s.end_time}`);
           en.setMinutes(en.getMinutes() + 30);
           if (nowTime >= st && nowTime <= en) {
-            currentMatch = s;
+            window.currentMatch = s;
           }
         }
       });
