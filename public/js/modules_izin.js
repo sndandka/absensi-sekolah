@@ -158,14 +158,14 @@ async function izin(){
         }).join('');
   } else {
     tb.innerHTML=list.map(r=>`<tr>
-      <td style="font-weight:700">${r.student_name||'—'}</td>
-      <td class="t2">${r.class_name||'—'}</td>
-      <td><span class="bdg ${r.type==='sakit'?'ba':'bv'}">${r.type==='sakit'?'<img src="image/add.png" style="width:1.2em;height:1.2em;vertical-align:middle"> Sakit':'<img src="image/add-document.png" style="width:1.2em;height:1.2em;vertical-align:middle"> Izin'}</span></td>
-      <td>${r.start_date}${r.end_date&&r.end_date!==r.start_date?' → '+r.end_date:''}</td>
-      <td class="t2 tsm" style="max-width:140px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${r.reason||'—'}</td>
-      <td>${r.evidence?`<button class="btn btn-xs btn-out" onclick="viewBukti('${r.id}')"><img src="image/add-document.png" style="width:1.2em;height:1.2em;vertical-align:middle"> Lihat</button>`:'<span class="t3 txs">Tanpa Bukti</span>'}</td>
-      <td><span class="bdg ${r.status==='approved'?'bg':r.status==='rejected'?'br':'ba'}">${r.status==='approved'?'<img src="image/checkbox.png" style="width:1.2em;height:1.2em;vertical-align:middle"> Disetujui':r.status==='rejected'?'<span style="font-weight:bold;margin:0 4px">✕</span> Ditolak':'<img src="image/info.png" style="width:1.2em;height:1.2em;vertical-align:middle"> Pending'}</span></td>
-      <td>${!isSiswa&&r.status==='pending'?`<div class="flex gap1">
+      <td data-label="Siswa" style="font-weight:700">${r.student_name||'—'}</td>
+      <td data-label="Kelas" class="t2">${r.class_name||'—'}</td>
+      <td data-label="Jenis"><span class="bdg ${r.type==='sakit'?'ba':'bv'}">${r.type==='sakit'?'<img src="image/add.png" style="width:1.2em;height:1.2em;vertical-align:middle"> Sakit':'<img src="image/add-document.png" style="width:1.2em;height:1.2em;vertical-align:middle"> Izin'}</span></td>
+      <td data-label="Tanggal">${r.start_date}${r.end_date&&r.end_date!==r.start_date?' → '+r.end_date:''}</td>
+      <td data-label="Alasan" class="t2 tsm" style="max-width:140px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${r.reason||'—'}</td>
+      <td data-label="Bukti">${r.evidence?`<button class="btn btn-xs btn-out" onclick="viewBukti('${r.id}')"><img src="image/add-document.png" style="width:1.2em;height:1.2em;vertical-align:middle"> Lihat</button>`:'<span class="t3 txs">Tanpa Bukti</span>'}</td>
+      <td data-label="Status"><span class="bdg ${r.status==='approved'?'bg':r.status==='rejected'?'br':'ba'}">${r.status==='approved'?'<img src="image/checkbox.png" style="width:1.2em;height:1.2em;vertical-align:middle"> Disetujui':r.status==='rejected'?'<span style="font-weight:bold;margin:0 4px">✕</span> Ditolak':'<img src="image/info.png" style="width:1.2em;height:1.2em;vertical-align:middle"> Pending'}</span></td>
+      <td data-label="Aksi">${!isSiswa&&r.status==='pending'?`<div class="flex gap1" style="justify-content:flex-end">
         <button class="btn btn-xs btn-grn" onclick="approveIzin('${r.id}')"><img src="image/checkbox.png" style="width:1.2em;height:1.2em;vertical-align:middle"></button>
         <button class="btn btn-xs btn-red" onclick="rejectIzin('${r.id}')"><span style="font-weight:bold;margin:0 4px">✕</span></button>
       </div>`:(isSiswa&&r.status==='pending'?'<span class="t3 txs">Menunggu...</span>':'—')}</td>
