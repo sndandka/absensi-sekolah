@@ -379,14 +379,14 @@ function renderSchTable() {
       const startTime = s.start_time ? s.start_time.slice(0, 5) : '—';
       const endTime = s.end_time ? s.end_time.slice(0, 5) : '—';
 
-      const classCol = role !== 'siswa' ? `<td><span class="bdg bv">${className}</span></td>` : '';
+      const classCol = role !== 'siswa' ? `<td data-label="Kelas"><span class="bdg bv">${className}</span></td>` : '';
 
       return `<tr>
-        <td><span class="bdg ${DAY_COLORS[s.day] || 'bn'}">${dayName}</span></td>
-        <td class="tb7">${startTime} - ${endTime}</td>
+        <td data-label="Hari"><span class="bdg ${DAY_COLORS[s.day] || 'bn'}">${dayName}</span></td>
+        <td data-label="Jam" class="tb7">${startTime} - ${endTime}</td>
         ${classCol}
-        <td>${subjName}</td>
-        <td>
+        <td data-label="Mapel">${subjName}</td>
+        <td data-label="Guru">
           <div style="display:flex;align-items:center;gap:.4rem">
             <div style="width:28px;height:28px;border-radius:50%;background:linear-gradient(135deg,var(--v),var(--v1));display:flex;align-items:center;justify-content:center;flex-shrink:0">
               <img src="image/graduation-cap.png" style="width:.9em;height:.9em;filter:brightness(10)">
@@ -397,7 +397,7 @@ function renderSchTable() {
             </div>
           </div>
         </td>
-        <td>
+        <td data-label="Aksi">
           <div class="flex gap1">
             ${isAdmin ? `
               <button class="btn btn-xs btn-out" onclick="editSchedule(${s.id})" title="Edit"><img src="image/settings (1).png" style="width:1em;height:1em;vertical-align:middle"></button>
