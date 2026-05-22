@@ -181,11 +181,14 @@ async function rekapSekolah() {
     selCls.dataset.loaded = 'true';
   }
   
-  // Set default date to today
-  const dtInput = id('rekSekolahDate');
-  if (dtInput && !dtInput.value) {
-    dtInput.value = new Date().toISOString().split('T')[0];
-  }
+  // Set default dates
+  const dtStart = id('rekSekolahDateStart');
+  const dtEnd = id('rekSekolahDateEnd');
+  const now = new Date();
+  const firstDay = new Date(now.getFullYear(), now.getMonth(), 1);
+  const fmt = d => { const p=n=>(n<10?'0':'')+n; return d.getFullYear()+'-'+p(d.getMonth()+1)+'-'+p(d.getDate()); };
+  if (dtStart && !dtStart.value) dtStart.value = fmt(firstDay);
+  if (dtEnd && !dtEnd.value) dtEnd.value = fmt(now);
   
   // Auto load data
   loadRekapSekolah();
@@ -197,31 +200,24 @@ async function rekapMapel() {
   
   // Populate class filter
   const selCls = id('rekMapelClass');
-  if (selCls && !selCls.dataset.loaded) {
-    const { data: classes } = await supabase.from('classes').select('*').order('name');
-    if (Array.isArray(classes)) {
-      selCls.innerHTML = '<option value="">Semua Kelas</option>' +
-        classes.map(c => `<option value="${c.id}">${c.name}</option>`).join('');
-    }
-    selCls.dataset.loaded = 'true';
+  if (selCls) {
+    await fillClassSel('rekMapelClass', true);
   }
   
   // Populate subject filter
   const selSubj = id('rekMapelSubject');
-  if (selSubj && !selSubj.dataset.loaded) {
-    const { data: subjects } = await supabase.from('subjects').select('*').order('name');
-    if (Array.isArray(subjects)) {
-      selSubj.innerHTML = '<option value="">Semua Mapel</option>' +
-        subjects.map(s => `<option value="${s.name}">${s.name}</option>`).join('');
-    }
-    selSubj.dataset.loaded = 'true';
+  if (selSubj) {
+    await fillSubjSel('rekMapelSubject');
   }
   
-  // Set default date to today
-  const dtInput = id('rekMapelDate');
-  if (dtInput && !dtInput.value) {
-    dtInput.value = new Date().toISOString().split('T')[0];
-  }
+  // Set default dates
+  const dtStart = id('rekMapelDateStart');
+  const dtEnd = id('rekMapelDateEnd');
+  const now = new Date();
+  const firstDay = new Date(now.getFullYear(), now.getMonth(), 1);
+  const fmt = d => { const p=n=>(n<10?'0':'')+n; return d.getFullYear()+'-'+p(d.getMonth()+1)+'-'+p(d.getDate()); };
+  if (dtStart && !dtStart.value) dtStart.value = fmt(firstDay);
+  if (dtEnd && !dtEnd.value) dtEnd.value = fmt(now);
   
   // Auto load data
   loadRekapMapel();
@@ -367,11 +363,27 @@ document.addEventListener('click', e => {
 
 // ── CLASS / SUBJECT SELECTS ──────────────────────────────
 async function fillClassSel(selId, inclAll = false) {
-  const { data: classes, error } = await supabase
-    .from('classes')
-    .select('*')
-    .eq('active', true)
-    .order('name', { ascending: true });
+  const isGuru = App.profile?.role === 'guru';
+  let classes = [];
+
+  if (isGuru) {
+    const tId = await getTeacherId();
+    if (tId) {
+      const { data: sch } = await supabase.from('teaching_schedules').select('classes(id, name)').eq('teacher_id', tId);
+      if (sch) {
+        const uniqueMap = new Map();
+        sch.forEach(s => { if(s.classes) uniqueMap.set(s.classes.id, s.classes.name); });
+        classes = Array.from(uniqueMap, ([id, name]) => ({id, name})).sort((a,b)=>a.name.localeCompare(b.name));
+      }
+    }
+  } else {
+    const { data: allCls } = await supabase
+      .from('classes')
+      .select('*')
+      .eq('active', true)
+      .order('name', { ascending: true });
+    classes = allCls || [];
+  }
 
   const el = id(selId); if (!el) return;
   el.innerHTML = inclAll ? '<option value="">— Semua Kelas —</option>' : '<option value="">— Pilih Kelas —</option>';
@@ -379,11 +391,28 @@ async function fillClassSel(selId, inclAll = false) {
     classes.forEach(c => { el.innerHTML += `<option value="${c.id}">${c.name}</option>`; });
   }
 }
+
 async function fillSubjSel(selId) {
-  const { data: subjects, error } = await supabase
-    .from('subjects')
-    .select('*')
-    .order('name', { ascending: true });
+  const isGuru = App.profile?.role === 'guru';
+  let subjects = [];
+
+  if (isGuru) {
+    const tId = await getTeacherId();
+    if (tId) {
+      const { data: sch } = await supabase.from('teaching_schedules').select('subjects(id, name)').eq('teacher_id', tId);
+      if (sch) {
+        const uniqueMap = new Map();
+        sch.forEach(s => { if(s.subjects) uniqueMap.set(s.subjects.id, s.subjects.name); });
+        subjects = Array.from(uniqueMap, ([id, name]) => ({id, name})).sort((a,b)=>a.name.localeCompare(b.name));
+      }
+    }
+  } else {
+    const { data: allSubj } = await supabase
+      .from('subjects')
+      .select('*')
+      .order('name', { ascending: true });
+    subjects = allSubj || [];
+  }
 
   const el = id(selId); if (!el) return;
   el.innerHTML = '<option value="">— Pilih Mapel —</option>';
