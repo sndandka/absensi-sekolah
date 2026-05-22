@@ -404,7 +404,7 @@ function renderSchTable() {
               <button class="btn btn-xs btn-red" onclick="delSchedule(${s.id})" title="Hapus"><img src="image/trash.png" style="width:1em;height:1em;vertical-align:middle"></button>
             ` : role === 'guru' ? `
               <button class="btn btn-xs btn-pri" onclick="generateQR(${s.id}, '${subjName}', '${className}')"><img src="image/camera.png" style="width:1em;height:1em;vertical-align:middle"> Tampilkan QR</button>
-              <button class="btn btn-xs btn-out" onclick="goToInputPresensi(${s.class_id}, ${s.subject_id})"><img src="image/add-document.png" style="width:1em;height:1em;vertical-align:middle"> Input Presensi</button>
+              <button class="btn btn-xs btn-out" onclick="goToInputPresensi(${s.class_id}, ${s.subject_id}, ${s.day})"><img src="image/add-document.png" style="width:1em;height:1em;vertical-align:middle"> Input Presensi</button>
             ` : ''}
           </div>
         </td>
@@ -436,8 +436,8 @@ function changeSchPage(p) {
   renderSchTable();
 }
 
-function goToInputPresensi(classId, subjectId) {
-  window._absensiPrefill = { classId, subjectId };
+function goToInputPresensi(classId, subjectId, day) {
+  window._absensiPrefill = { classId, subjectId, day };
   navigateTo('absensi');
 }
 
