@@ -1,6 +1,94 @@
 /* ═══════════════════════════════════════════════════════════
-   SiAbsen — Modul Absensi & Rekap (MySQL Version)
+   SiAbsen — Modul Absensi (Jadwal & Rekap)
    ═══════════════════════════════════════════════════════════ */
+
+let rsList = [], rsIsSiswa = false, rsPage = 1, rsPerPage = 10;
+let rmList = [], rmIsSiswa = false, rmPage = 1, rmPerPage = 10;
+
+function renderRekapPagination(totalItems, perPage, currentPage, containerId, pageVar, renderFunc) {
+  const container = id(containerId);
+  if(!container) return;
+  const totalPages = Math.ceil(totalItems / perPage);
+  if(totalPages <= 1) { container.innerHTML = ''; return; }
+  
+  let html = `<button class="btn btn-xs btn-out" ${currentPage === 1 ? 'disabled' : ''} onclick="${pageVar}=${currentPage - 1};${renderFunc}()">Prev</button>`;
+  for (let i = 1; i <= totalPages; i++) {
+    if (i === 1 || i === totalPages || (i >= currentPage - 1 && i <= currentPage + 1)) {
+      html += `<button class="btn btn-xs ${i === currentPage ? 'btn-pri' : 'btn-out'}" onclick="${pageVar}=${i};${renderFunc}()">${i}</button>`;
+    } else if (i === currentPage - 2 || i === currentPage + 2) {
+      html += `<span style="padding:0 5px;color:var(--tx2)">...</span>`;
+    }
+  }
+  html += `<button class="btn btn-xs btn-out" ${currentPage === totalPages ? 'disabled' : ''} onclick="${pageVar}=${currentPage + 1};${renderFunc}()">Next</button>`;
+  container.innerHTML = html.replace(/(<span[^>]*>\.\.\.<\/span>)+/g, '<span style="padding:0 5px;color:var(--tx2)">...</span>');
+}
+
+function renderRS() {
+  const tbody = rsIsSiswa ? document.querySelector('#pg-rekap #rekTbodySekolah') : document.querySelector('#pg-rekap_sekolah #rekTbodySekolah');
+  if(!tbody) return;
+  const total = rsList.length;
+  const totalPages = Math.ceil(total / rsPerPage);
+  if(rsPage > totalPages && totalPages > 0) rsPage = totalPages;
+  const start = (rsPage - 1) * rsPerPage;
+  const pagedList = rsList.slice(start, start + rsPerPage);
+
+  renderRekapPagination(total, rsPerPage, rsPage, rsIsSiswa ? 'rekSiswaSekolahPagination' : 'rekSekolahPagination', 'rsPage', 'renderRS');
+
+  if(rsIsSiswa) {
+    if(!pagedList.length) tbody.innerHTML = `<tr><td colspan="3" style="text-align:center;padding:2rem;color:var(--tx3)">Anda belum memiliki riwayat absensi pagi pada rentang tanggal ini</td></tr>`;
+    else tbody.innerHTML = pagedList.map(r=>`<tr>
+      <td>${ftm(r.time)}</td>
+      <td class="t2 txs">${r.teacher_name||'Sistem (AI)'}</td>
+      <td>${mkBadge(r.status)}</td>
+    </tr>`).join('');
+  } else {
+    if(!pagedList.length) tbody.innerHTML = `<tr><td colspan="8" style="text-align:center;padding:2rem;color:var(--tx3)">Tidak ada data absensi sekolah pada tanggal yang dipilih</td></tr>`;
+    else tbody.innerHTML = pagedList.map(r=>`<tr>
+      <td style="font-weight:700">${r.name||'—'}</td>
+      <td class="t2">${r.nisn||'—'}</td>
+      <td><span class="bdg bb">${r.class_name||'—'}</span></td>
+      <td style="font-weight:bold;color:var(--grn)">${r.hadir}</td>
+      <td style="font-weight:bold;color:var(--amb)">${r.sakit}</td>
+      <td style="font-weight:bold;color:var(--v)">${r.izin}</td>
+      <td style="font-weight:bold;color:var(--red)">${r.alpha}</td>
+      <td style="font-weight:bold;color:var(--pnk)">${r.terlambat}</td>
+    </tr>`).join('');
+  }
+}
+
+function renderRM() {
+  const tbody = rmIsSiswa ? document.querySelector('#pg-rekap #rekTbodyMapel') : document.querySelector('#pg-rekap_mapel #rekTbodyMapel');
+  if(!tbody) return;
+  const total = rmList.length;
+  const totalPages = Math.ceil(total / rmPerPage);
+  if(rmPage > totalPages && totalPages > 0) rmPage = totalPages;
+  const start = (rmPage - 1) * rmPerPage;
+  const pagedList = rmList.slice(start, start + rmPerPage);
+
+  renderRekapPagination(total, rmPerPage, rmPage, rmIsSiswa ? 'rekSiswaMapelPagination' : 'rekMapelPagination', 'rmPage', 'renderRM');
+
+  if(rmIsSiswa) {
+    if(!pagedList.length) tbody.innerHTML = `<tr><td colspan="4" style="text-align:center;padding:2rem;color:var(--tx3)">Anda belum memiliki riwayat absensi mapel pada rentang tanggal ini</td></tr>`;
+    else tbody.innerHTML = pagedList.map(r=>`<tr>
+      <td class="t2" style="font-weight:600;color:var(--v)"><div style="display:flex;align-items:center"><span class="bdg bb" style="font-size:10px;padding:2px 6px;margin-right:5px"><img src="image/add-document.png" style="width:1.2em;height:1.2em;vertical-align:middle"> MAPEL</span> ${r.subject||'—'}</div></td>
+      <td>${ftm(r.time)}</td>
+      <td class="t2 txs">${r.teacher_name||'Sistem (AI)'}</td>
+      <td>${mkBadge(r.status)}</td>
+    </tr>`).join('');
+  } else {
+    if(!pagedList.length) tbody.innerHTML = `<tr><td colspan="8" style="text-align:center;padding:2rem;color:var(--tx3)">Tidak ada data absensi mapel pada tanggal yang dipilih</td></tr>`;
+    else tbody.innerHTML = pagedList.map(r=>`<tr>
+      <td style="font-weight:700">${r.name||'—'}</td>
+      <td class="t2">${r.nisn||'—'}</td>
+      <td><span class="bdg bb">${r.class_name||'—'}</span></td>
+      <td style="font-weight:bold;color:var(--grn)">${r.hadir}</td>
+      <td style="font-weight:bold;color:var(--amb)">${r.sakit}</td>
+      <td style="font-weight:bold;color:var(--v)">${r.izin}</td>
+      <td style="font-weight:bold;color:var(--red)">${r.alpha}</td>
+      <td style="font-weight:bold;color:var(--pnk)">${r.terlambat}</td>
+    </tr>`).join('');
+  }
+}
 
 /* ╔══════════════════════════════════╗
    ║  1. ABSENSI KELAS (Guru/Admin)   ║
@@ -9,17 +97,95 @@ let attStudents=[], attClassId='', attClassName='', attSubject='', attSubjectKey
 
 async function absensi(){
   setHdr('Absensi Mata Pelajaran','Input kehadiran siswa per kelas & mata pelajaran');
-  await fillClassSel('absClass'); await fillSubjSel('absSubj');
+  
   const d=new Date(); d.setMinutes(d.getMinutes() - d.getTimezoneOffset());
   id('absDate').value = d.toISOString().slice(0,10);
+  if (typeof updateAbsDay === 'function') updateAbsDay();
   
-  if(window._absensiPrefill) {
-    id('absClass').value = window._absensiPrefill.classId;
-    id('absSubj').value = window._absensiPrefill.subjectId;
-    window._absensiPrefill = null;
-    setTimeout(loadAttStudents, 300);
+  const isGuru = App.profile?.role === 'guru';
+  let tId = null;
+  window.currentMatch = null;
+  
+  if(isGuru) {
+    tId = await getTeacherId();
+    const days = ['Minggu','Senin','Selasa','Rabu','Kamis','Jumat','Sabtu'];
+    if (window._absensiPrefill && window._absensiPrefill.day !== undefined) {
+      id('guruAbsDay').value = days[window._absensiPrefill.day];
+    } else {
+      id('guruAbsDay').value = days[d.getDay()];
+    }
+    await loadGuruSchedulesForAbsensi();
+  }
+  
+  if (isGuru && tId) {
+    const { data: schData, error: e1 } = await supabase.from('teaching_schedules').select('class_id, subject_id, classes(name), subjects(name), day, start_time, end_time').eq('teacher_id', tId);
+    if (e1) console.error("Error schData:", e1);
+    
+    const clsMap = new Map();
+    const subMap = new Map();
+    const todayStr = new Date().toLocaleDateString('id-ID', { weekday: 'long' });
+    const nowTimeStr = new Date().toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit', hour12: false });
+    const nowTime = new Date(`2000-01-01 ${nowTimeStr}`);
+    
+    let currentMatch = null;
+
+    if (Array.isArray(schData)) {
+      schData.forEach(s => {
+        if(s.classes) clsMap.set(s.class_id, s.classes.name);
+        if(s.subjects) subMap.set(s.subject_id, s.subjects.name);
+        
+        if (s.day === new Date().getDay()) {
+           const st = new Date(`2000-01-01 ${s.start_time}`);
+           st.setMinutes(st.getMinutes() - 15);
+           const en = new Date(`2000-01-01 ${s.end_time}`);
+           en.setMinutes(en.getMinutes() + 30);
+           if (nowTime >= st && nowTime <= en) {
+              currentMatch = s;
+           }
+        }
+      });
+    }
+
+    const clsEl = id('absClass');
+    clsEl.innerHTML = '<option value="">— Pilih Kelas —</option>';
+    for (let [cid, cname] of clsMap) {
+      clsEl.innerHTML += `<option value="${cid}">${cname}</option>`;
+    }
+
+    const subEl = id('absSubj');
+    subEl.innerHTML = '<option value="">— Pilih Mapel —</option>';
+    for (let [sid, sname] of subMap) {
+      subEl.innerHTML += `<option value="${sid}">${sname}</option>`;
+    }
+
+    if (window._absensiPrefill) {
+      const optVal = `${window._absensiPrefill.classId}|${window._absensiPrefill.subjectId}`;
+      if(id('guruAbsSchedule').querySelector(`option[value="${optVal}"]`)) {
+        id('guruAbsSchedule').value = optVal;
+      }
+      window._absensiPrefill = null;
+      setTimeout(loadAttStudents, 300);
+    } else if (window.currentMatch) {
+      clsEl.value = window.currentMatch.class_id;
+      subEl.value = window.currentMatch.subject_id;
+      const optVal = `${window.currentMatch.class_id}|${window.currentMatch.subject_id}`;
+      if(id('guruAbsSchedule').querySelector(`option[value="${optVal}"]`)) {
+        id('guruAbsSchedule').value = optVal;
+      }
+      setTimeout(loadAttStudents, 300);
+    } else {
+      renderAttEmpty();
+    }
   } else {
-    renderAttEmpty();
+    await fillClassSel('absClass'); await fillSubjSel('absSubj');
+    if(window._absensiPrefill) {
+      id('absClass').value = window._absensiPrefill.classId;
+      id('absSubj').value = window._absensiPrefill.subjectId;
+      window._absensiPrefill = null;
+      setTimeout(loadAttStudents, 300);
+    } else {
+      renderAttEmpty();
+    }
   }
 }
 
@@ -28,58 +194,126 @@ function renderAttEmpty(){
   w.innerHTML=`<div style="text-align:center;padding:3rem;color:var(--tx3);grid-column:1/-1">
     <div style="font-size:3rem;margin-bottom:.8rem;color:var(--tx2)"><img src="image/add-document.png" style="width:1.2em;height:1.2em;vertical-align:middle;filter:drop-shadow(0 2px 3px rgba(0,0,0,0.2))"></div>
     <div style="font-weight:700;margin-bottom:.3rem">Pilih Kelas & Mata Pelajaran</div>
-    <div style="font-size:.83rem">Klik "Muat Siswa" untuk memulai</div>
+    <div style="font-size:.83rem">Klik "Muat Data Siswa" untuk memulai</div>
   </div>`;
 }
 
+window.loadGuruSchedulesForAbsensi = async function() {
+  if (App.profile?.role !== 'guru') return;
+  const dayStr = id('guruAbsDay').value;
+  const days = ['Minggu','Senin','Selasa','Rabu','Kamis','Jumat','Sabtu'];
+  const dayInt = days.indexOf(dayStr);
+  const tId = await getTeacherId();
+  if(!tId) return;
+  
+  const { data: schedules, error } = await supabase
+    .from('teaching_schedules')
+    .select('class_id, subject_id, start_time, end_time, day, classes(name), subjects(name)')
+    .eq('teacher_id', tId)
+    .eq('day', dayInt)
+    .order('start_time');
+    
+  if (error) {
+    console.error("Fetch schedules error:", error);
+    showToast("Gagal memuat jadwal: " + error.message, 'error');
+  }
+    
+  const sel = id('guruAbsSchedule');
+  if(!sel) return;
+  
+  sel.innerHTML = '<option value="">— Pilih Jadwal —</option>';
+  if(schedules && schedules.length > 0) {
+    schedules.forEach(s => {
+      sel.innerHTML += `<option value="${s.class_id}|${s.subject_id}">${s.start_time} - ${s.end_time} | ${s.subjects?.name || s.subject_id} | ${s.classes?.name || s.class_id}</option>`;
+    });
+  } else {
+    sel.innerHTML = '<option value="">— Tidak ada jadwal —</option>';
+  }
+  
+  // Also reset hidden fields when day changes
+  const cEl = id('absClass'), sEl = id('absSubj');
+  if(cEl) cEl.value = '';
+  if(sEl) sEl.value = '';
+  renderAttEmpty(); // clear the grid when day is changed
+}
+
+window.onGuruScheduleSelect = function() {
+  const val = id('guruAbsSchedule').value;
+  if(val) {
+    const [cId, sId] = val.split('|');
+    id('absClass').value = cId;
+    id('absSubj').value = sId;
+    loadAttStudents();
+  } else {
+    id('absClass').value = '';
+    id('absSubj').value = '';
+    renderAttEmpty();
+  }
+}
+
 async function loadAttStudents(){
-  attClassId = id('absClass')?.value;
-  attSubjectKey = id('absSubj')?.value;
-  attDate = id('absDate')?.value?.replace(/-/g,'_');
-  if(!attClassId||!attSubjectKey||!attDate) return showToast('Pilih kelas, mapel & tanggal!','warning');
+  const isGuru = App.profile?.role === 'guru';
+  
+  if (isGuru) {
+    const val = id('guruAbsSchedule')?.value;
+    if (val) {
+      const [cId, sId] = val.split('|');
+      attClassId = cId;
+      attSubjectKey = sId;
+    } else {
+      attClassId = '';
+      attSubjectKey = '';
+    }
+    
+    const dayName = id('guruAbsDay')?.value;
+    if (dayName) {
+      const days = ['Minggu','Senin','Selasa','Rabu','Kamis','Jumat','Sabtu'];
+      const targetDayIdx = days.indexOf(dayName);
+      const d = new Date();
+      let diff = targetDayIdx - d.getDay();
+      if (diff > 0) diff -= 7;
+      d.setDate(d.getDate() + diff);
+      d.setMinutes(d.getMinutes() - d.getTimezoneOffset());
+      attDate = d.toISOString().slice(0,10).replace(/-/g,'_');
+    } else {
+      attDate = id('absDate')?.value?.replace(/-/g,'_');
+    }
+  } else {
+    attClassId = id('absClass')?.value;
+    attSubjectKey = id('absSubj')?.value;
+    attDate = id('absDate')?.value?.replace(/-/g,'_');
+  }
+  
+  if(!attClassId||!attSubjectKey||!attDate) {
+    if (isGuru) return showToast('Pilih Jadwal Pelajaran terlebih dahulu!', 'warning');
+    return showToast('Pilih kelas, mapel & tanggal!','warning');
+  }
 
   // ── VALIDASI JADWAL MENGAJAR GURU ──
-  const isGuru = App.profile?.role === 'guru';
   if(isGuru) {
     const tId = await getTeacherId();
     if(tId) {
       // Get current day and time
       const selectedDate = new Date(attDate.replace(/_/g,'-'));
-      const dayOfWeek = selectedDate.toLocaleDateString('id-ID', { weekday: 'long' });
+      const dayOfWeekStr = selectedDate.toLocaleDateString('id-ID', { weekday: 'long' });
+      const dayOfWeekInt = selectedDate.getDay();
       const currentTime = new Date().toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit', hour12: false });
       
       // Check if teacher has schedule for this class, subject, and day
       const { data: schedules } = await supabase
-        .from('schedules')
+        .from('teaching_schedules')
         .select('*')
         .eq('teacher_id', tId)
         .eq('class_id', attClassId)
         .eq('subject_id', attSubjectKey)
-        .eq('day', dayOfWeek);
+        .eq('day', dayOfWeekInt);
       
       if(!schedules || schedules.length === 0) {
         const btn=id('btnLoad'); 
         if(btn){btn.innerHTML='<img src="image/info.png" style="width:1.2em;height:1.2em;vertical-align:middle;filter:drop-shadow(0 2px 3px rgba(0,0,0,0.2))"> Muat Data Siswa';btn.disabled=false;}
-        return showToast(`Anda tidak memiliki jadwal mengajar untuk kelas dan mapel ini pada hari ${dayOfWeek}!`, 'error', 5000);
+        return showToast(`Anda tidak memiliki jadwal mengajar untuk kelas dan mapel ini pada hari ${dayOfWeekStr}!`, 'error', 5000);
       }
       
-      // Check if current time is within schedule time
-      const schedule = schedules[0];
-      const startTime = schedule.start_time;
-      const endTime = schedule.end_time;
-      
-      // Allow 15 minutes before and 30 minutes after schedule
-      const scheduleStart = new Date(`2000-01-01 ${startTime}`);
-      scheduleStart.setMinutes(scheduleStart.getMinutes() - 15);
-      const scheduleEnd = new Date(`2000-01-01 ${endTime}`);
-      scheduleEnd.setMinutes(scheduleEnd.getMinutes() + 30);
-      const currentDateTime = new Date(`2000-01-01 ${currentTime}`);
-      
-      if(currentDateTime < scheduleStart || currentDateTime > scheduleEnd) {
-        const btn=id('btnLoad'); 
-        if(btn){btn.innerHTML='<img src="image/info.png" style="width:1.2em;height:1.2em;vertical-align:middle;filter:drop-shadow(0 2px 3px rgba(0,0,0,0.2))"> Muat Data Siswa';btn.disabled=false;}
-        return showToast(`Jadwal mengajar Anda: ${startTime} - ${endTime}. Anda hanya bisa absen 15 menit sebelum hingga 30 menit setelah jadwal.`, 'warning', 6000);
-      }
     }
   }
 
@@ -158,31 +392,19 @@ function renderAttGrid(){
         <div class="att-name" style="font-weight:700;font-size:0.95rem;color:var(--tx1);margin-bottom:0.2rem;">${s.name}</div>
         <div class="att-nisn" style="font-size:0.8rem;color:var(--tx3);">NISN: ${s.nisn||'—'} · No. ${s.no||i+1}</div>
       </div>
-      <div style="flex-shrink:0;min-width:180px;">
-        <select class="fi" id="sel_${s.id}" onchange="setStFromSelect('${s.id}')" style="padding:0.65rem 1rem;font-size:0.88rem;font-weight:600;border:2px solid ${st ? statusColor[st] : 'var(--brd)'};border-radius:8px;background:${st ? statusColor[st]+'15' : 'var(--bg)'};color:${st ? statusColor[st] : 'var(--tx2)'};cursor:pointer;width:100%;">
-          <option value="" ${!st?'selected':''}>-- Pilih Status --</option>
-          <option value="hadir" ${st==='hadir'?'selected':''}>Hadir</option>
-          <option value="izin" ${st==='izin'?'selected':''}>Izin</option>
-          <option value="sakit" ${st==='sakit'?'selected':''}>Sakit</option>
-          <option value="alpha" ${st==='alpha'?'selected':''}>Alpha</option>
-          <option value="terlambat" ${st==='terlambat'?'selected':''}>Terlambat</option>
-        </select>
+      <div id="btns_${s.id}" style="flex-shrink:0; display:flex; gap:0.4rem; align-items:center; flex-wrap:wrap; justify-content:flex-end;">
+        <button id="btn_${s.id}_hadir" onclick="setSt('${s.id}', 'hadir')" style="background:${st==='hadir'?'var(--grn)':'var(--bg2)'}; color:${st==='hadir'?'#fff':'var(--tx2)'}; border:none; border-radius:8px; padding:0.5rem 0.8rem; font-weight:700; font-size:0.8rem; cursor:pointer; transition:0.2s;">Hadir</button>
+        <button id="btn_${s.id}_izin" onclick="setSt('${s.id}', 'izin')" style="background:${st==='izin'?'var(--v)':'var(--bg2)'}; color:${st==='izin'?'#fff':'var(--tx2)'}; border:none; border-radius:8px; padding:0.5rem 0.8rem; font-weight:700; font-size:0.8rem; cursor:pointer; transition:0.2s;">Izin</button>
+        <button id="btn_${s.id}_sakit" onclick="setSt('${s.id}', 'sakit')" style="background:${st==='sakit'?'var(--amb)':'var(--bg2)'}; color:${st==='sakit'?'#fff':'var(--tx2)'}; border:none; border-radius:8px; padding:0.5rem 0.8rem; font-weight:700; font-size:0.8rem; cursor:pointer; transition:0.2s;">Sakit</button>
+        <button id="btn_${s.id}_alpha" onclick="setSt('${s.id}', 'alpha')" style="background:${st==='alpha'?'var(--red)':'var(--bg2)'}; color:${st==='alpha'?'#fff':'var(--tx2)'}; border:none; border-radius:8px; padding:0.5rem 0.8rem; font-weight:700; font-size:0.8rem; cursor:pointer; transition:0.2s;">Alpha</button>
       </div>
     </div>`;
   }).join('');
 }
 
-function setStFromSelect(sid){
-  const sel = id('sel_'+sid);
-  if(!sel) return;
-  const status = sel.value;
-  if(!status) return;
-  setSt(sid, status);
-}
-
 function setSt(sid,status){
   App.attBuf[sid]=status;
-  const c=id('ac_'+sid), av=id('av_'+sid), sel=id('sel_'+sid);
+  const c=id('ac_'+sid), av=id('av_'+sid);
   
   const statusColor = {
     hadir: 'var(--grn)',
@@ -192,22 +414,28 @@ function setSt(sid,status){
     terlambat: 'var(--pnk)'
   };
   
-  // Update card class
-  if(c) c.className=`att-card-horizontal ${status}`;
-  
-  // Update avatar
+  if(c) {
+    c.className = 'att-card-horizontal ' + status;
+  }
   if(av) {
-    av.className=`att-av av-${status}`;
+    av.className = 'att-av av-' + status;
     av.style.background = statusColor[status] || 'var(--bg2)';
   }
   
-  // Update select styling
-  if(sel) {
-    sel.style.borderColor = statusColor[status] || 'var(--brd)';
-    sel.style.background = (statusColor[status] || 'var(--bg)') + '15';
-    sel.style.color = statusColor[status] || 'var(--tx2)';
-    sel.value = status;
-  }
+  const statuses = ['hadir', 'izin', 'sakit', 'alpha', 'terlambat'];
+  statuses.forEach(s => {
+    const btn = id(`btn_${sid}_${s}`);
+    if (btn) {
+      if (s === status) {
+        btn.style.background = statusColor[s];
+        btn.style.color = '#fff';
+      } else {
+        btn.style.background = 'var(--bg2)';
+        btn.style.color = 'var(--tx2)';
+      }
+    }
+  });
+
   updateAttSummary();
 }
 function setAllSt(status){ attStudents.forEach(s=>setSt(s.id,status)); }
@@ -335,14 +563,18 @@ async function rekap(){
 async function loadRekapSekolah(){
   const isSiswa = App.profile?.role === 'siswa';
   const uid = App.profile?.id || App.user?.id;
-  const cls=id('rekSekolahClass')?.value, dt=id('rekSekolahDate')?.value;
-  if(!dt) return showToast('Pilih tanggal!','warning');
-  const dk=dt.replace(/-/g,'_');
-  const tbody=id('rekTbodySekolah');
+  const cls=id('rekSekolahClass')?.value;
+  const dtStart=id('rekSekolahDateStart')?.value;
+  const dtEnd=id('rekSekolahDateEnd')?.value;
+  if(!dtStart || !dtEnd) return showToast('Pilih rentang tanggal!','warning');
+  const dkStart=dtStart.replace(/-/g,'_');
+  const dkEnd=dtEnd.replace(/-/g,'_');
   
-  if(tbody) tbody.innerHTML=`<tr><td colspan="6" style="text-align:center;padding:2rem"><div class="spin" style="margin:auto"></div></td></tr>`;
+  const tbody = isSiswa ? document.querySelector('#pg-rekap #rekTbodySekolah') : document.querySelector('#pg-rekap_sekolah #rekTbodySekolah');
   
-  let query = supabase.from('attendance').select('*').eq('date_key', dk).eq('subject', 'Absensi Sekolah');
+  if(tbody) tbody.innerHTML=`<tr><td colspan="8" style="text-align:center;padding:2rem"><div class="spin" style="margin:auto"></div></td></tr>`;
+  
+  let query = supabase.from('attendance').select('*').gte('date_key', dkStart).lte('date_key', dkEnd).eq('subject', 'Absensi Sekolah');
   if(cls) query = query.eq('class_id', cls);
   
   if(isSiswa) {
@@ -356,6 +588,7 @@ async function loadRekapSekolah(){
   }
   
   const { data: rows, error } = await query;
+  if(error) { console.error(error); return showToast('Error memuat data: ' + error.message, 'error'); }
   let list = Array.isArray(rows) ? rows : [];
   
   const sum={hadir:0,terlambat:0,izin:0,sakit:0,alpha:0};
@@ -368,26 +601,40 @@ async function loadRekapSekolah(){
   });
 
   list.sort((a,b)=>(a.time||0)-(b.time||0));
-  if(tbody) {
-    if(!list.length) {
-      tbody.innerHTML=`<tr><td colspan="6" style="text-align:center;padding:2rem;color:var(--tx3)">${isSiswa ? 'Anda belum memiliki riwayat absensi sekolah pada tanggal ini' : 'Tidak ada data absensi sekolah'}</td></tr>`;
-    } else {
-      tbody.innerHTML=list.map(r=>{
-        const adminCols = !isSiswa ? `
-          <td style="font-weight:700">${r.name||'—'}</td>
-          <td class="t2">${r.nisn||'—'}</td>
-          <td><span class="bdg bb">${r.class_name||'—'}</span></td>
-        ` : '';
-        return `<tr>
-          ${adminCols}
-          <td>${ftm(r.time)}</td>
-          <td class="t2 txs">${r.teacher_name||'Sistem (AI)'}</td>
-          <td>${mkBadge(r.status)}</td>
-        </tr>`;
-      }).join('');
-    }
+  
+  const thead = isSiswa ? document.querySelector('#pg-rekap #rekTheadSekolah') || document.querySelector('#pg-rekap #rekCardSekolah thead') : document.querySelector('#pg-rekap_sekolah #rekTheadSekolah') || document.querySelector('#pg-rekap_sekolah thead');
+  
+  rsIsSiswa = isSiswa;
+  if(!isSiswa) {
+    if(thead) thead.innerHTML = `<tr>
+      <th>Nama Siswa</th>
+      <th>NISN</th>
+      <th>Kelas</th>
+      <th>Hadir</th>
+      <th>Sakit</th>
+      <th>Izin</th>
+      <th>Alpha</th>
+      <th>Terlambat</th>
+    </tr>`;
+    
+    const g={};
+    list.forEach(r=>{
+      if(!g[r.student_id]) g[r.student_id]={name:r.name, nisn:r.nisn, class_name:r.class_name, hadir:0, sakit:0, izin:0, alpha:0, terlambat:0};
+      if(g[r.student_id][r.status]!==undefined) g[r.student_id][r.status]++;
+    });
+    rsList = Object.values(g).sort((a,b)=>(a.name||'').localeCompare(b.name||''));
+    if(!rsList.length) showToast('Info: Belum ada rekaman absensi yang tersimpan pada rentang tanggal dan kelas yang Anda pilih.', 'info');
+  } else {
+    if(thead) thead.innerHTML = `<tr>
+      <th>Waktu</th>
+      <th>Guru Piket</th>
+      <th>Status</th>
+    </tr>`;
+    rsList = list;
   }
 
+  rsPage = 1;
+  renderRS();
   window._rekapSekolahData=list;
 }
 
@@ -402,16 +649,25 @@ function exportRekapSekolah(){
 async function loadRekapMapel(){
   const isSiswa = App.profile?.role === 'siswa';
   const uid = App.profile?.id || App.user?.id;
-  const cls=id('rekMapelClass')?.value, dt=id('rekMapelDate')?.value, subj=id('rekMapelSubject')?.value;
-  if(!dt) return showToast('Pilih tanggal!','warning');
-  const dk=dt.replace(/-/g,'_');
-  const tbody=id('rekTbodyMapel');
+  const cls=id('rekMapelClass')?.value, subj=id('rekMapelSubject')?.value;
+  const dtStart=id('rekMapelDateStart')?.value;
+  const dtEnd=id('rekMapelDateEnd')?.value;
+  if(!dtStart || !dtEnd) return showToast('Pilih rentang tanggal!','warning');
+  const dkStart=dtStart.replace(/-/g,'_');
+  const dkEnd=dtEnd.replace(/-/g,'_');
+  const tbody = isSiswa ? document.querySelector('#pg-rekap #rekTbodyMapel') : document.querySelector('#pg-rekap_mapel #rekTbodyMapel');
   
-  if(tbody) tbody.innerHTML=`<tr><td colspan="7" style="text-align:center;padding:2rem"><div class="spin" style="margin:auto"></div></td></tr>`;
+  if(tbody) tbody.innerHTML=`<tr><td colspan="8" style="text-align:center;padding:2rem"><div class="spin" style="margin:auto"></div></td></tr>`;
   
-  let query = supabase.from('attendance').select('*').eq('date_key', dk).neq('subject', 'Absensi Sekolah');
+  let query = supabase.from('attendance').select('*').gte('date_key', dkStart).lte('date_key', dkEnd).neq('subject', 'Absensi Sekolah');
   if(cls) query = query.eq('class_id', cls);
-  if(subj) query = query.eq('subject', subj);
+  if(subj) query = query.eq('subject_key', String(subj));
+  
+  const isGuru = App.profile?.role === 'guru';
+  if(isGuru) {
+    const tId = await getTeacherId();
+    if(tId) query = query.eq('teacher_id', tId);
+  }
   
   if(isSiswa) {
     let stuNisn = App.user?.user_metadata?.nisn;
@@ -424,6 +680,7 @@ async function loadRekapMapel(){
   }
   
   const { data: rows, error } = await query;
+  if(error) { console.error(error); return showToast('Error memuat data: ' + error.message, 'error'); }
   let list = Array.isArray(rows) ? rows : [];
   
   const sum={hadir:0,terlambat:0,izin:0,sakit:0,alpha:0};
@@ -436,27 +693,41 @@ async function loadRekapMapel(){
   });
 
   list.sort((a,b)=>(a.time||0)-(b.time||0));
-  if(tbody) {
-    if(!list.length) {
-      tbody.innerHTML=`<tr><td colspan="7" style="text-align:center;padding:2rem;color:var(--tx3)">${isSiswa ? 'Anda belum memiliki riwayat absensi mapel pada tanggal ini' : 'Tidak ada data absensi mapel'}</td></tr>`;
-    } else {
-      tbody.innerHTML=list.map(r=>{
-        const adminCols = !isSiswa ? `
-          <td style="font-weight:700">${r.name||'—'}</td>
-          <td class="t2">${r.nisn||'—'}</td>
-          <td><span class="bdg bb">${r.class_name||'—'}</span></td>
-        ` : '';
-        return `<tr>
-          ${adminCols}
-          <td class="t2" style="font-weight:600;color:var(--v)"><div style="display:flex;align-items:center"><span class="bdg bb" style="font-size:10px;padding:2px 6px;margin-right:5px"><img src="image/add-document.png" style="width:1.2em;height:1.2em;vertical-align:middle"> MAPEL</span> ${r.subject||'—'}</div></td>
-          <td>${ftm(r.time)}</td>
-          <td class="t2 txs">${r.teacher_name||'Sistem (AI)'}</td>
-          <td>${mkBadge(r.status)}</td>
-        </tr>`;
-      }).join('');
-    }
+  
+  const thead = isSiswa ? document.querySelector('#pg-rekap #rekTheadMapel') || document.querySelector('#pg-rekap thead') : document.querySelector('#pg-rekap_mapel #rekTheadMapel');
+  
+  rmIsSiswa = isSiswa;
+  if(!isSiswa) {
+    if(thead) thead.innerHTML = `<tr>
+      <th>Nama Siswa</th>
+      <th>NISN</th>
+      <th>Kelas</th>
+      <th>Hadir</th>
+      <th>Sakit</th>
+      <th>Izin</th>
+      <th>Alpha</th>
+      <th>Terlambat</th>
+    </tr>`;
+    
+    const g={};
+    list.forEach(r=>{
+      if(!g[r.student_id]) g[r.student_id]={name:r.name, nisn:r.nisn, class_name:r.class_name, hadir:0, sakit:0, izin:0, alpha:0, terlambat:0};
+      if(g[r.student_id][r.status]!==undefined) g[r.student_id][r.status]++;
+    });
+    rmList = Object.values(g).sort((a,b)=>(a.name||'').localeCompare(b.name||''));
+    if(!rmList.length) showToast('Info: Belum ada rekaman absensi yang tersimpan pada rentang tanggal dan kelas yang Anda pilih.', 'info');
+  } else {
+    if(thead) thead.innerHTML = `<tr>
+      <th>Mapel</th>
+      <th>Waktu</th>
+      <th>Guru</th>
+      <th>Status</th>
+    </tr>`;
+    rmList = list;
   }
 
+  rmPage = 1;
+  renderRM();
   window._rekapMapelData=list;
 }
 
