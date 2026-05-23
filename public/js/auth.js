@@ -191,16 +191,13 @@ async function sendResetEmail(){
   btn.disabled = true;
   
   try {
-    // Get current URL origin for redirect
-    const redirectTo = `${window.location.origin}${window.location.pathname}`;
-    
-    const { error } = await supabase.auth.resetPasswordForEmail(email, {
-      redirectTo: redirectTo
-    });
+    // Omitting redirectTo so Supabase uses the default Site URL configured in its dashboard.
+    // This prevents silent failures if running from file:// or an unconfigured localhost port.
+    const { error } = await supabase.auth.resetPasswordForEmail(email);
     
     if(error) throw error;
     
-    showToast('Email reset password telah dikirim! Silakan cek inbox Anda.', 'success', 5000);
+    showToast('Email reset password telah dikirim! Silakan cek inbox/spam Anda.', 'success', 5000);
     
     // Close modal
     document.querySelector('.ov.on')?.remove();
