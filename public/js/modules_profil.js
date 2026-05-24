@@ -41,7 +41,7 @@ async function profil() {
     <div class="g2">
       <div class="card"><div class="card-h"><div class="card-t"><img src="image/user.png" style="width:1.2em;height:1.2em;vertical-align:middle;filter:drop-shadow(0 2px 3px rgba(0,0,0,0.2))"> Data Diri</div></div><div class="card-b">
         <form onsubmit="saveStudentProfil(event)">
-          <div class="fg"><label class="fl">Nama Lengkap</label><input id="pName" type="text" class="fi" value="${u.name || ''}" required></div>
+          <div class="fg"><label class="fl">Nama Lengkap <span style="font-size:0.75rem;color:var(--tx3);font-weight:600">(Tidak dapat diubah)</span></label><input id="pName" type="text" class="fi" value="${u.name || ''}" required readonly style="background:var(--bg2);cursor:not-allowed;color:var(--tx2);"></div>
           ${isSiswa ? `<div class="fg"><label class="fl">Kelas (Informasi)</label><select id="pClsId" class="fi" disabled><option value="">Pilih Kelas</option>${classes.map(c => `<option value="${c.id}" ${extra.class_id == c.id ? 'selected' : ''}>${c.name}</option>`).join('')}</select></div>
           <div class="fg"><label class="fl">Nomor Absen (Informasi)</label><input id="pNo" type="number" class="fi" value="${extra.no || ''}" disabled></div>
           <div class="fg"><label class="fl">NISN (Informasi)</label><input type="text" class="fi" value="${extra.nisn || ''}" disabled></div>` : ''}
@@ -115,20 +115,8 @@ async function verifikasi() {
 
 async function saveStudentProfil(e) {
   e.preventDefault();
-  const uid = App.profile.id, name = id('pName').value.trim(), role = App.profile.role;
-  try {
-    // Update public.profiles
-    const { error: err1 } = await supabase.from('profiles').update({ name }).eq('id', uid);
-    if (err1) throw err1;
-
-    if (role === 'siswa') {
-      const { error: err2 } = await supabase.from('students').update({ name }).eq('user_id', uid);
-      if (err2) throw err2;
-    }
-
-    App.profile.name = name; renderSbUser();
-    showToast('Profil berhasil diperbarui!', 'success');
-  } catch (err) { showToast(err.message, 'error'); }
+  // Name is readonly — nothing to update on the profile page
+  showToast('Tidak ada perubahan yang dapat disimpan. Nama hanya dapat diubah oleh Admin.', 'info');
 }
 
 async function previewAndSavePhoto(input) {
