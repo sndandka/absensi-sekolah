@@ -104,79 +104,121 @@ async function absensi() {
 
   const isGuru = App.profile?.role === 'guru';
   let tId = null;
-  window.currentMatch = null;
 
   if (isGuru) {
     tId = await getTeacherId();
-    const days = ['Minggu', 'Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat', 'Sabtu'];
+    if (!tId) {
+      showToast('Data guru tidak ditemukan untuk akun Anda', 'error');
+      renderAttEmpty();
+      return;
+    }
+
+    const DAYS = ['Minggu', 'Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat', 'Sabtu'];
+    
+    // Tentukan hari target
+    let targetDayIdx = d.getDay(); // default hari ini
     if (window._absensiPrefill && window._absensiPrefill.day !== undefined) {
-      id('guruAbsDay').value = days[window._absensiPrefill.day];
-    } else {
-      id('guruAbsDay').value = days[d.getDay()];
+      targetDayIdx = window._absensiPrefill.day;
     }
-    await loadGuruSchedulesForAbsensi();
-  }
+    
+    const dayName = DAYS[targetDayIdx];
+    id('guruAbsDay').value = dayName;
 
-  if (isGuru && tId) {
-    const { data: schData, error: e1 } = await supabase.from('teaching_schedules').select('class_id, subject_id, classes(name), subjects(name), day, start_time, end_time').eq('teacher_id', tId);
-    if (e1) console.error("Error schData:", e1);
+    // Ambil jadwal hari tersebut
+    const { data: schedules, error } = await supabase
+      .from('teaching_schedules')
+      .select('id, class_id, subject_id, start_time, end_time, day, classes(name), subjects(name)')
+      .eq('teacher_id', tId)
+      .eq('day', targetDayIdx)
+      .order('start_time');
 
-    const clsMap = new Map();
-    const subMap = new Map();
-    const todayStr = new Date().toLocaleDateString('id-ID', { weekday: 'long' });
-    const nowTimeStr = new Date().toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit', hour12: false });
-    const nowTime = new Date(`2000-01-01 ${nowTimeStr}`);
-
-
-    if (Array.isArray(schData)) {
-      schData.forEach(s => {
-        if (s.classes) clsMap.set(s.class_id, s.classes.name);
-        if (s.subjects) subMap.set(s.subject_id, s.subjects.name);
-
-        if (s.day === new Date().getDay()) {
-          const st = new Date(`2000-01-01 ${s.start_time}`);
-          st.setMinutes(st.getMinutes() - 15);
-          const en = new Date(`2000-01-01 ${s.end_time}`);
-          en.setMinutes(en.getMinutes() + 30);
-          if (nowTime >= st && nowTime <= en) {
-            window.currentMatch = s;
-          }
-        }
-      });
+    if (error) {
+      console.error("Fetch schedules error:", error);
+      showToast("Gagal memuat jadwal: " + error.message, 'error');
     }
 
-    const clsEl = id('absClass');
-    clsEl.innerHTML = '<option value="">— Pilih Kelas —</option>';
-    for (let [cid, cname] of clsMap) {
-      clsEl.innerHTML += `<option value="${cid}">${cname}</option>`;
+    // Isi dropdown jadwal
+    const sel = id('guruAbsSchedule');
+    if (sel) {
+      sel.innerHTML = '<option value="">— Pilih Jadwal —</option>';
+      if (schedules && schedules.length > 0) {
+        schedules.forEach(s => {
+          const optVal = `${s.class_id}|${s.subject_id}|${s.start_time}|${s.end_time}`;
+          sel.innerHTML += `<option value="${optVal}">${s.start_time.slice(0, 5)} - ${s.end_time.slice(0, 5)} | ${s.subjects?.name || s.subject_id} | ${s.classes?.name || s.class_id}</option>`;
+        });
+      } else {
+        sel.innerHTML = '<option value="">— Tidak ada jadwal —</option>';
+      }
     }
 
-    const subEl = id('absSubj');
-    subEl.innerHTML = '<option value="">— Pilih Mapel —</option>';
-    for (let [sid, sname] of subMap) {
-      subEl.innerHTML += `<option value="${sid}">${sname}</option>`;
-    }
+    // Cari jadwal yang aktif/terpilih
+    let selectedSchedule = null;
 
     if (window._absensiPrefill) {
-      const optVal = `${window._absensiPrefill.classId}|${window._absensiPrefill.subjectId}`;
-      if (id('guruAbsSchedule').querySelector(`option[value="${optVal}"]`)) {
-        id('guruAbsSchedule').value = optVal;
+      // Diarahkan dari Jadwal Pelajaran
+      const prefill = window._absensiPrefill;
+      if (schedules && schedules.length > 0) {
+        // Cari yang cocok persis
+        selectedSchedule = schedules.find(s => 
+          s.class_id === prefill.classId && 
+          s.subject_id === prefill.subjectId && 
+          s.start_time === prefill.startTime && 
+          s.end_time === prefill.endTime
+        );
+        // Fallback jika jam tidak cocok persis
+        if (!selectedSchedule) {
+          selectedSchedule = schedules.find(s => 
+            s.class_id === prefill.classId && 
+            s.subject_id === prefill.subjectId
+          );
+        }
       }
       window._absensiPrefill = null;
-      setTimeout(loadAttStudents, 300);
-    } else if (window.currentMatch) {
-      clsEl.value = window.currentMatch.class_id;
-      subEl.value = window.currentMatch.subject_id;
-      const optVal = `${window.currentMatch.class_id}|${window.currentMatch.subject_id}`;
-      if (id('guruAbsSchedule').querySelector(`option[value="${optVal}"]`)) {
-        id('guruAbsSchedule').value = optVal;
+    } else {
+      // Akses langsung — otomatis cari jadwal yang aktif saat ini
+      const now = new Date();
+      const nowTimeStr = now.toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit', hour12: false });
+      
+      if (schedules && schedules.length > 0) {
+        selectedSchedule = schedules.find(s => {
+          const start = s.start_time.slice(0, 5);
+          const end = s.end_time.slice(0, 5);
+          return nowTimeStr >= start && nowTimeStr <= end;
+        });
       }
+    }
+
+    // Terapkan pilihan jadwal
+    if (selectedSchedule) {
+      const optVal = `${selectedSchedule.class_id}|${selectedSchedule.subject_id}|${selectedSchedule.start_time}|${selectedSchedule.end_time}`;
+      if (sel) sel.value = optVal;
+      
+      id('absClass').value = selectedSchedule.class_id;
+      id('absSubj').value = selectedSchedule.subject_id;
+      
+      // Muat data siswa otomatis
       setTimeout(loadAttStudents, 300);
     } else {
-      renderAttEmpty();
+      if (sel) sel.value = "";
+      id('absClass').value = "";
+      id('absSubj').value = "";
+      
+      // Tampilkan grid kosong dengan pesan bahwa tidak ada jadwal aktif saat ini
+      const w = id('attGrid');
+      const now = new Date();
+      const nowTimeStr = now.toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit', hour12: false });
+      if (w) {
+        w.innerHTML = `<div style="text-align:center;padding:3rem;color:var(--tx3);grid-column:1/-1">
+          <div style="font-size:3rem;margin-bottom:.8rem;color:var(--tx2)"><img src="image/info.png" style="width:1.2em;height:1.2em;vertical-align:middle;filter:drop-shadow(0 2px 3px rgba(0,0,0,0.2))"></div>
+          <div style="font-weight:700;margin-bottom:.3rem;color:var(--tx1)">Tidak Ada Jadwal Pelajaran Saat Ini</div>
+          <div style="font-size:.83rem">Hari ini ${dayName} jam ${nowTimeStr} tidak terdapat jadwal pelajaran Anda.<br>Silakan pilih jadwal secara manual pada dropdown di atas atau buka menu Jadwal Mengajar.</div>
+        </div>`;
+      }
     }
   } else {
-    await fillClassSel('absClass'); await fillSubjSel('absSubj');
+    // Admin role
+    await fillClassSel('absClass');
+    await fillSubjSel('absSubj');
     if (window._absensiPrefill) {
       id('absClass').value = window._absensiPrefill.classId;
       id('absSubj').value = window._absensiPrefill.subjectId;
@@ -223,7 +265,7 @@ window.loadGuruSchedulesForAbsensi = async function () {
   sel.innerHTML = '<option value="">— Pilih Jadwal —</option>';
   if (schedules && schedules.length > 0) {
     schedules.forEach(s => {
-      sel.innerHTML += `<option value="${s.class_id}|${s.subject_id}">${s.start_time} - ${s.end_time} | ${s.subjects?.name || s.subject_id} | ${s.classes?.name || s.class_id}</option>`;
+      sel.innerHTML += `<option value="${s.class_id}|${s.subject_id}|${s.start_time}|${s.end_time}">${s.start_time.slice(0, 5)} - ${s.end_time.slice(0, 5)} | ${s.subjects?.name || s.subject_id} | ${s.classes?.name || s.class_id}</option>`;
     });
   } else {
     sel.innerHTML = '<option value="">— Tidak ada jadwal —</option>';
