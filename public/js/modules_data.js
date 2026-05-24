@@ -165,11 +165,61 @@ function filterStu(val) {
   renderStuTable(stuList.filter(s => (s.name||'').toLowerCase().includes(v) || (s.nisn||'').toLowerCase().includes(v)));
 }
 
+async function generateNisn() {
+  // Count total students to determine next sequence number
+  const { count, error } = await supabase
+    .from('students')
+    .select('*', { count: 'exact', head: true });
+  if (error) return null;
+  const seq = (count || 0) + 1;
+  // Format: year (4 digits) + 6-digit sequence => 10 digits total
+  const year = new Date().getFullYear();
+  return String(year) + String(seq).padStart(6, '0');
+}
+
+async function getNextNoAbsen(clsId) {
+  if (!clsId) return '';
+  const { count, error } = await supabase
+    .from('students')
+    .select('*', { count: 'exact', head: true })
+    .eq('class_id', clsId);
+  if (error) return 1;
+  return (count || 0) + 1;
+}
+
+async function onStuClsChange(clsId) {
+  const noEl = id('stuNo');
+  if (!noEl) return;
+  const stuEditId = id('stuId')?.value;
+  if (stuEditId) {
+    // In edit mode, recalculate only if class changes
+    if (clsId) {
+      noEl.value = await getNextNoAbsen(clsId);
+    } else {
+      noEl.value = '';
+    }
+  } else {
+    // In add mode
+    if (clsId) {
+      noEl.value = await getNextNoAbsen(clsId);
+    } else {
+      noEl.value = '';
+    }
+  }
+}
+
 async function addStu() {
   id('stuForm').reset();
   id('stuId').value = '';
   id('stuMdlTitle').textContent = 'Tambah Siswa';
   await fillClassSel('stuClsId');
+  // Re-attach onchange because fillClassSel might replace options
+  const clsSel = id('stuClsId');
+  if (clsSel) clsSel.onchange = function() { onStuClsChange(this.value); };
+  // Auto-generate NISN
+  const nisn = await generateNisn();
+  id('stuNisn').value = nisn || '';
+  id('stuNo').value = '';
   openMdl('stuMdl');
 }
 
@@ -184,7 +234,11 @@ async function editStu(eid) {
   id('stuPhone').value = s.phone || '';
 
   await fillClassSel('stuClsId');
-  id('stuClsId').value = s.class_id || '';
+  const clsSel = id('stuClsId');
+  if (clsSel) {
+    clsSel.value = s.class_id || '';
+    clsSel.onchange = function() { onStuClsChange(this.value); };
+  }
   id('stuMdlTitle').textContent = 'Edit Siswa';
   openMdl('stuMdl');
 }
@@ -194,15 +248,18 @@ async function saveStu(e){
   const eid = id('stuId').value;
   const data = {
     name: id('stuName').value.trim(),
-    nisn: id('stuNisn').value.trim() || null,
-    no: parseInt(id('stuNo').value) || 0,
     gender: id('stuGender').value,
     phone: id('stuPhone').value.trim() || null,
-
     class_id: parseInt(id('stuClsId').value) || null
   };
 
   if(!data.name) return showToast('Nama wajib diisi!','warning');
+
+  if (!eid) {
+    // New student: include auto-generated NISN and No. Absen
+    data.nisn = id('stuNisn').value.trim() || null;
+    data.no = parseInt(id('stuNo').value) || null;
+  }
 
   let error;
   if(eid){
@@ -307,10 +364,24 @@ function filterGuru(val) {
   renderTchrTable(tchrList.filter(g => (g.name||'').toLowerCase().includes(v) || (g.nip||'').toLowerCase().includes(v)));
 }
 
-function addGuru() {
+async function generateNip() {
+  const { count, error } = await supabase
+    .from('teachers')
+    .select('*', { count: 'exact', head: true });
+  if (error) return null;
+  const seq = (count || 0) + 1;
+  const year = new Date().getFullYear();
+  // NIP format: year + 8-digit sequence => 12 digits total
+  return String(year) + String(seq).padStart(8, '0');
+}
+
+async function addGuru() {
   id('guruForm').reset();
   id('guruId').value = '';
   id('guruMdlTitle').textContent = 'Tambah Guru';
+  // Auto-generate NIP
+  const nip = await generateNip();
+  id('guruNip').value = nip || '';
   openMdl('guruMdl');
 }
 
@@ -333,7 +404,6 @@ async function saveGuru(e){
   const eid = id('guruId').value;
   const data = {
     name: id('guruName').value.trim(),
-    nip: id('guruNip').value.trim() || null,
     subject: id('guruSubj').value.trim() || null,
     homeroom: id('guruHomeroom').value.trim() || null,
     phone: id('guruPhone').value.trim() || null,
@@ -341,6 +411,11 @@ async function saveGuru(e){
   };
 
   if(!data.name) return showToast('Nama wajib diisi!','warning');
+
+  if (!eid) {
+    // New teacher: include auto-generated NIP
+    data.nip = id('guruNip').value.trim() || null;
+  }
 
   let error;
   if(eid){
