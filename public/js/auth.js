@@ -15,7 +15,14 @@ async function handleLogin(e){
     btn.innerHTML='<div class="spin"></div>'; btn.disabled=true;
 
     try {
-      const { data: email, error: rpcErr } = await supabase.rpc('get_email_by_nisn', { p_nisn: nisn });
+      const { data: rpcData, error: rpcErr } = await supabase.rpc('get_email_by_nisn', { p_nisn: nisn });
+
+      let email = rpcData;
+      if (Array.isArray(rpcData)) {
+        email = rpcData.length > 0 ? (rpcData[0].email || rpcData[0]) : null;
+      } else if (rpcData && typeof rpcData === 'object') {
+        email = rpcData.email;
+      }
 
       if(rpcErr || !email) {
         btn.innerHTML='Masuk'; btn.disabled=false;
@@ -36,7 +43,14 @@ async function handleLogin(e){
     btn.innerHTML='<div class="spin"></div>'; btn.disabled=true;
 
     try {
-      const { data: email, error: rpcErr } = await supabase.rpc('get_email_by_nip', { p_nip: nip });
+      const { data: rpcData, error: rpcErr } = await supabase.rpc('get_email_by_nip', { p_nip: nip });
+
+      let email = rpcData;
+      if (Array.isArray(rpcData)) {
+        email = rpcData.length > 0 ? (rpcData[0].email || rpcData[0]) : null;
+      } else if (rpcData && typeof rpcData === 'object') {
+        email = rpcData.email;
+      }
 
       if(rpcErr || !email) {
         btn.innerHTML='Masuk'; btn.disabled=false;
@@ -191,9 +205,11 @@ async function sendResetEmail(){
   btn.disabled = true;
   
   try {
-    // Omitting redirectTo so Supabase uses the default Site URL configured in its dashboard.
-    // This prevents silent failures if running from file:// or an unconfigured localhost port.
-    const { error } = await supabase.auth.resetPasswordForEmail(email);
+    // Use the current URL as the redirect destination (e.g. for Vercel or local development)
+    const redirectToUrl = window.location.origin + window.location.pathname;
+    const { error } = await supabase.auth.resetPasswordForEmail(email, {
+      redirectTo: redirectToUrl
+    });
     
     if(error) throw error;
     
