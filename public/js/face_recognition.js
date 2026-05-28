@@ -72,8 +72,8 @@ async function loadFaceModels() {
       console.log('[FaceAPI] Face Recognition Net loaded ✓');
 
       faceModelsLoaded = true;
-      showToast(`✅ AI Model siap! (${src})`, 'success');
-      enrollMsg('✅ AI Model siap! Klik "Ambil Foto" untuk mulai.', 'ok');
+      showToast(`AI Model siap! (${src})`, 'success');
+      enrollMsg('AI Model siap! Klik "Ambil Foto" untuk mulai.', 'ok');
       return true;
 
     } catch (err) {
@@ -81,9 +81,9 @@ async function loadFaceModels() {
       // If there's another URI to try, continue; otherwise fail
       if (modelUri === uris[uris.length - 1]) {
         console.error('[FaceAPI] Semua sumber model gagal.');
-        showToast('❌ Gagal memuat AI Model. Pastikan koneksi internet aktif.', 'error');
-        scanMsg('❌ Gagal memuat model AI. Cek koneksi internet & refresh.', 'err');
-        enrollMsg('❌ Gagal memuat AI Model. Cek koneksi internet & refresh.', 'err');
+        showToast('Gagal memuat AI Model. Pastikan koneksi internet aktif.', 'error');
+        scanMsg('Gagal memuat model AI. Cek koneksi internet & refresh.', 'err');
+        enrollMsg('Gagal memuat AI Model. Cek koneksi internet & refresh.', 'err');
         return false;
       }
       console.log('[FaceAPI] Mencoba sumber alternatif...');
@@ -172,7 +172,7 @@ async function startFaceEnroll() {
   const btnStart = id('btnStartEnroll');
   if (btnStart) { btnStart.disabled = true; btnStart.innerHTML = '<div class="spin"></div> Memuat...'; }
 
-  enrollMsg('⏳ Memuat AI model & kamera...', '');
+  enrollMsg('Memuat AI model & kamera...', '');
 
   const ok = await loadFaceModels();
   if (!ok) {
@@ -204,7 +204,7 @@ async function startFaceEnroll() {
   } catch (err) {
     console.error('[FaceEnroll] Camera error:', err);
     showToast('Gagal mengakses kamera: ' + err.message, 'error');
-    enrollMsg('❌ Tidak bisa membuka kamera. Izinkan akses kamera di browser.', 'err');
+    enrollMsg('Tidak bisa membuka kamera. Izinkan akses kamera di browser.', 'err');
     if (btnStart) { btnStart.disabled = false; btnStart.style.display = 'inline-flex'; btnStart.innerHTML = '<img src="image/add.png" style="width:1.2em;height:1.2em;vertical-align:middle"> Daftarkan Wajah'; }
   }
 }
@@ -258,10 +258,10 @@ async function snapFace() {
   if (btnStop) btnStop.style.display = 'none'; // hide cancel during capture
 
   const poses = [
-    { key: 'depan', icon: '👤', label: 'Depan', samplesNeeded: 2 },
-    { key: 'kiri', icon: '👈', label: 'Kiri', samplesNeeded: 2 },
-    { key: 'kanan', icon: '👉', label: 'Kanan', samplesNeeded: 2 },
-    { key: 'mulut', icon: '😮', label: 'Mulut Terbuka', samplesNeeded: 2 }
+    { key: 'depan', icon: '', label: 'Depan', samplesNeeded: 2 },
+    { key: 'kiri', icon: '', label: 'Kiri', samplesNeeded: 2 },
+    { key: 'kanan', icon: '', label: 'Kanan', samplesNeeded: 2 },
+    { key: 'mulut', icon: '', label: 'Mulut Terbuka', samplesNeeded: 2 }
   ];
 
   try {
@@ -274,7 +274,7 @@ async function snapFace() {
 
       // ── Show instruction ──
       btn.innerHTML = pose.icon + ' Pose ' + poseNum + ' - ' + rule.direction;
-      enrollMsg('🔄 <b>Pose ' + poseNum + ' (' + pose.label + ')</b>: ' + rule.direction, '');
+      enrollMsg(' <b>Pose ' + poseNum + ' (' + pose.label + ')</b>: ' + rule.direction, '');
 
       // Wait for user to adjust
       await wait(1000);
@@ -293,13 +293,13 @@ async function snapFace() {
             .withFaceDescriptor();
 
           if (!det) {
-            btn.innerHTML = '⚠️ Wajah tidak terdeteksi... (' + attempts + ')';
+            btn.innerHTML = 'Wajah tidak terdeteksi... (' + attempts + ')';
             await wait(100);
             continue;
           }
 
           if (det.detection.score < 0.5) {
-            btn.innerHTML = '⚠️ Kualitas rendah, perbaiki posisi...';
+            btn.innerHTML = 'Kualitas rendah, perbaiki posisi...';
             await wait(100);
             continue;
           }
@@ -311,7 +311,7 @@ async function snapFace() {
           if (pose.key === 'mulut') {
             const mouthRatio = estimateMouthOpen(det.landmarks);
             if (mouthRatio < 0.12) {
-              btn.innerHTML = '🔄 Buka MULUT Anda lebih lebar!';
+              btn.innerHTML = 'Buka MULUT Anda lebih lebar!';
               await wait(100);
               continue;
             }
@@ -325,7 +325,7 @@ async function snapFace() {
             } else {
               hint = yawRatio > rule.max ? 'Tengok kepala LEBIH ke KANAN...' : 'Terlalu jauh! Luruskan sedikit';
             }
-            btn.innerHTML = '🔄 ' + hint + ' (' + yawPct + '%)';
+            btn.innerHTML = '' + hint + ' (' + yawPct + '%)';
             await wait(100);
             continue;
           }
@@ -359,15 +359,15 @@ async function snapFace() {
       allDescriptors = allDescriptors.concat(samples);
 
       // Show success for this pose
-      btn.innerHTML = '✅ Pose ' + pose.label + ' lengkap! (' + samples.length + ' sample)';
-      enrollMsg('✅ <b>Pose ' + poseNum + ' (' + pose.label + ')</b> berhasil! ' + samples.length + ' sample terekam.', 'ok');
-      showToast('✅ Pose ' + pose.label + ' berhasil!', 'success');
+      btn.innerHTML = 'Pose ' + pose.label + ' lengkap! (' + samples.length + ' sample)';
+      enrollMsg('<b>Pose ' + poseNum + ' (' + pose.label + ')</b> berhasil! ' + samples.length + ' sample terekam.', 'ok');
+      showToast('Pose ' + pose.label + ' berhasil!', 'success');
       await wait(1000);
     }
 
     // ── All poses captured - save to Supabase ──
-    btn.innerHTML = '💾 Menyimpan ' + allDescriptors.length + ' descriptor ke database...';
-    enrollMsg('💾 Menyimpan data wajah (' + poses.length + ' pose × ' + poses[0].samplesNeeded + ' sample = ' + allDescriptors.length + ' descriptor)...', '');
+    btn.innerHTML = 'Menyimpan ' + allDescriptors.length + ' descriptor ke database...';
+    enrollMsg('Menyimpan data wajah (' + poses.length + ' pose × ' + poses[0].samplesNeeded + ' sample = ' + allDescriptors.length + ' descriptor)...', '');
 
     const faceData = JSON.stringify(allDescriptors.map(d => Array.from(d)));
     console.log('[FaceEnroll] Saving', allDescriptors.length, 'descriptors');
@@ -405,7 +405,7 @@ async function snapFace() {
       }
     }
 
-    showToast('✅ Data wajah (' + allDescriptors.length + ' descriptor, 4 pose) berhasil didaftarkan!', 'success');
+    showToast('Data wajah (' + allDescriptors.length + ' descriptor, 4 pose) berhasil didaftarkan!', 'success');
     enrollMsg(
       '<img src="image/checkbox.png" style="width:1.2em;height:1.2em;vertical-align:middle"> ' +
       'Wajah Terdaftar (' + allDescriptors.length + ' Descriptor - Depan + Kiri + Kanan + Mulut Buka)', 'ok'
@@ -415,9 +415,9 @@ async function snapFace() {
   } catch (err) {
     console.error('[FaceEnroll] Error:', err);
     showToast('Registrasi gagal: ' + err.message, 'error');
-    enrollMsg('❌ ' + err.message, 'err');
+    enrollMsg('' + err.message, 'err');
     btn.disabled = false;
-    btn.innerHTML = '🔄 Ulangi Ambil Foto';
+    btn.innerHTML = 'Ulangi Ambil Foto';
     if (btnStop) btnStop.style.display = 'inline-flex';
   }
 }
@@ -470,9 +470,9 @@ async function camera() {
     .maybeSingle();
 
   if (existing) {
-    scanMsg('✅ Anda sudah absen hari ini! (' + existing.status.toUpperCase() + ' pukul ' + ftm(existing.time) + ')', 'ok');
+    scanMsg('Anda sudah absen hari ini! (' + existing.status.toUpperCase() + ' pukul ' + ftm(existing.time) + ')', 'ok');
     id('btnCatatHdr').style.display = 'inline-flex';
-    id('btnCatatHdr').innerHTML = '✅ Sudah Absen Hari Ini';
+    id('btnCatatHdr').innerHTML = 'Sudah Absen Hari Ini';
     id('btnCatatHdr').disabled = true;
     id('btnStartCam').style.display = 'none';
     id('btnCapture').style.display = 'none';
@@ -483,7 +483,7 @@ async function camera() {
   // Check face registration from students table
   const { data: stu } = await supabase.from('students').select('face_data').eq('user_id', uid).single();
   if (!stu?.face_data) {
-    scanMsg('⚠️ Wajah belum terdaftar! Daftarkan di menu Profil Saya terlebih dahulu.', 'err');
+    scanMsg('Wajah belum terdaftar! Daftarkan di menu Profil Saya terlebih dahulu.', 'err');
     id('btnStartCam').disabled = true;
     id('btnCapture').style.display = 'none';
     return;
@@ -529,13 +529,13 @@ async function startCam() {
   if (!ok) return;
 
   // Load user's descriptor for matching (1:1)
-  scanMsg('📡 Memuat data wajah Anda dari database...', '');
+  scanMsg('Memuat data wajah Anda dari database...', '');
   await loadMyDescriptor();
   if (allFaceDescriptors.length === 0) {
-    scanMsg('⚠️ Data wajah Anda belum terdaftar. Silakan registrasi di Profil Saya.', 'err');
+    scanMsg('Data wajah Anda belum terdaftar. Silakan registrasi di Profil Saya.', 'err');
     return;
   }
-  scanMsg('✅ Data wajah siap. Membuka kamera...', '');
+  scanMsg('Data wajah siap. Membuka kamera...', '');
 
   try {
     faceStream = await navigator.mediaDevices.getUserMedia({
@@ -551,7 +551,7 @@ async function startCam() {
     // Auto start scanning after a short delay to allow video stream to initialize
     setTimeout(doCapture, 1000);
   } catch (e) {
-    scanMsg('❌ Gagal akses kamera: ' + e.message, 'err');
+    scanMsg('Gagal akses kamera: ' + e.message, 'err');
     showToast('Tidak bisa akses kamera: ' + e.message, 'error');
   }
 }
@@ -591,13 +591,13 @@ async function doCapture() {
             bestResult = result;
             break;
           } else {
-            scanMsg('⚠️ Wajah terdeteksi sebagai: ' + result.student.name + ' (bukan Anda)', 'err');
+            scanMsg('Wajah terdeteksi sebagai: ' + result.student.name + ' (bukan Anda)', 'err');
           }
         } else if (result.student) {
-          scanMsg('🔄 Wajah belum cocok (perlu ≥60%). Coba ubah posisi...', '');
+          scanMsg('Wajah belum cocok (perlu ≥60%). Coba ubah posisi...', '');
         }
       } else {
-        scanMsg('👤 Wajah tidak terdeteksi. Posisikan wajah di lingkaran.', '');
+        scanMsg('Wajah tidak terdeteksi. Posisikan wajah di lingkaran.', '');
       }
     } catch (e) {
       console.error('Detection error:', e);
@@ -606,9 +606,9 @@ async function doCapture() {
   }
 
   if (bestResult && bestResult.passed) {
-    scanMsg('✅ Identitas COCOK! - ' + bestResult.student.name, 'ok');
+    scanMsg('Identitas COCOK! - ' + bestResult.student.name, 'ok');
     id('btnCatatHdr').disabled = false;
-    id('btnCatatHdr').innerHTML = '🚀 Catat Kehadiran Sekarang';
+    id('btnCatatHdr').innerHTML = 'Catat Kehadiran Sekarang';
     id('btnCatatHdr').classList.add('pulse');
     // Store match result for recording
     window._lastFaceMatch = bestResult;
@@ -617,7 +617,7 @@ async function doCapture() {
     if (!faceStream) {
       scanMsg('Kamera dihentikan.', '');
     } else {
-      scanMsg('❌ Gagal mencocokkan wajah. Pastikan wajah terdaftar dan cahaya cukup.', 'err');
+      scanMsg('Gagal mencocokkan wajah. Pastikan wajah terdaftar dan cahaya cukup.', 'err');
     }
   }
 
@@ -640,7 +640,7 @@ async function catatHadir() {
   if (!uid) return;
 
   id('btnCatatHdr').disabled = true;
-  id('btnCatatHdr').innerHTML = '⏳ Menyimpan...';
+  id('btnCatatHdr').innerHTML = 'Menyimpan...';
 
   try {
     // 1. Get settings from Supabase
@@ -656,7 +656,7 @@ async function catatHadir() {
     if (!isNaN(schoolLat) && !isNaN(schoolLng)) {
       // Jika GPS belum tersedia, tunggu hingga 10 detik
       if (!geoPosition) {
-        scanMsg('⏳ Menunggu sinyal GPS...', '');
+        scanMsg('Menunggu sinyal GPS...', '');
         await new Promise(resolve => {
           let waited = 0;
           const check = setInterval(() => {
@@ -685,8 +685,8 @@ async function catatHadir() {
 
       if (!geoPosition) {
         id('btnCatatHdr').disabled = false;
-        id('btnCatatHdr').innerHTML = '🚀 Catat Kehadiran Sekarang';
-        return showToast('❌ GPS tidak ditemukan! Aktifkan lokasi dan coba lagi.', 'error');
+        id('btnCatatHdr').innerHTML = 'Catat Kehadiran Sekarang';
+        return showToast('GPS tidak ditemukan! Aktifkan lokasi dan coba lagi.', 'error');
       }
 
       const dist = getDistance(schoolLat, schoolLng, geoPosition.lat, geoPosition.lng);
@@ -701,9 +701,9 @@ async function catatHadir() {
         Math.round(dist) + 'm dari sekolah (maks ' + maxRadius + 'm) ±' + Math.round(accuracy) + 'm</span>';
 
       if (dist > maxRadius) {
-        scanMsg('❌ Anda ' + Math.round(dist) + 'm dari sekolah. Maks ' + maxRadius + 'm. (Akurasi GPS: ±' + Math.round(accuracy) + 'm)', 'err');
+        scanMsg('Anda ' + Math.round(dist) + 'm dari sekolah. Maks ' + maxRadius + 'm. (Akurasi GPS: ±' + Math.round(accuracy) + 'm)', 'err');
         id('btnCatatHdr').disabled = false;
-        id('btnCatatHdr').innerHTML = '🚀 Catat Kehadiran Sekarang';
+        id('btnCatatHdr').innerHTML = 'Catat Kehadiran Sekarang';
         return showToast('Gagal: Jarak ' + Math.round(dist) + 'm dari sekolah (maks ' + maxRadius + 'm)!', 'error');
       }
     }
@@ -750,16 +750,16 @@ async function catatHadir() {
     await logAct('selfcheckin', 'Absen ' + status + ' via Face Recognition');
 
     const timeStr = now.toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit', second: '2-digit' });
-    scanMsg('✅ Kehadiran tercatat! Status: ' + status.toUpperCase() + ' | Waktu: ' + timeStr, 'ok');
-    showToast('🎉 Absensi berhasil!', 'success');
-    id('btnCatatHdr').innerHTML = '✅ Berhasil - ' + status.toUpperCase();
+    scanMsg('Kehadiran tercatat! Status: ' + status.toUpperCase() + ' | Waktu: ' + timeStr, 'ok');
+    showToast('Absensi berhasil!', 'success');
+    id('btnCatatHdr').innerHTML = 'Berhasil - ' + status.toUpperCase();
     stopCam();
 
   } catch (err) {
     console.error(err);
     showToast('Gagal menyimpan absensi: ' + err.message, 'error');
     id('btnCatatHdr').disabled = false;
-    id('btnCatatHdr').innerHTML = '🚀 Catat Kehadiran Sekarang';
+    id('btnCatatHdr').innerHTML = 'Catat Kehadiran Sekarang';
   }
 }
 
