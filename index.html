@@ -278,8 +278,13 @@
             <div class="fg" style="margin-bottom:1rem;">
               <label class="fl" style="font-weight:600;color:var(--tx2);font-size:0.85rem;margin-bottom:0.4rem;">Kata
                 Sandi</label>
-              <input id="lPass" type="password" class="fi"
-                style="padding:0.75rem 1rem;font-size:0.9rem;background:#f9fafb;" placeholder="••••••••" required>
+              <div style="position:relative;">
+                <input id="lPass" type="password" class="fi"
+                  style="padding:0.75rem 2.8rem 0.75rem 1rem;font-size:0.9rem;background:#f9fafb;width:100%;box-sizing:border-box;" placeholder="••••••••" required>
+                <button type="button" onclick="togglePasswordVisibility('lPass', this)" style="position:absolute;right:0.75rem;top:50%;transform:translateY(-50%);background:none;border:none;cursor:pointer;color:var(--tx3);padding:0;display:flex;align-items:center;justify-content:center;transition:color 0.2s;" onmouseover="this.style.color='var(--v)'" onmouseout="this.style.color='var(--tx3)'">
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-eye-off"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"></path><line x1="1" y1="1" x2="23" y2="23"></line></svg>
+                </button>
+              </div>
             </div>
 
             <!-- Role Selector (dropdown, below password) -->
@@ -341,9 +346,25 @@
             <div class="fg" style="margin-bottom:1rem;">
               <label class="fl" style="font-weight:600;color:var(--tx2);font-size:0.85rem;margin-bottom:0.4rem;">Kata
                 Sandi</label>
-              <input id="rPass" type="password" class="fi"
-                style="background:#f9fafb;padding:0.75rem 1rem;font-size:0.9rem;" placeholder="Min. 6 karakter"
-                required>
+              <div style="position:relative;">
+                <input id="rPass" type="password" class="fi"
+                  style="background:#f9fafb;padding:0.75rem 2.8rem 0.75rem 1rem;font-size:0.9rem;width:100%;box-sizing:border-box;" placeholder="Min. 6 karakter"
+                  required>
+                <button type="button" onclick="togglePasswordVisibility('rPass', this)" style="position:absolute;right:0.75rem;top:50%;transform:translateY(-50%);background:none;border:none;cursor:pointer;color:var(--tx3);padding:0;display:flex;align-items:center;justify-content:center;transition:color 0.2s;" onmouseover="this.style.color='var(--v)'" onmouseout="this.style.color='var(--tx3)'">
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-eye-off"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"></path><line x1="1" y1="1" x2="23" y2="23"></line></svg>
+                </button>
+              </div>
+            </div>
+            <div class="fg" style="margin-bottom:1rem;">
+              <label class="fl" style="font-weight:600;color:var(--tx2);font-size:0.85rem;margin-bottom:0.4rem;">Verifikasi Kata Sandi</label>
+              <div style="position:relative;">
+                <input id="rPassConfirm" type="password" class="fi"
+                  style="background:#f9fafb;padding:0.75rem 2.8rem 0.75rem 1rem;font-size:0.9rem;width:100%;box-sizing:border-box;" placeholder="Ketik ulang kata sandi"
+                  required>
+                <button type="button" onclick="togglePasswordVisibility('rPassConfirm', this)" style="position:absolute;right:0.75rem;top:50%;transform:translateY(-50%);background:none;border:none;cursor:pointer;color:var(--tx3);padding:0;display:flex;align-items:center;justify-content:center;transition:color 0.2s;" onmouseover="this.style.color='var(--v)'" onmouseout="this.style.color='var(--tx3)'">
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-eye-off"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"></path><line x1="1" y1="1" x2="23" y2="23"></line></svg>
+                </button>
+              </div>
             </div>
             <div class="fg" id="nisnWrap" style="margin-bottom:1rem;">
               <label class="fl" style="font-weight:600;color:var(--tx2);font-size:0.85rem;margin-bottom:0.4rem;">NISN
@@ -450,8 +471,16 @@
             Profil Saya
           </div>
           <div class="nav" data-pg="verifikasi" onclick="navigateTo('verifikasi')">
-            <span class="nav-ic"><img src="image/camera.png"
-                style="width:1.2em;height:1.2em;vertical-align:middle;filter:drop-shadow(0 2px 3px rgba(0,0,0,0.2))"></span>
+            <span class="nav-ic">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="width:1.2em;height:1.2em;vertical-align:middle;filter:drop-shadow(0 2px 3px rgba(0,0,0,0.2));">
+                <path d="M3 7V5a2 2 0 0 1 2-2h2" />
+                <path d="M17 3h2a2 2 0 0 1 2 2v2" />
+                <path d="M21 17v2a2 2 0 0 1-2 2h-2" />
+                <path d="M7 21H5a2 2 0 0 1-2-2v-2" />
+                <path d="M16 17v-1a2 2 0 0 0-2-2H10a2 2 0 0 0-2 2v1" />
+                <circle cx="12" cy="9" r="3" />
+              </svg>
+            </span>
             Verifikasi Wajah
           </div>
         </div>
@@ -460,7 +489,7 @@
         <div data-r="guru">
           <div class="sb-lbl">Kepenulisan & Verifikasi</div>
           <div class="nav" data-pg="absensi" onclick="navigateTo('absensi')">
-            <span class="nav-ic"><img src="image/camera.png"
+            <span class="nav-ic"><img src="image/checkbox.png"
                 style="width:1.2em;height:1.2em;vertical-align:middle;filter:drop-shadow(0 2px 3px rgba(0,0,0,0.2))"></span>
             Input Presensi
           </div>
@@ -471,17 +500,17 @@
           </div>
 
           <div class="nav" data-pg="jadwal" onclick="navigateTo('jadwal')">
-            <span class="nav-ic"><img src="image/info.png"
+            <span class="nav-ic"><img src="image/jadwal_pelajaran.png"
                 style="width:1.2em;height:1.2em;vertical-align:middle;filter:drop-shadow(0 2px 3px rgba(0,0,0,0.2))"></span>
             Jadwal Mengajar
           </div>
           <div class="nav" data-pg="rekap_sekolah" onclick="navigateTo('rekap_sekolah')">
-            <span class="nav-ic"><img src="image/home.png"
+            <span class="nav-ic"><img src="image/rekap_absensi_sekolah.png"
                 style="width:1.2em;height:1.2em;vertical-align:middle;filter:drop-shadow(0 2px 3px rgba(0,0,0,0.2))"></span>
             Rekap Absensi Sekolah
           </div>
           <div class="nav" data-pg="rekap_mapel" onclick="navigateTo('rekap_mapel')">
-            <span class="nav-ic"><img src="image/add-document.png"
+            <span class="nav-ic"><img src="image/rekap_absensi_mapel.png"
                 style="width:1.2em;height:1.2em;vertical-align:middle;filter:drop-shadow(0 2px 3px rgba(0,0,0,0.2))"></span>
             Rekap Absensi Mapel
           </div>
