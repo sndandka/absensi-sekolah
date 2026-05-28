@@ -47,7 +47,6 @@ async function profil() {
           <div class="fg"><label class="fl">NISN (Informasi)</label><input type="text" class="fi" value="${extra.nisn || ''}" disabled></div>` : ''}
           ${u.role === 'guru' ? `<div class="fg"><label class="fl">NIP (Informasi)</label><input type="text" class="fi" value="${extra.nip || ''}" disabled></div>
           <div class="fg"><label class="fl">Mata Pelajaran (Informasi)</label><input type="text" class="fi" value="${extra.subject || ''}" disabled></div>` : ''}
-          <button type="submit" class="btn btn-pri wf mt1"><img src="image/checkbox.png" style="width:1.2em;height:1.2em;vertical-align:middle;filter:drop-shadow(0 2px 3px rgba(0,0,0,0.2))"> Simpan Perubahan</button>
         </form>
       </div></div>
       <div class="card"><div class="card-h"><div class="card-t"><img src="image/settings (1).png" style="width:1.2em;height:1.2em;vertical-align:middle;filter:drop-shadow(0 2px 3px rgba(0,0,0,0.2))"> Keamanan</div></div><div class="card-b">
