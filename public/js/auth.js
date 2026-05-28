@@ -84,11 +84,12 @@ async function handleLogin(e){
 async function handleRegister(e){
   e.preventDefault();
   const name=id('rName').value.trim(), email=id('rEmail').value.trim(),
-        pass=id('rPass').value, role=id('rRole').value;
+        pass=id('rPass').value, passConfirm=id('rPassConfirm').value, role=id('rRole').value;
   const btn=id('regBtn');
   
-  if(!name||!email||!pass) return showToast('Lengkapi semua field!','warning');
+  if(!name||!email||!pass||!passConfirm) return showToast('Lengkapi semua field!','warning');
   if(pass.length<6) return showToast('Password minimal 6 karakter','warning');
+  if(pass !== passConfirm) return showToast('Verifikasi kata sandi tidak cocok!','warning');
   btn.innerHTML='<div class="spin"></div>'; btn.disabled=true;
 
   try {
@@ -119,7 +120,7 @@ async function handleRegister(e){
     if(error) throw error;
     
     showToast('Pendaftaran berhasil! Silakan cek email (jika konfirmasi aktif) atau login.','success');
-    id('rName').value=''; id('rEmail').value=''; id('rPass').value='';
+    id('rName').value=''; id('rEmail').value=''; id('rPass').value=''; id('rPassConfirm').value='';
     if(id('rNisn')) id('rNisn').value = '';
     switchTab('login');
 
@@ -338,5 +339,21 @@ function switchTab(tab){
   } else {
     tr.style.background='linear-gradient(135deg,var(--v),var(--v1))'; tr.style.color='#fff';
     tl.style.background='transparent'; tl.style.color='var(--tx2)';
+  }
+}
+
+function togglePasswordVisibility(inputId, buttonEl) {
+  const input = document.getElementById(inputId);
+  if (!input) return;
+  
+  const eyeIcon = `<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-eye"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg>`;
+  const eyeOffIcon = `<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-eye-off"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"></path><line x1="1" y1="1" x2="23" y2="23"></line></svg>`;
+
+  if (input.type === 'password') {
+    input.type = 'text';
+    buttonEl.innerHTML = eyeIcon;
+  } else {
+    input.type = 'password';
+    buttonEl.innerHTML = eyeOffIcon;
   }
 }
