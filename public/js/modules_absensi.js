@@ -158,18 +158,18 @@ async function absensi() {
       // Diarahkan dari Jadwal Pelajaran
       const prefill = window._absensiPrefill;
       if (schedules && schedules.length > 0) {
-        // Cari yang cocok persis
+        // Cari yang cocok persis (menggunakan == agar tipe data fleksibel)
         selectedSchedule = schedules.find(s => 
-          s.class_id === prefill.classId && 
-          s.subject_id === prefill.subjectId && 
-          s.start_time === prefill.startTime && 
-          s.end_time === prefill.endTime
+          s.class_id == prefill.classId && 
+          s.subject_id == prefill.subjectId && 
+          s.start_time == prefill.startTime && 
+          s.end_time == prefill.endTime
         );
         // Fallback jika jam tidak cocok persis
         if (!selectedSchedule) {
           selectedSchedule = schedules.find(s => 
-            s.class_id === prefill.classId && 
-            s.subject_id === prefill.subjectId
+            s.class_id == prefill.classId && 
+            s.subject_id == prefill.subjectId
           );
         }
       }
@@ -185,6 +185,11 @@ async function absensi() {
           const end = s.end_time.slice(0, 5);
           return nowTimeStr >= start && nowTimeStr <= end;
         });
+        
+        // JIKA TIDAK DI JAM PELAJARAN, TAMPILKAN SAJA JADWAL PERTAMA (Default)
+        if (!selectedSchedule) {
+          selectedSchedule = schedules[0];
+        }
       }
     }
 
