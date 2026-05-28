@@ -35,8 +35,8 @@ async function loadFaceModels() {
   if (faceModelsLoaded) return true;
 
   // Show progress on whatever page we're on
-  enrollMsg('⏳ Memuat AI Model (SSD Mobilenet v1)...', '');
-  scanMsg('⏳ Memuat AI Model (SSD Mobilenet v1)...', '');
+  enrollMsg('Memuat AI Model (SSD Mobilenet v1)...', '');
+  scanMsg('Memuat AI Model (SSD Mobilenet v1)...', '');
   showToast('Memuat AI Face Recognition Model...', 'info');
 
   // Try local first, fallback to CDN
@@ -50,9 +50,9 @@ async function loadFaceModels() {
       const src = isLocal ? 'lokal' : 'CDN';
       console.log(`[FaceAPI] Memuat model dari ${src}: ${modelUri}`);
       if (!isLocal) {
-        showToast('⏳ Memuat model AI dari CDN (internet)...', 'info');
-        scanMsg('⏳ Memuat AI Model dari CDN (butuh internet)...', '');
-        enrollMsg('⏳ Memuat AI Model dari CDN (butuh internet)...', '');
+        showToast('Memuat model AI dari CDN (internet)...', 'info');
+        scanMsg('Memuat AI Model dari CDN (butuh internet)...', '');
+        enrollMsg('Memuat AI Model dari CDN (butuh internet)...', '');
       }
 
       console.log('[FaceAPI] Loading SSD Mobilenet v1...');
