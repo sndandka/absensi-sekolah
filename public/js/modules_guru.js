@@ -566,19 +566,24 @@ async function updateGuruDash() {
     
     const { data: t } = await supabase.from('teachers').select('homeroom').eq('id', tId).single();
     const homeroomName = t?.homeroom || '';
-    const { data: sch } = await supabase.from('teaching_schedules').select('day, classes(name)').eq('teacher_id', tId);
+    const { data: sch } = await supabase.from('teaching_schedules').select('day, class_id, classes(name)').eq('teacher_id', tId);
     
+    const { data: allStu } = await supabase.from('students').select('user_id, class_id');
+    const stuClassMap = {};
+    if (allStu) allStu.forEach(s => { if (s.user_id) stuClassMap[s.user_id] = s.class_id; });
+    
+    const { data: allClasses } = await supabase.from('classes').select('id, name');
+    const cMap = {};
+    if (allClasses) allClasses.forEach(c => cMap[c.id] = c.name);
+
     pc = listPending.filter(p => {
-       if (homeroomName && p.class_name === homeroomName) return true;
+       const sCid = stuClassMap[p.student_id];
+       const actualClassName = (sCid ? cMap[sCid] : null) || p.class_name || '';
+       
+       if (homeroomName && actualClassName === homeroomName) return true;
        if (!sch) return false;
-       const classSchedules = sch.filter(s => s.classes?.name === p.class_name);
-       if (classSchedules.length === 0) return false;
-       const sDate = new Date(p.start_date);
-       const eDate = new Date(p.end_date || p.start_date);
-       const permitDays = new Set();
-       let curr = new Date(sDate);
-       while (curr <= eDate) { permitDays.add(curr.getDay()); curr.setDate(curr.getDate() + 1); }
-       return classSchedules.some(s => permitDays.has(s.day));
+       if (sCid) return sch.some(s => s.class_id === sCid);
+       return sch.some(s => s.classes?.name === actualClassName);
     }).length;
   }
 
